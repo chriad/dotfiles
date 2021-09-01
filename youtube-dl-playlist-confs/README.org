@@ -1,11 +1,12 @@
+* The youtube-dl playlist compendium
 * Save a local copy of a youtube playlist and integrate with jellyfin
 
 Requirements:
-- youtube
-- ytcc
+- access to youtube
+- ytcc (optional)
 - ffmpeg
 - youtube-dl
-- emby/yellyfin
+- emby/yellyfin (optional)
 
 The available metadata dependes on the extractor. I have an additional level of control if I can extract metadata from video titles that might not be captured by the extractor. ll
 
@@ -30,7 +31,8 @@ ffmpeg -i 'The Privacy Tax - How tracking and hacking affect disabled people, an
 
 Maybe conform to jellyfin naming?
 
-
 #+begin_src bash
 youtube-dl --get-filename https://www.youtube.com/playlist?list=PLzH6n4zXuckpfMu_4Ff8E7Z1behQks5ba -o '/media/chriad/YOUTUBE-dl/YOUTUBE-PLAYLISTS/%(channel)s/%(playlist)s - S01E%(playlist_index)s - %(title)s.%(ext)s'
 #+end_src
+
+Case study: using `--metadata-from-title`
