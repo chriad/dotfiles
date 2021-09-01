@@ -11,14 +11,9 @@
 --add-metadata
 --write-auto-sub
 --sub-lang en
---metadata-from-title '%(playlist) - (?P<title>.+) by (?P<artist>.+)'
+--metadata-from-title '%(playlist)s - (?P<title>.+) by (?P<artist>.+)'
 --xattrs
 --skip-download
 --exec 'rename -d -e s/\!\!Con\ 2021\ \-// -e s/\ by// {}'
 ") 
 
-# --reject-title 'Rotifers'
-# --playlist-items 1-3,4 
-# --metadata-from-title FORMAT
-# --match-filter FILTER
-# --exec ''

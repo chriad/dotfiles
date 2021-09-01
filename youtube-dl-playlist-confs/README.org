@@ -1,4 +1,13 @@
-* Save a local copy of a youtube playlist and integrate with emby.
+* Save a local copy of a youtube playlist and integrate with jellyfin
+
+Requirements:
+- youtube
+- ytcc
+- ffmpeg
+- youtube-dl
+- emby/yellyfin
+
+The available metadata dependes on the extractor. I have an additional level of control if I can extract metadata from video titles that might not be captured by the extractor. ll
 
 First just download the titles of the playlist:
 #+begin_src bash
@@ -12,3 +21,16 @@ youtube-dl --get-filename https://www.youtube.com/playlist?list=PLzH6n4zXuckpfMu
 #+end_src
 
 Now use this output for `--exec ... {}` to remove unnecessary stuff from filename.
+
+Look at embedded metadata:
+
+#+begin_src bash 
+ffmpeg -i 'The Privacy Tax - How tracking and hacking affect disabled people, and what we can do about it.mkv' -f ffmetadata - 2> /dev/null
+#+end_src
+
+Maybe conform to jellyfin naming?
+
+
+#+begin_src bash
+youtube-dl --get-filename https://www.youtube.com/playlist?list=PLzH6n4zXuckpfMu_4Ff8E7Z1behQks5ba -o '/media/chriad/YOUTUBE-dl/YOUTUBE-PLAYLISTS/%(channel)s/%(playlist)s - S01E%(playlist_index)s - %(title)s.%(ext)s'
+#+end_src
