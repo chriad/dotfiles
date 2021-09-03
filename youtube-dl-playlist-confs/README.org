@@ -10,6 +10,8 @@ Requirements:
 
 The available metadata dependes on the extractor. I have an additional level of control if I can extract metadata from video titles that might not be captured by the extractor. ll
 
+In fact, every set of videos can be downloaded as a playlist, because all videos form a channel are a playlist themself (names "Uploads from <channel name>"), and youtube-dl can arbitrarily filter this list. So a playlist is not just what that uploader has defined as a playlist, but what you choose to be.
+
 First just download the titles of the playlist:
 #+begin_src bash
 youtube-dl --get-title https://www.youtube.com/playlist?list=PLzH6n4zXuckpfMu_4Ff8E7Z1behQks5ba
@@ -36,3 +38,8 @@ youtube-dl --get-filename https://www.youtube.com/playlist?list=PLzH6n4zXuckpfMu
 #+end_src
 
 Case study: using `--metadata-from-title`
+
+What metadata can we extract?
+youtube-dl -j
+
+To look for metadata in the json file, I can highly recommand [[https://developer.github.com/v3/repos/statistics/][jid]] bla.
