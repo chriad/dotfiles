@@ -17,9 +17,7 @@ alias ec="emacsclient --no-wait"
 alias e="emacsclient --no-wait"
 alias c2='cd ../../'
 alias xpdf="~/Desktop/XpdfReader-linux64-4.01.01/xpdf"
-# alias fd="fdfind"
 alias gsadd='git submodule add'
-alias find="fd"
 alias bfg="java -jar /home/chriad/bfg-1.13.0.jar"
 alias detox="detox --remove-trailing"
 alias mpvd="mpv --input-test --force-window --idle --osc=no" #mpv debug to show keybindings
