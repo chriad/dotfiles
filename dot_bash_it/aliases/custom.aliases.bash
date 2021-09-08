@@ -24,7 +24,7 @@ alias mpvd="mpv --input-test --force-window --idle --osc=no" #mpv debug to show 
 alias cat="batcat"
 alias ripgrep="rg"
 #alias emacs="sudo emacs"
-alias youtube-dl-single='~/.youtube-dl-wrapper.sh'
+# alias youtube-dl-single='~/.youtube-dl-wrapper.sh'
 alias z="zathura"
 alias rsbcl='rlwrap sbcl'
 # alias wget='wget -a "downloads.log"'
@@ -73,7 +73,7 @@ alias mplayer="mplayer -af scaletempo"
 # alias python="ptpython"
 alias vim0="nvim -u NONE -N"
 alias ini="vim ~/.config/nvim/init.vim"
-alias clipit="xclip -selection clipboard" # use e.g. ls | clipit 
+alias clipit="xclip -selection clipboard" # use e.g. ls | clipit
 alias gitaliases="git config --list"
 alias findbig="/usr/bin/find ./ -type f -print0 | xargs -0 du | sort -n | tail -n 100 | cut -f2 | xargs -I{} du -sh {}"
 alias findbigdir="/usr/bin/find ./ -maxdepth 1 -type d -print0 | xargs -0 du --max-depth=1 | sort -n | tail -n 50 | tail -n +1 | cut -f2 | xargs -I{} du -sh {}"
@@ -111,9 +111,9 @@ git_diff_pdf() {
 youtube-dl-audio() {
     /usr/local/bin/youtube-dl--extract-audio --restrict-filenames --write-info-json --write-description --write-auto-sub --sub-lang en --audio-format mp3 "$1"
 }
-youtube-dl-playlist() {
-    /usr/local/bin/youtube-dl -i -c -o '/media/chriad/E/YOUTUBE-PLAYLISTS/%(channel)s/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s' --write-info-json --write-thumbnail --write-description --add-metadata --write-auto-sub --sub-lang en "$1"
-}
+# youtube-dl-playlist() {
+#     /usr/local/bin/youtube-dl -i -c -o '/media/chriad/E/YOUTUBE-PLAYLISTS/%(channel)s/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s' --write-info-json --write-thumbnail --write-description --add-metadata --write-auto-sub --sub-lang en "$1"
+# }
 
 thumbnail() {
     pdftoppm -f 1 -l 1 -scale-to 1024 -png  $1 thumb
@@ -123,7 +123,7 @@ asciimux() {
     cd $ASCIINEMA_HOME
     filename=$2.json
     test -f $filename || touch $filename
-    asciinema rec "$filename" -c "tmux attach -t $1" 
+    asciinema rec "$filename" -c "tmux attach -t $1"
 }
 arec() {
     filename=$ASCIINEMA_HOME/"$1".json
