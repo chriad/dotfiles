@@ -98,6 +98,8 @@ alias pdf-txt='pdftotext -layout -eol unix -nopgbrk'
 alias powershell='pwsh'
 alias ipinfo='curl ipinfo.io'
 
+alias subscriptions='ytcc -o xsv subscriptions -a name|fzf'
+
 #call with asciimux "session_name_here" "file_name_here", must
 #have ""
 ghist() {
