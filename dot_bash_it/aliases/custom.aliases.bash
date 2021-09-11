@@ -1,4 +1,6 @@
 # From laptop
+alias cs='chezmoi status'
+alias cc='chezmoi cd'
 alias firefox="firefox -P -no-remote" # multiple concurrent profiles
 alias jpdf="java -jar /home/chriad/jpdftweak-linux-x64-1.1/jpdftweak.jar"
 alias ls-git-cwd='find . -name "*.git" -type d'
@@ -12,7 +14,6 @@ alias rescue-emacs="killall -s USR2 emacs"
 alias raspb-connect="screen /dev/ttyUSB0 115200"
 alias regexp-buddy="wine /home/chriad/.wine/dosdevices/c\:/Program\ Files\ \(x86\)/JGsoft/RegexBuddy3/RegexBuddy.exe"
 alias lisp-works="/usr/local/lib64/LispWorksPersonal/lispworks-personal-7-1-2-amd64-linux"
-alias my-reload-aliases='source ~/.dotfiles/custom.aliases.bash'
 alias ec="emacsclient --no-wait"
 alias e="emacsclient --no-wait"
 alias c2='cd ../../'
