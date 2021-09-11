@@ -263,3 +263,22 @@ f() {
      fi
   fi
 }
+
+bdfr1() {
+	CMD="conda run -n py39 python3 -m bdfr\
+			   clone\
+			   --file-scheme {TITLE}\
+			   -l '$1'\
+			   /home/chriad/reddit-archive"
+	eval "$CMD"
+}
+
+# A quick way to pull this image, video, without metadata. For metadata, use clone
+reddit-pull-this() {
+	CMD="conda run -n py39 python3 -m bdfr\
+			   download\
+			   --file-scheme {TITLE}\
+			   -l '$1'\
+			   /home/chriad/reddit-archive"
+	eval "$CMD"
+}
