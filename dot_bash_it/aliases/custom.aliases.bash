@@ -1,4 +1,5 @@
 # From laptop
+alias bdfr='conda run -n py39 python3 -m bdfr'
 alias cs='chezmoi status'
 alias cc='chezmoi cd'
 alias firefox="firefox -P -no-remote" # multiple concurrent profiles
