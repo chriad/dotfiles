@@ -264,7 +264,7 @@ f() {
   fi
 }
 
-bdfr1() {
+bdfr-c() {
 	CMD="conda run -n py39 python3 -m bdfr\
 			   clone\
 			   --file-scheme {TITLE}\
@@ -274,7 +274,7 @@ bdfr1() {
 }
 
 # A quick way to pull this image, video, without metadata. For metadata, use clone
-reddit-pull-this() {
+bdfr-d() {
 	CMD="conda run -n py39 python3 -m bdfr\
 			   download\
 			   --file-scheme {TITLE}\
