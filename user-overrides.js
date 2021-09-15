@@ -18,6 +18,8 @@ user_pref("privacy.cpd.history", false); // 2804 to match when you use Ctrl-Shif
 user_pref("_user.js.parrot", "0800 syntax error: the parrot's ceased to be!");
 user_pref("keyword.enabled", true); // 0801 - I use startpage
 
+// needed for org protocol
+user_pref("security.external_protocol_requires_permission", false);
 
 // https://support.mozilla.org/en-US/questions/1263537
 user_pref("browser.tabs.insertRelatedAfterCurrent", true)
