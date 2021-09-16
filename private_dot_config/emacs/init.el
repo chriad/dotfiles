@@ -1102,7 +1102,7 @@ With a prefix ARG, remove start location."
   (require 'orca)
 
 
-  (load "/media/chriad/nebula/spacemacs-config-files/fork/capture.el")
+  (load "~/.config/emacs/capture.el")
   (load "/media/chriad/nebula/spacemacs-config-files/fork/o-keymap.el")
   (load "/media/chriad/nebula/spacemacs-config-files/fork/eaf-config.el")
 
@@ -1186,7 +1186,7 @@ This function is called at the very end of Spacemacs initialization."
  '(bmkp-last-as-first-bookmark-file
    "/media/chriad/nebula/spacemacs-config-files/fork/lazycat.bmk")
  '(bookmark-default-file
-   "/media/chriad/nebula/spacemacs-config-files/fork/bookmarks" t)
+   "/media/chriad/nebula/spacemacs-config-files/fork/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
  '(dap-python-executable "/media/chriad/nebula/anaconda3/bin/python")
  '(default-frame-alist
