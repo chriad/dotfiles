@@ -807,7 +807,6 @@ before packages are loaded."
   ;;         org-roam-server-network-label-wrap-length 20))
 
   ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/ol-git-link.el")
-  (require 'git-link)
 
 
   (use-package hydra)
@@ -1103,7 +1102,7 @@ With a prefix ARG, remove start location."
 
 
   (load "~/.config/emacs/capture.el")
-  (load "/media/chriad/nebula/spacemacs-config-files/fork/o-keymap.el")
+  (load "~/.config/emacs/o-keymap.el")
   (load "/media/chriad/nebula/spacemacs-config-files/fork/eaf-config.el")
 
 
