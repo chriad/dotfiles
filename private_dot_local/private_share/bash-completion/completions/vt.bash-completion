@@ -1,0 +1,5451 @@
+# bash completion for vt                                   -*- shell-script -*-
+
+__vt_debug()
+{
+    if [[ -n ${BASH_COMP_DEBUG_FILE} ]]; then
+        echo "$*" >> "${BASH_COMP_DEBUG_FILE}"
+    fi
+}
+
+# Homebrew on Macs have version 1.3 of bash-completion which doesn't include
+# _init_completion. This is a very minimal version of that function.
+__vt_init_completion()
+{
+    COMPREPLY=()
+    _get_comp_words_by_ref "$@" cur prev words cword
+}
+
+__vt_index_of_word()
+{
+    local w word=$1
+    shift
+    index=0
+    for w in "$@"; do
+        [[ $w = "$word" ]] && return
+        index=$((index+1))
+    done
+    index=-1
+}
+
+__vt_contains_word()
+{
+    local w word=$1; shift
+    for w in "$@"; do
+        [[ $w = "$word" ]] && return
+    done
+    return 1
+}
+
+__vt_handle_go_custom_completion()
+{
+    __vt_debug "${FUNCNAME[0]}: cur is ${cur}, words[*] is ${words[*]}, #words[@] is ${#words[@]}"
+
+    local shellCompDirectiveError=1
+    local shellCompDirectiveNoSpace=2
+    local shellCompDirectiveNoFileComp=4
+    local shellCompDirectiveFilterFileExt=8
+    local shellCompDirectiveFilterDirs=16
+
+    local out requestComp lastParam lastChar comp directive args
+
+    # Prepare the command to request completions for the program.
+    # Calling ${words[0]} instead of directly vt allows to handle aliases
+    args=("${words[@]:1}")
+    requestComp="${words[0]} __completeNoDesc ${args[*]}"
+
+    lastParam=${words[$((${#words[@]}-1))]}
+    lastChar=${lastParam:$((${#lastParam}-1)):1}
+    __vt_debug "${FUNCNAME[0]}: lastParam ${lastParam}, lastChar ${lastChar}"
+
+    if [ -z "${cur}" ] && [ "${lastChar}" != "=" ]; then
+        # If the last parameter is complete (there is a space following it)
+        # We add an extra empty parameter so we can indicate this to the go method.
+        __vt_debug "${FUNCNAME[0]}: Adding extra empty parameter"
+        requestComp="${requestComp} \"\""
+    fi
+
+    __vt_debug "${FUNCNAME[0]}: calling ${requestComp}"
+    # Use eval to handle any environment variables and such
+    out=$(eval "${requestComp}" 2>/dev/null)
+
+    # Extract the directive integer at the very end of the output following a colon (:)
+    directive=${out##*:}
+    # Remove the directive
+    out=${out%:*}
+    if [ "${directive}" = "${out}" ]; then
+        # There is not directive specified
+        directive=0
+    fi
+    __vt_debug "${FUNCNAME[0]}: the completion directive is: ${directive}"
+    __vt_debug "${FUNCNAME[0]}: the completions are: ${out[*]}"
+
+    if [ $((directive & shellCompDirectiveError)) -ne 0 ]; then
+        # Error code.  No completion.
+        __vt_debug "${FUNCNAME[0]}: received error from custom completion go code"
+        return
+    else
+        if [ $((directive & shellCompDirectiveNoSpace)) -ne 0 ]; then
+            if [[ $(type -t compopt) = "builtin" ]]; then
+                __vt_debug "${FUNCNAME[0]}: activating no space"
+                compopt -o nospace
+            fi
+        fi
+        if [ $((directive & shellCompDirectiveNoFileComp)) -ne 0 ]; then
+            if [[ $(type -t compopt) = "builtin" ]]; then
+                __vt_debug "${FUNCNAME[0]}: activating no file completion"
+                compopt +o default
+            fi
+        fi
+    fi
+
+    if [ $((directive & shellCompDirectiveFilterFileExt)) -ne 0 ]; then
+        # File extension filtering
+        local fullFilter filter filteringCmd
+        # Do not use quotes around the $out variable or else newline
+        # characters will be kept.
+        for filter in ${out[*]}; do
+            fullFilter+="$filter|"
+        done
+
+        filteringCmd="_filedir $fullFilter"
+        __vt_debug "File filtering command: $filteringCmd"
+        $filteringCmd
+    elif [ $((directive & shellCompDirectiveFilterDirs)) -ne 0 ]; then
+        # File completion for directories only
+        local subDir
+        # Use printf to strip any trailing newline
+        subdir=$(printf "%s" "${out[0]}")
+        if [ -n "$subdir" ]; then
+            __vt_debug "Listing directories in $subdir"
+            __vt_handle_subdirs_in_dir_flag "$subdir"
+        else
+            __vt_debug "Listing directories in ."
+            _filedir -d
+        fi
+    else
+        while IFS='' read -r comp; do
+            COMPREPLY+=("$comp")
+        done < <(compgen -W "${out[*]}" -- "$cur")
+    fi
+}
+
+__vt_handle_reply()
+{
+    __vt_debug "${FUNCNAME[0]}"
+    local comp
+    case $cur in
+        -*)
+            if [[ $(type -t compopt) = "builtin" ]]; then
+                compopt -o nospace
+            fi
+            local allflags
+            if [ ${#must_have_one_flag[@]} -ne 0 ]; then
+                allflags=("${must_have_one_flag[@]}")
+            else
+                allflags=("${flags[*]} ${two_word_flags[*]}")
+            fi
+            while IFS='' read -r comp; do
+                COMPREPLY+=("$comp")
+            done < <(compgen -W "${allflags[*]}" -- "$cur")
+            if [[ $(type -t compopt) = "builtin" ]]; then
+                [[ "${COMPREPLY[0]}" == *= ]] || compopt +o nospace
+            fi
+
+            # complete after --flag=abc
+            if [[ $cur == *=* ]]; then
+                if [[ $(type -t compopt) = "builtin" ]]; then
+                    compopt +o nospace
+                fi
+
+                local index flag
+                flag="${cur%=*}"
+                __vt_index_of_word "${flag}" "${flags_with_completion[@]}"
+                COMPREPLY=()
+                if [[ ${index} -ge 0 ]]; then
+                    PREFIX=""
+                    cur="${cur#*=}"
+                    ${flags_completion[${index}]}
+                    if [ -n "${ZSH_VERSION}" ]; then
+                        # zsh completion needs --flag= prefix
+                        eval "COMPREPLY=( \"\${COMPREPLY[@]/#/${flag}=}\" )"
+                    fi
+                fi
+            fi
+            return 0;
+            ;;
+    esac
+
+    # check if we are handling a flag with special work handling
+    local index
+    __vt_index_of_word "${prev}" "${flags_with_completion[@]}"
+    if [[ ${index} -ge 0 ]]; then
+        ${flags_completion[${index}]}
+        return
+    fi
+
+    # we are parsing a flag and don't have a special handler, no completion
+    if [[ ${cur} != "${words[cword]}" ]]; then
+        return
+    fi
+
+    local completions
+    completions=("${commands[@]}")
+    if [[ ${#must_have_one_noun[@]} -ne 0 ]]; then
+        completions+=("${must_have_one_noun[@]}")
+    elif [[ -n "${has_completion_function}" ]]; then
+        # if a go completion function is provided, defer to that function
+        __vt_handle_go_custom_completion
+    fi
+    if [[ ${#must_have_one_flag[@]} -ne 0 ]]; then
+        completions+=("${must_have_one_flag[@]}")
+    fi
+    while IFS='' read -r comp; do
+        COMPREPLY+=("$comp")
+    done < <(compgen -W "${completions[*]}" -- "$cur")
+
+    if [[ ${#COMPREPLY[@]} -eq 0 && ${#noun_aliases[@]} -gt 0 && ${#must_have_one_noun[@]} -ne 0 ]]; then
+        while IFS='' read -r comp; do
+            COMPREPLY+=("$comp")
+        done < <(compgen -W "${noun_aliases[*]}" -- "$cur")
+    fi
+
+    if [[ ${#COMPREPLY[@]} -eq 0 ]]; then
+		if declare -F __vt_custom_func >/dev/null; then
+			# try command name qualified custom func
+			__vt_custom_func
+		else
+			# otherwise fall back to unqualified for compatibility
+			declare -F __custom_func >/dev/null && __custom_func
+		fi
+    fi
+
+    # available in bash-completion >= 2, not always present on macOS
+    if declare -F __ltrim_colon_completions >/dev/null; then
+        __ltrim_colon_completions "$cur"
+    fi
+
+    # If there is only 1 completion and it is a flag with an = it will be completed
+    # but we don't want a space after the =
+    if [[ "${#COMPREPLY[@]}" -eq "1" ]] && [[ $(type -t compopt) = "builtin" ]] && [[ "${COMPREPLY[0]}" == --*= ]]; then
+       compopt -o nospace
+    fi
+}
+
+# The arguments should be in the form "ext1|ext2|extn"
+__vt_handle_filename_extension_flag()
+{
+    local ext="$1"
+    _filedir "@(${ext})"
+}
+
+__vt_handle_subdirs_in_dir_flag()
+{
+    local dir="$1"
+    pushd "${dir}" >/dev/null 2>&1 && _filedir -d && popd >/dev/null 2>&1 || return
+}
+
+__vt_handle_flag()
+{
+    __vt_debug "${FUNCNAME[0]}: c is $c words[c] is ${words[c]}"
+
+    # if a command required a flag, and we found it, unset must_have_one_flag()
+    local flagname=${words[c]}
+    local flagvalue
+    # if the word contained an =
+    if [[ ${words[c]} == *"="* ]]; then
+        flagvalue=${flagname#*=} # take in as flagvalue after the =
+        flagname=${flagname%=*} # strip everything after the =
+        flagname="${flagname}=" # but put the = back
+    fi
+    __vt_debug "${FUNCNAME[0]}: looking for ${flagname}"
+    if __vt_contains_word "${flagname}" "${must_have_one_flag[@]}"; then
+        must_have_one_flag=()
+    fi
+
+    # if you set a flag which only applies to this command, don't show subcommands
+    if __vt_contains_word "${flagname}" "${local_nonpersistent_flags[@]}"; then
+      commands=()
+    fi
+
+    # keep flag value with flagname as flaghash
+    # flaghash variable is an associative array which is only supported in bash > 3.
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        if [ -n "${flagvalue}" ] ; then
+            flaghash[${flagname}]=${flagvalue}
+        elif [ -n "${words[ $((c+1)) ]}" ] ; then
+            flaghash[${flagname}]=${words[ $((c+1)) ]}
+        else
+            flaghash[${flagname}]="true" # pad "true" for bool flag
+        fi
+    fi
+
+    # skip the argument to a two word flag
+    if [[ ${words[c]} != *"="* ]] && __vt_contains_word "${words[c]}" "${two_word_flags[@]}"; then
+			  __vt_debug "${FUNCNAME[0]}: found a flag ${words[c]}, skip the next argument"
+        c=$((c+1))
+        # if we are looking for a flags value, don't show commands
+        if [[ $c -eq $cword ]]; then
+            commands=()
+        fi
+    fi
+
+    c=$((c+1))
+
+}
+
+__vt_handle_noun()
+{
+    __vt_debug "${FUNCNAME[0]}: c is $c words[c] is ${words[c]}"
+
+    if __vt_contains_word "${words[c]}" "${must_have_one_noun[@]}"; then
+        must_have_one_noun=()
+    elif __vt_contains_word "${words[c]}" "${noun_aliases[@]}"; then
+        must_have_one_noun=()
+    fi
+
+    nouns+=("${words[c]}")
+    c=$((c+1))
+}
+
+__vt_handle_command()
+{
+    __vt_debug "${FUNCNAME[0]}: c is $c words[c] is ${words[c]}"
+
+    local next_command
+    if [[ -n ${last_command} ]]; then
+        next_command="_${last_command}_${words[c]//:/__}"
+    else
+        if [[ $c -eq 0 ]]; then
+            next_command="_vt_root_command"
+        else
+            next_command="_${words[c]//:/__}"
+        fi
+    fi
+    c=$((c+1))
+    __vt_debug "${FUNCNAME[0]}: looking for ${next_command}"
+    declare -F "$next_command" >/dev/null && $next_command
+}
+
+__vt_handle_word()
+{
+    if [[ $c -ge $cword ]]; then
+        __vt_handle_reply
+        return
+    fi
+    __vt_debug "${FUNCNAME[0]}: c is $c words[c] is ${words[c]}"
+    if [[ "${words[c]}" == -* ]]; then
+        __vt_handle_flag
+    elif __vt_contains_word "${words[c]}" "${commands[@]}"; then
+        __vt_handle_command
+    elif [[ $c -eq 0 ]]; then
+        __vt_handle_command
+    elif __vt_contains_word "${words[c]}" "${command_aliases[@]}"; then
+        # aliashash variable is an associative array which is only supported in bash > 3.
+        if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+            words[c]=${aliashash[${words[c]}]}
+            __vt_handle_command
+        else
+            __vt_handle_noun
+        fi
+    else
+        __vt_handle_noun
+    fi
+    __vt_handle_word
+}
+
+_vt_analysis()
+{
+    last_command="vt_analysis"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_completion()
+{
+    last_command="vt_completion"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    local_nonpersistent_flags+=("--help")
+    local_nonpersistent_flags+=("-h")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_comments()
+{
+    last_command="vt_domain_comments"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_communicating_files()
+{
+    last_command="vt_domain_communicating_files"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_graphs()
+{
+    last_command="vt_domain_graphs"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_historical_ssl_certificates()
+{
+    last_command="vt_domain_historical_ssl_certificates"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_historical_whois()
+{
+    last_command="vt_domain_historical_whois"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_immediate_parent()
+{
+    last_command="vt_domain_immediate_parent"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_parent()
+{
+    last_command="vt_domain_parent"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_referrer_files()
+{
+    last_command="vt_domain_referrer_files"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_related_comments()
+{
+    last_command="vt_domain_related_comments"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_relationships()
+{
+    last_command="vt_domain_relationships"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_resolutions()
+{
+    last_command="vt_domain_resolutions"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_siblings()
+{
+    last_command="vt_domain_siblings"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_subdomains()
+{
+    last_command="vt_domain_subdomains"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_user_votes()
+{
+    last_command="vt_domain_user_votes"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain_votes()
+{
+    last_command="vt_domain_votes"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_domain()
+{
+    last_command="vt_domain"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("comments")
+    commands+=("communicating_files")
+    commands+=("graphs")
+    commands+=("historical_ssl_certificates")
+    commands+=("historical_whois")
+    commands+=("immediate_parent")
+    commands+=("parent")
+    commands+=("referrer_files")
+    commands+=("related_comments")
+    commands+=("relationships")
+    commands+=("resolutions")
+    commands+=("siblings")
+    commands+=("subdomains")
+    commands+=("user_votes")
+    commands+=("votes")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_download()
+{
+    last_command="vt_download"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    local_nonpersistent_flags+=("--output")
+    local_nonpersistent_flags+=("--output=")
+    local_nonpersistent_flags+=("-o")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--zip")
+    flags+=("-z")
+    local_nonpersistent_flags+=("--zip")
+    local_nonpersistent_flags+=("-z")
+    flags+=("--zip-password=")
+    two_word_flags+=("--zip-password")
+    local_nonpersistent_flags+=("--zip-password")
+    local_nonpersistent_flags+=("--zip-password=")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_behaviours()
+{
+    last_command="vt_file_behaviours"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_bundled_files()
+{
+    last_command="vt_file_bundled_files"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_comments()
+{
+    last_command="vt_file_comments"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_contacted_domains()
+{
+    last_command="vt_file_contacted_domains"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_contacted_ips()
+{
+    last_command="vt_file_contacted_ips"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_contacted_urls()
+{
+    last_command="vt_file_contacted_urls"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_distributors()
+{
+    last_command="vt_file_distributors"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_dropped_files()
+{
+    last_command="vt_file_dropped_files"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_execution_parents()
+{
+    last_command="vt_file_execution_parents"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_graphs()
+{
+    last_command="vt_file_graphs"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_pe_resource_children()
+{
+    last_command="vt_file_pe_resource_children"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_pe_resource_parents()
+{
+    last_command="vt_file_pe_resource_parents"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_relationships()
+{
+    last_command="vt_file_relationships"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_sigma_analysis()
+{
+    last_command="vt_file_sigma_analysis"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_user_votes()
+{
+    last_command="vt_file_user_votes"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file_votes()
+{
+    last_command="vt_file_votes"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_file()
+{
+    last_command="vt_file"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("behaviours")
+    commands+=("bundled_files")
+    commands+=("comments")
+    commands+=("contacted_domains")
+    commands+=("contacted_ips")
+    commands+=("contacted_urls")
+    commands+=("distributors")
+    commands+=("dropped_files")
+    commands+=("execution_parents")
+    commands+=("graphs")
+    commands+=("pe_resource_children")
+    commands+=("pe_resource_parents")
+    commands+=("relationships")
+    commands+=("sigma_analysis")
+    commands+=("user_votes")
+    commands+=("votes")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_group_privileges_grant()
+{
+    last_command="vt_group_privileges_grant"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--expiration=")
+    two_word_flags+=("--expiration")
+    two_word_flags+=("-e")
+    local_nonpersistent_flags+=("--expiration")
+    local_nonpersistent_flags+=("--expiration=")
+    local_nonpersistent_flags+=("-e")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_group_privileges_revoke()
+{
+    last_command="vt_group_privileges_revoke"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_group_privileges()
+{
+    last_command="vt_group_privileges"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("grant")
+    commands+=("revoke")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_group()
+{
+    last_command="vt_group"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("privileges")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_help()
+{
+    last_command="vt_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_vt_hunting_notification_delete()
+{
+    last_command="vt_hunting_notification_delete"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--all")
+    flags+=("-a")
+    local_nonpersistent_flags+=("--all")
+    local_nonpersistent_flags+=("-a")
+    flags+=("--with-tag=")
+    two_word_flags+=("--with-tag")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--with-tag")
+    local_nonpersistent_flags+=("--with-tag=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_notification_list_delete()
+{
+    last_command="vt_hunting_notification_list_delete"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--all")
+    flags+=("-a")
+    local_nonpersistent_flags+=("--all")
+    local_nonpersistent_flags+=("-a")
+    flags+=("--with-tag=")
+    two_word_flags+=("--with-tag")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--with-tag")
+    local_nonpersistent_flags+=("--with-tag=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_notification_list()
+{
+    last_command="vt_hunting_notification_list"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("delete")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--filter=")
+    two_word_flags+=("--filter")
+    two_word_flags+=("-f")
+    local_nonpersistent_flags+=("--filter")
+    local_nonpersistent_flags+=("--filter=")
+    local_nonpersistent_flags+=("-f")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_notification()
+{
+    last_command="vt_hunting_notification"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("delete")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_ruleset_add()
+{
+    last_command="vt_hunting_ruleset_add"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_ruleset_delete()
+{
+    last_command="vt_hunting_ruleset_delete"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--all")
+    flags+=("-a")
+    local_nonpersistent_flags+=("--all")
+    local_nonpersistent_flags+=("-a")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_ruleset_disable()
+{
+    last_command="vt_hunting_ruleset_disable"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_ruleset_enable()
+{
+    last_command="vt_hunting_ruleset_enable"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_ruleset_list()
+{
+    last_command="vt_hunting_ruleset_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--filter=")
+    two_word_flags+=("--filter")
+    two_word_flags+=("-f")
+    local_nonpersistent_flags+=("--filter")
+    local_nonpersistent_flags+=("--filter=")
+    local_nonpersistent_flags+=("-f")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_ruleset_rename()
+{
+    last_command="vt_hunting_ruleset_rename"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_ruleset_setlimit()
+{
+    last_command="vt_hunting_ruleset_setlimit"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_ruleset_update()
+{
+    last_command="vt_hunting_ruleset_update"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting_ruleset()
+{
+    last_command="vt_hunting_ruleset"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("add")
+    commands+=("delete")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("del")
+        aliashash["del"]="delete"
+        command_aliases+=("rm")
+        aliashash["rm"]="delete"
+    fi
+    commands+=("disable")
+    commands+=("enable")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("rename")
+    commands+=("setlimit")
+    commands+=("update")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_hunting()
+{
+    last_command="vt_hunting"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("notification")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("nt")
+        aliashash["nt"]="notification"
+    fi
+    commands+=("ruleset")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("rs")
+        aliashash["rs"]="ruleset"
+    fi
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_init()
+{
+    last_command="vt_init"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_comments()
+{
+    last_command="vt_ip_comments"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_communicating_files()
+{
+    last_command="vt_ip_communicating_files"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_graphs()
+{
+    last_command="vt_ip_graphs"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_historical_ssl_certificates()
+{
+    last_command="vt_ip_historical_ssl_certificates"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_historical_whois()
+{
+    last_command="vt_ip_historical_whois"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_referrer_files()
+{
+    last_command="vt_ip_referrer_files"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_related_comments()
+{
+    last_command="vt_ip_related_comments"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_relationships()
+{
+    last_command="vt_ip_relationships"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_resolutions()
+{
+    last_command="vt_ip_resolutions"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_user_votes()
+{
+    last_command="vt_ip_user_votes"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip_votes()
+{
+    last_command="vt_ip_votes"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_ip()
+{
+    last_command="vt_ip"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("comments")
+    commands+=("communicating_files")
+    commands+=("graphs")
+    commands+=("historical_ssl_certificates")
+    commands+=("historical_whois")
+    commands+=("referrer_files")
+    commands+=("related_comments")
+    commands+=("relationships")
+    commands+=("resolutions")
+    commands+=("user_votes")
+    commands+=("votes")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_meta()
+{
+    last_command="vt_meta"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitor_delete()
+{
+    last_command="vt_monitor_delete"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitor_deletedetails()
+{
+    last_command="vt_monitor_deletedetails"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitor_download()
+{
+    last_command="vt_monitor_download"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    local_nonpersistent_flags+=("--output")
+    local_nonpersistent_flags+=("--output=")
+    local_nonpersistent_flags+=("-o")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitor_list()
+{
+    last_command="vt_monitor_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--filter=")
+    two_word_flags+=("--filter")
+    two_word_flags+=("-f")
+    local_nonpersistent_flags+=("--filter")
+    local_nonpersistent_flags+=("--filter=")
+    local_nonpersistent_flags+=("-f")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitor_relationships()
+{
+    last_command="vt_monitor_relationships"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitor_setdetails()
+{
+    last_command="vt_monitor_setdetails"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitor_upload()
+{
+    last_command="vt_monitor_upload"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitor()
+{
+    last_command="vt_monitor"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("delete")
+    commands+=("deletedetails")
+    commands+=("download")
+    commands+=("list")
+    commands+=("relationships")
+    commands+=("setdetails")
+    commands+=("upload")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitorpartner_download()
+{
+    last_command="vt_monitorpartner_download"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    local_nonpersistent_flags+=("--output")
+    local_nonpersistent_flags+=("--output=")
+    local_nonpersistent_flags+=("-o")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitorpartner_list()
+{
+    last_command="vt_monitorpartner_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--filter=")
+    two_word_flags+=("--filter")
+    two_word_flags+=("-f")
+    local_nonpersistent_flags+=("--filter")
+    local_nonpersistent_flags+=("--filter=")
+    local_nonpersistent_flags+=("-f")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitorpartner_relationships()
+{
+    last_command="vt_monitorpartner_relationships"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_monitorpartner()
+{
+    last_command="vt_monitorpartner"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("download")
+    commands+=("list")
+    commands+=("relationships")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_retrohunt_abort()
+{
+    last_command="vt_retrohunt_abort"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_retrohunt_delete()
+{
+    last_command="vt_retrohunt_delete"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_retrohunt_list()
+{
+    last_command="vt_retrohunt_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--filter=")
+    two_word_flags+=("--filter")
+    two_word_flags+=("-f")
+    local_nonpersistent_flags+=("--filter")
+    local_nonpersistent_flags+=("--filter=")
+    local_nonpersistent_flags+=("-f")
+    flags+=("--human")
+    flags+=("-H")
+    local_nonpersistent_flags+=("--human")
+    local_nonpersistent_flags+=("-H")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_retrohunt_matches()
+{
+    last_command="vt_retrohunt_matches"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_retrohunt_start()
+{
+    last_command="vt_retrohunt_start"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--after=")
+    two_word_flags+=("--after")
+    local_nonpersistent_flags+=("--after")
+    local_nonpersistent_flags+=("--after=")
+    flags+=("--before=")
+    two_word_flags+=("--before")
+    local_nonpersistent_flags+=("--before")
+    local_nonpersistent_flags+=("--before=")
+    flags+=("--corpus=")
+    two_word_flags+=("--corpus")
+    local_nonpersistent_flags+=("--corpus")
+    local_nonpersistent_flags+=("--corpus=")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_retrohunt()
+{
+    last_command="vt_retrohunt"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("abort")
+    commands+=("delete")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("del")
+        aliashash["del"]="delete"
+        command_aliases+=("rm")
+        aliashash["rm"]="delete"
+    fi
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("matches")
+    commands+=("start")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_scan_file()
+{
+    last_command="vt_scan_file"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_scan_url()
+{
+    last_command="vt_scan_url"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_scan()
+{
+    last_command="vt_scan"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("file")
+    commands+=("url")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_search_content()
+{
+    last_command="vt_search_content"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--download")
+    flags+=("-d")
+    local_nonpersistent_flags+=("--download")
+    local_nonpersistent_flags+=("-d")
+    flags+=("--exact-matches-only")
+    flags+=("-e")
+    local_nonpersistent_flags+=("--exact-matches-only")
+    local_nonpersistent_flags+=("-e")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_search()
+{
+    last_command="vt_search"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("content")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--download")
+    flags+=("-d")
+    local_nonpersistent_flags+=("--download")
+    local_nonpersistent_flags+=("-d")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    local_nonpersistent_flags+=("--output")
+    local_nonpersistent_flags+=("--output=")
+    local_nonpersistent_flags+=("-o")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_url_comments()
+{
+    last_command="vt_url_comments"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_url_graphs()
+{
+    last_command="vt_url_graphs"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_url_last_serving_ip_address()
+{
+    last_command="vt_url_last_serving_ip_address"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_url_network_location()
+{
+    last_command="vt_url_network_location"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_url_related_comments()
+{
+    last_command="vt_url_related_comments"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_url_relationships()
+{
+    last_command="vt_url_relationships"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_url_user_votes()
+{
+    last_command="vt_url_user_votes"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_url_votes()
+{
+    last_command="vt_url_votes"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cursor=")
+    two_word_flags+=("--cursor")
+    two_word_flags+=("-c")
+    local_nonpersistent_flags+=("--cursor")
+    local_nonpersistent_flags+=("--cursor=")
+    local_nonpersistent_flags+=("-c")
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--limit=")
+    two_word_flags+=("--limit")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--limit")
+    local_nonpersistent_flags+=("--limit=")
+    local_nonpersistent_flags+=("-n")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_url()
+{
+    last_command="vt_url"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("comments")
+    commands+=("graphs")
+    commands+=("last_serving_ip_address")
+    commands+=("network_location")
+    commands+=("related_comments")
+    commands+=("relationships")
+    commands+=("user_votes")
+    commands+=("votes")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_user_privileges_grant()
+{
+    last_command="vt_user_privileges_grant"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--expiration=")
+    two_word_flags+=("--expiration")
+    two_word_flags+=("-e")
+    local_nonpersistent_flags+=("--expiration")
+    local_nonpersistent_flags+=("--expiration=")
+    local_nonpersistent_flags+=("-e")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_user_privileges_revoke()
+{
+    last_command="vt_user_privileges_revoke"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_user_privileges()
+{
+    last_command="vt_user_privileges"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("grant")
+    commands+=("revoke")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_user()
+{
+    last_command="vt_user"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("privileges")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--exclude=")
+    two_word_flags+=("--exclude")
+    two_word_flags+=("-x")
+    local_nonpersistent_flags+=("--exclude")
+    local_nonpersistent_flags+=("--exclude=")
+    local_nonpersistent_flags+=("-x")
+    flags+=("--identifiers-only")
+    flags+=("-I")
+    local_nonpersistent_flags+=("--identifiers-only")
+    local_nonpersistent_flags+=("-I")
+    flags+=("--include=")
+    two_word_flags+=("--include")
+    two_word_flags+=("-i")
+    local_nonpersistent_flags+=("--include")
+    local_nonpersistent_flags+=("--include=")
+    local_nonpersistent_flags+=("-i")
+    flags+=("--threads=")
+    two_word_flags+=("--threads")
+    two_word_flags+=("-t")
+    local_nonpersistent_flags+=("--threads")
+    local_nonpersistent_flags+=("--threads=")
+    local_nonpersistent_flags+=("-t")
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_version()
+{
+    last_command="vt_version"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_vt_root_command()
+{
+    last_command="vt"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("analysis")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("an")
+        aliashash["an"]="analysis"
+    fi
+    commands+=("completion")
+    commands+=("domain")
+    commands+=("download")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("dl")
+        aliashash["dl"]="download"
+    fi
+    commands+=("file")
+    commands+=("group")
+    commands+=("help")
+    commands+=("hunting")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ht")
+        aliashash["ht"]="hunting"
+    fi
+    commands+=("init")
+    commands+=("ip")
+    commands+=("meta")
+    commands+=("monitor")
+    commands+=("monitorpartner")
+    commands+=("retrohunt")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("rh")
+        aliashash["rh"]="retrohunt"
+    fi
+    commands+=("scan")
+    commands+=("search")
+    commands+=("url")
+    commands+=("user")
+    commands+=("version")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--apikey=")
+    two_word_flags+=("--apikey")
+    two_word_flags+=("-k")
+    flags+=("--proxy=")
+    two_word_flags+=("--proxy")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+__start_vt()
+{
+    local cur prev words cword
+    declare -A flaghash 2>/dev/null || :
+    declare -A aliashash 2>/dev/null || :
+    if declare -F _init_completion >/dev/null 2>&1; then
+        _init_completion -s || return
+    else
+        __vt_init_completion -n "=" || return
+    fi
+
+    local c=0
+    local flags=()
+    local two_word_flags=()
+    local local_nonpersistent_flags=()
+    local flags_with_completion=()
+    local flags_completion=()
+    local commands=("vt")
+    local must_have_one_flag=()
+    local must_have_one_noun=()
+    local has_completion_function
+    local last_command
+    local nouns=()
+
+    __vt_handle_word
+}
+
+if [[ $(type -t compopt) = "builtin" ]]; then
+    complete -o default -F __start_vt vt
+else
+    complete -o default -o nospace -F __start_vt vt
+fi
+
+# ex: ts=4 sw=4 et filetype=sh

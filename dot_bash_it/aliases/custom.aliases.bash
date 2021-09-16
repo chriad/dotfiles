@@ -1,4 +1,6 @@
 # From laptop
+# to programatically untoggle caps lock if it is stuck
+alias uncaps='xdotool key Caps_Lock'
 alias bdfr='conda run -n py39 python3 -m bdfr'
 alias cs='chezmoi status'
 alias cc='chezmoi cd'
