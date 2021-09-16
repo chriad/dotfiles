@@ -806,7 +806,6 @@ before packages are loaded."
   ;;         org-roam-server-network-label-truncate-length 60
   ;;         org-roam-server-network-label-wrap-length 20))
 
-  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/ol-git-link.el")
 
 
   (use-package hydra)
@@ -927,8 +926,6 @@ With a prefix ARG, remove start location."
 
 
 ;;;; org-roam-in-buffer-headings
-
-  ;; (load-file "/media/chriad/nebula/spacemacs-fork/elpa/28.0/develop/org-plus-contrib-20210222/ol-git-link.el")
 
   (add-to-list 'load-path "/media/chriad/nebula/spacemacs-fork/private/bookmark-plus/")
   (require 'bookmark+)
@@ -1329,7 +1326,7 @@ This function is called at the very end of Spacemacs initialization."
  '(org-journal-file-format "%Y-%m-%d.org")
  '(org-journal-time-prefix "- ")
  '(org-modules
-   '(ol-bbdb ol-bibtex ol-docview ol-eww ol-gnus org-habit ol-info ol-irc ol-mhe ol-rmail org-tempo ol-w3m ol-elisp-symbol ol-man))
+   '(ol-bbdb ol-bibtex ol-docview ol-eww ol-gnus org-habit ol-info ol-irc ol-mhe ol-rmail org-tempo ol-w3m ol-git-link ol-man))
  '(org-noter-always-create-frame t)
  '(org-noter-auto-save-last-location t)
  '(org-noter-default-notes-file-names nil)
@@ -1375,7 +1372,24 @@ This function is called at the very end of Spacemacs initialization."
  '(racket-browse-url-function 'browse-url-firefox)
  '(racket-documentation-search-location ''local)
  '(safe-local-variable-values
-   '((eval add-hook 'after-save-hook
+   '((elisp-lint-indent-specs
+      (vulpea-utils-with-file . 1)
+      (vulpea-utils-with-note . 1)
+      (org-roam-with-file . 2)
+      (org-with-point-at . 1)
+      (org-element-map . 2)
+      (file-templates-set . defun)
+      (leader-def . 0)
+      (dlet . 1)
+      (general-create-definer . 1)
+      (eval-with-default-dir . 1)
+      (bui-define-interface . 2)
+      (use-package . 1)
+      (buffer-lines-map . 1)
+      (buffer-lines-each . 1)
+      (buffer-lines-each-t . 1)
+      (request . defun))
+     (eval add-hook 'after-save-hook
            (lambda nil
              (org-babel-tangle))
            nil t)
