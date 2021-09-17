@@ -72,7 +72,7 @@ alias remove_whitespaces="rename 's/ /-/g' *"
 alias kill-key-mon="kill $(ps aux| grep key-mon | grep python | awk '{print $2}')"
 alias b="WD=\$(pwd);cd /media/chriad/E/MENDELEY_WATCHED;zathura \"\$(fzf)\";cd \$WD"
 alias key-mon="key-mon &"
-alias diff=colordiff
+# alias diff=colordiff
 alias mplayer="mplayer -af scaletempo"
 # alias python="ptpython"
 alias vim0="nvim -u NONE -N"
