@@ -1163,6 +1163,9 @@ With a prefix ARG, remove start location."
   (setq op/site-main-title "My Blog")
   (setq op/site-sub-title "Spacemacs")
 
+  (setq custom-file "~/.config/emacs/.emacs-custom.el")
+  (load custom-file)
+
   (require 'evil-surround)
   (add-hook 'org-mode-hook (lambda ()
                              (push '(?{ . ("{{" . "}}")) evil-surround-pairs-alist))))

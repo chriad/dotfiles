@@ -1,0 +1,32 @@
+[user]
+	email = {{ .email }}
+	name = {{ .git.name }}
+[core]
+	# fileMode = false
+	excludesfile = {{ .chezmoi.homeDir }}/.gitignore
+	pager = diff-so-fancy | less --tabs=4 -RFX
+[diff]
+    tool = meld
+[difftool]
+    prompt = false
+[difftool "meld"]
+    cmd = meld "$LOCAL" "$REMOTE"
+[difftool "diffpdf"]
+  cmd = diffpdf --appearance \"$LOCAL\" \"$REMOTE\"
+[merge]
+    tool = meld
+[mergetool "meld"]
+    # Choose one of these 2 lines (not both!) explained below.
+    cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output "$MERGED"
+    cmd = meld "$LOCAL" "$BASE" "$REMOTE" --output "$MERGED"
+[github]
+	user = {{ .git.name }}
+[status]
+	showUntrackedFiles = all
+[alias]
+	coa = !git add -A && git commit -m
+	nccommit = commit -a --allow-empty-message -m \"\"
+[interactive]
+	diffFilter = diff-so-fancy --patch
+[credential "https://github.com"]
+	helper = !/usr/bin/gh auth git-credential
