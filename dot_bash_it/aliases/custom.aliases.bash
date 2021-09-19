@@ -4,7 +4,7 @@ alias fzfp="fzf --preview='batcat --color=always {}'"
 alias uncaps='xdotool key Caps_Lock'
 alias bdfr='conda run -n py39 python3 -m bdfr'
 alias cs='chezmoi status'
-alias cm='chezmoi managed | fzf'
+alias cm='chezmoi managed --include files,symlinks | fzf'
 alias cc='chezmoi cd'
 alias firefox="firefox -P -no-remote" # multiple concurrent profiles
 alias jpdf="java -jar /home/chriad/jpdftweak-linux-x64-1.1/jpdftweak.jar"

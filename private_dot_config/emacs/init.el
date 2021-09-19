@@ -109,6 +109,8 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      ;; mic-paren ;; customize paren-face-match
+                                      ;; m-buffer
                                       helm-firefox
                                       camcorder
                                       helm-bibtex
@@ -920,7 +922,7 @@ With a prefix ARG, remove start location."
 
 ;;;; org-roam-dailies-capture-templates
 
-  ;; (load "/media/chriad/nebula/spacemacs-config-files/fork/roam-helpers.el")
+  (load "~/.config/emacs/roam-helpers.el")
 
   ;; (require 'mplayer-mode)
 

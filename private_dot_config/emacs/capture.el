@@ -410,20 +410,20 @@ If NO-CONFIRM, assume that the user does not want to modify the initial prompt."
      :head "#+title: ${title}\n"
      :unnarrowed t)
 
-    ;; capture multiple selections to page
-    ("o" "simple list item" item
-     (function org-roam-capture--get-point)
-     "- %i ${ref}"
+    ("i" "webpage no region" item "%i"
+     :if-new (file+head "${slug}.org" "#+title: ${title}")
      :file-name "${slug}"
-     :head "#+title: ${title}\n#+roam_key: ${ref}\n\n"
+     ;; :head "#+title: ${title}\n"
      :unnarrowed t)
 
-    ("i" "webpage with region" entry
-     (function org-roam-capture--get-point)
-     "* %?\n"
-     :file-name "${slug}"
-     :head "#+title: ${title}\n#+roam_key: ${ref}\n%i\n"
-     :unnarrowed t)))
+    ;; ("i" "webpage with region" entry
+    ;;  (function org-roam-capture--get-point)
+    ;;  "* %?\n"
+    ;;  :file-name "${slug}"
+    ;;  :head "#+title: ${title}\n#+roam_key: ${ref}\n%i\n"
+    ;;  :unnarrowed t)
+    )
+  )
 
 (setq org-roam-capture-templates
       '(
