@@ -64,7 +64,7 @@ alias asciiplay="asciinema play"
 # alias mpv2="mpv --really-quiet --input-ipc-server=/tmp/mpvsocket --idle"
 # alias mpv="nohup mpv --really-quiet --input-ipc-server=$HOME/.mpv/socket &"
 alias fuzv="rg -g '*.{mkv,mp4,ogv,webm}' --files 2> /dev/null | fzf --bind='enter:execute(mpv {})'"
-alias mpv-playlist='rg -g '*.{mkv,mp4,ogv,webm}' --files 2> /dev/null | shuf | mpv --playlist=-'
+alias mpv-playlist="rg -g '*.{mkv,mp4,ogv,webm}' --files 2> /dev/null | mpv --playlist=-"
 # alias ee="set -o emacs"
 alias largefiles="ls -Slr| head -n10"
 # alias vv="set -o vi"
