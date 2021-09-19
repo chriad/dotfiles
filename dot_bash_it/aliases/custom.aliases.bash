@@ -1,6 +1,6 @@
 # From laptop
 # to programatically untoggle caps lock if it is stuck
-alias nethogs='nethogs -v 3'
+alias nethogs="nethogs -v 3"
 alias fzfp="fzf --preview='batcat --color=always {}'"
 alias uncaps='xdotool key Caps_Lock'
 alias bdfr='conda run -n py39 python3 -m bdfr'
