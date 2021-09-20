@@ -1184,10 +1184,6 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
- '(bmkp-last-as-first-bookmark-file
-   "/media/chriad/nebula/spacemacs-config-files/fork/lazycat.bmk")
- '(bookmark-default-file
-   "/media/chriad/nebula/spacemacs-config-files/fork/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
  '(dap-python-executable "/media/chriad/nebula/anaconda3/bin/python")
  '(default-frame-alist
@@ -1371,8 +1367,6 @@ This function is called at the very end of Spacemacs initialization."
  '(persp-save-dir
    "/media/chriad/nebula/spacemacs-config-files/fork/.cache/layouts")
  '(persp-use-workgroups t)
- '(projectile-known-projects-file
-   "/media/chriad/nebula/spacemacs-config-files/fork/projectile-bookmarks.eld")
  '(projectile-project-search-path '("/home/chriad" "/home/chriad/emacs-projects"))
  '(racket-browse-url-function 'browse-url-firefox)
  '(racket-documentation-search-location ''local)
@@ -1420,7 +1414,6 @@ This function is called at the very end of Spacemacs initialization."
      (Base . 10)
      (Package . NEW-MATH)
      (eval org-cycle-hide-drawers 'all)))
- '(savehist-file "/media/chriad/nebula/spacemacs-fork/savehist")
  '(scroll-conservatively 10000)
  '(scroll-margin 1)
  '(scroll-step 1)
