@@ -258,10 +258,12 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ;; ("py" "capture project region quote" plain ; :floppy_disk: -> :key: :books: -> :link: :file-folder: -> :crayon: :scroll: -> ·
           ;;  (function (lambda () (find-file (concat "/home/chriad/roam/" (org-capture-project) ".org"))))
           ;;  "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: \"project\" %(org-roam-tag-add)\n \n#+begin_quote\n%i\n#+end_quote\n->%a\n\n* Inbox" :unnarrowed t :empty-lines 1)
+
           ("i" "Inbox"
            entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
            "* %?\n%U\n\n  %i"
            :kill-buffer t)
+
           ("u" "Todo with link"
            entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
            "* %?\n%U\n\n  %i\n  %a"
@@ -270,7 +272,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ("h" "roam headline" entry
            (function (lambda () (my/helm-in-org-buffer (org-roam-find-file-name))))
            "* %?\n%a"
-           :kill-buffer t)
+           :kill-buffer t :unnarrowed t)
 
           ("b" "book=pdf (no-date-prefix)")
           ("bb" "freestyle | %a" entry
@@ -289,33 +291,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ;;  (function (lambda () (org-roam-find-file)))
           ;;  "* %(org-capture-pdf-active-region)\n%a")
 
-; ===
-
-          ;; ("n" "plain Notes")
-          ;; ("ns" "%?" item          ; s = selection
-          ;;  (function (lambda () (org-roam-node-find)))
-          ;;  "- %i %a" :unnarrowed t)
-
-          ;; ("nj" "%i %a" item          ; s = selection
-          ;;  (function (lambda () (org-roam-node-find)))
-          ;;  "- %?%i %a" :unnarrowed t)
-
-
-          ;; ("nk" "%i" item          ; s = selection
-          ;;  (function (lambda () (org-roam-node-find)))
-          ;;  "- %?%i" :unnarrowed t)
-
-
-
-          ;; ("f" "freestyle heading")
-          ;; ("fs" "freestyle | %a" entry          ; s = selection
-          ;;  (function (lambda () (org-roam-node-find)))
-          ;;  "* %? %a" :unnarrowed t)
-
-          ;; ("fs" "freestyle" entry          ; s = selection
-          ;;  (function (lambda () (org-roam-node-find)))
-          ;;  "* %?")
-
+; 
           ;; ("ft" "freestyle | TODO" entry          ; s = selection
           ;;  (function (lambda () (org-roam-node-find)))
           ;;  "* TODO %?" :unnarrowed t)
@@ -325,7 +301,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ("f" "fortune from url" plain
            #'chriad/fortune-append
            "%i\n\n          -- %:link%(eval fortune-end-sep)" :immediate-finish t)
-
 
           ("x" "firefox Org Capture Selected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
            "* %?%i\n%u\n%a\n")
@@ -341,14 +316,17 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 
           ("l" "org-fc")
           ("lx" "input" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
-           "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
-          
+           "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)        
 
           ("ll" "code" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
            "* %a
 #+begin_src %?
 %i
 #+end_src\n")
+
+
+          ;; ("p" "Code" entry (file "~/workspace/org/code.org")
+          ;;  (file ,(concat org-capture-template-dir "code-snippet.capture")))
 
           ("c" "custom")
           ("cm" "Maps"
@@ -374,95 +352,76 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 
           ))
 
-;; (defun my/org-roam-tag-add ()
-;;   "Add a tag to Org-roam file.
-
-;; Return added tag."
-;;   (interactive)
-;;   (unless org-roam-mode (org-roam-mode))
-;;   (let* ((all-tags (org-roam-db--get-tags))
-;;          (tag (completing-read "Tag: " all-tags))
-;;          (file (buffer-file-name (buffer-base-buffer)))
-;;          (existing-tags (org-roam--extract-tags-prop file)))
-;;     ;; (when (string-empty-p tag)
-;;     ;;   (user-error "Tag can't be empty"))
-;;     (org-roam--set-global-prop
-;;      "roam_tags"
-;;      (combine-and-quote-strings (seq-uniq (cons tag existing-tags))))
-;;     (org-roam-db--insert-tags 'update)
-;;     tag))
-
-(setq org-roam-capture-ref-templates ;; :fox:
-  '(
-    ("n" "ref" plain "%?"
-     :if-new (file+head "${slug}.org" "#+title: ${title}")
-     :unnarrowed t)
-
-    ("r" "webpage no region" entry "* %?"
-     :if-new (file+head "${slug}.org" "#+title: ${title}")
-     :file-name "${slug}"
-     :head "#+title: ${title}\n"
-     :unnarrowed t)
-
-    ("i" "webpage no region" item "%i"
-     :if-new (file+head "${slug}.org" "#+title: ${title}")
-     :file-name "${slug}"
-     ;; :head "#+title: ${title}\n"
-     :unnarrowed t)
-
-    ;; ("i" "webpage with region" entry
-    ;;  (function org-roam-capture--get-point)
-    ;;  "* %?\n"
-    ;;  :file-name "${slug}"
-    ;;  :head "#+title: ${title}\n#+roam_key: ${ref}\n%i\n"
-    ;;  :unnarrowed t)
-    )
-  )
 
 (setq org-roam-capture-templates
       '(
         ("d" "default" plain "%?"
-         :if-new (file+head "${slug}.org"
-                            "#+title: ${title}\n%(org-roam-ref-add (org-capture-pdf-name))")
+         :target (file+head "${slug}.org"
+                            "#+title: ${title}\n")
          :unnarrowed t)
 
-        ("s" "prepend simple" plain "%?"
-         :file-name "${slug}"
-         :head "#+title: ${title}\n"
-         :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n")
+        ("s" "prepend simple" item "%?"
+         :target (file+head+olp "${slug}.org" "#+title: ${title}\n" ("KB"))
          :unnarrowed t
          :prepend)
 
-        ("x" "append *" entry "* %?"
-         :file-name "${slug}"
-         :head "#+title: ${title}\n"
-         :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n" )
-         :unnarrowed t
-         :append)
+        ;; ("x" "append *" entry "* %?"
+        ;;  :file-name "${slug}"
+        ;;  :head "#+title: ${title}\n"
+        ;;  :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n" )
+        ;;  :unnarrowed t
+        ;;  :append)
         
-        ("t" "append * [link]" entry "* %?\n%a"
-         :file-name "${slug}"
-         :head "#+title: ${title}\n"
-         :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n" )
-         :unnarrowed t
-         :append)
+        ;; ("t" "append * [link]" entry "* %?\n%a"
+        ;;  :file-name "${slug}"
+        ;;  :head "#+title: ${title}\n"
+        ;;  :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n" )
+        ;;  :unnarrowed t
+        ;;  :append)
 
-        ("r" "region")
-        ("rv" "enter quote, append *" entry "* %?"
-         :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n\n#+begin_quote\n${quote}\n#+end_quote\n" )
-         :file-name "${slug}"
-         :head "#+title: ${title}\n"
-         :unnarrowed t
-         :append)
+        ;; ("r" "region")
+        ;; ("rv" "enter quote, append *" entry "* %?"
+        ;;  :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n\n#+begin_quote\n${quote}\n#+end_quote\n" )
+        ;;  :file-name "${slug}"
+        ;;  :head "#+title: ${title}\n"
+        ;;  :unnarrowed t
+        ;;  :append)
 
-        ("rr" "quote region, append *" entry "* %?"
-         :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n\n#+begin_quote\n%i\n#+end_quote\n" )
-         :file-name "${slug}"
-         :head "#+title: ${title}\n"
-         :unnarrowed t
-         :append)
+        ;; ("rr" "quote region, append *" entry "* %?"
+        ;;  :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n\n#+begin_quote\n%i\n#+end_quote\n" )
+        ;;  :file-name "${slug}"
+        ;;  :head "#+title: ${title}\n"
+        ;;  :unnarrowed t
+        ;;  :append)
 
         ))
+
+(setq org-roam-capture-ref-templates ;; :fox:
+      '(
+        ("n" "ref" plain "%?"
+         :if-new (file+head "${slug}.org" "#+title: ${title}")
+         :unnarrowed t)
+
+        ("r" "webpage no region" entry "* %?"
+         :if-new (file+head "${slug}.org" "#+title: ${title}")
+         :file-name "${slug}"
+         :head "#+title: ${title}\n"
+         :unnarrowed t)
+
+        ("i" "webpage no region" item "%i"
+         :if-new (file+head "${slug}.org" "#+title: ${title}")
+         :file-name "${slug}"
+         ;; :head "#+title: ${title}\n"
+         :unnarrowed t)
+
+        ;; ("i" "webpage with region" entry
+        ;;  (function org-roam-capture--get-point)
+        ;;  "* %?\n"
+        ;;  :file-name "${slug}"
+        ;;  :head "#+title: ${title}\n#+roam_key: ${ref}\n%i\n"
+        ;;  :unnarrowed t)
+        )
+      )
 
 (add-hook 'org-capture-mode-hook 'evil-insert-state)
 (add-hook 'org-capture-mode-hook 'evil-hybrid-state)

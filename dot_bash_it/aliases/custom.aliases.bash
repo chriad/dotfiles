@@ -1,5 +1,6 @@
 # From laptop
 # to programatically untoggle caps lock if it is stuck
+alias tt='gio trash' # to trash
 alias nethogs="nethogs -v 3"
 alias fzfp="fzf --preview='batcat --color=always {}'"
 alias uncaps='xdotool key Caps_Lock'
