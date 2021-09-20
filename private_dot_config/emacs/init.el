@@ -1284,10 +1284,6 @@ This function is called at the very end of Spacemacs initialization."
      ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
  '(keyfreq-autosave-mode t)
- '(keyfreq-file
-   "/media/chriad/nebula/spacemacs-config-files/fork/keyfreq-table")
- '(keyfreq-file-lock
-   "/media/chriad/nebula/spacemacs-config-files/fork/.emacs.keyfreq.lock")
  '(keyfreq-mode t)
  '(large-file-warning-threshold 100000000)
  '(lispy-completion-method 'helm)
@@ -1364,8 +1360,6 @@ This function is called at the very end of Spacemacs initialization."
  '(pdf-view-display-size 'fit-height)
  '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
  '(pdfgrep-options " -H -n -r ")
- '(persp-save-dir
-   "/media/chriad/nebula/spacemacs-config-files/fork/.cache/layouts")
  '(persp-use-workgroups t)
  '(projectile-project-search-path '("/home/chriad" "/home/chriad/emacs-projects"))
  '(racket-browse-url-function 'browse-url-firefox)

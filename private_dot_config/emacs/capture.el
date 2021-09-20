@@ -205,6 +205,30 @@ If NO-CONFIRM, assume that the user does not want to modify the initial prompt."
         (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
         (org-roam-capture--capture)))))
 
+(defun chriad/fortune-append (&optional interactive file)
+  "Append STRING to the fortune FILE.
+
+If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
+  (setq file (expand-file-name
+	            (substitute-in-file-name (or file fortune-file))))
+  (if (file-directory-p file)
+      (error "Cannot append fortune to directory %s" file))
+  (if interactive ; switch to file and return buffer
+      (find-file-other-frame file)
+    (find-file-noselect file))
+  (let ((fortune-buffer (get-file-buffer file)))
+
+    (set-buffer fortune-buffer)
+    (goto-char (point-max))
+    (setq fill-column fortune-fill-column)
+    (setq auto-fill-inhibit-regexp "^%")
+    (turn-on-auto-fill)
+    ;; (insert string fortune-end-sep)
+    ;; (unless interactive
+    ;;   (save-buffer)
+    ;;   (if fortune-always-compile
+	  ;;       (fortune-compile file)))
+    ))
 
 
 (defun org-ask-location ()
@@ -219,18 +243,6 @@ If NO-CONFIRM, assume that the user does not want to modify the initial prompt."
       (or (bolp) (insert "\n"))
       (insert "* " hd "\n")))
   (end-of-line))
-
-;; ("p" "capture project write quote" plain
-;;  (function (lambda () (find-file (concat "/home/chriad/roam/" (org-capture-project) ".org"))))
-;;  "#+title: %(org-capture-project)
-;;   #+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]
-;;   #+roam_tags: project %(org-roam-tag-add)\n
-;;   #+begin_quote\n%?\n#+end_quote
-
-;;   * %(org-capture-project)" :unnarrowed t)
-;; (defun roam-find-pdf ()
-;;   (find-file (concat "/home/chriad/roam/" (org-capture-pdf-name) ".org"))
-;;   )
 
 (defun find-pdfs-roam-file-other-widow ()
   (interactive)
@@ -259,29 +271,6 @@ If NO-CONFIRM, assume that the user does not want to modify the initial prompt."
            (function (lambda () (my/helm-in-org-buffer (org-roam-find-file-name))))
            "* %?\n%a"
            :kill-buffer t)
-
-          ;; ("i" "Inbox")
-          ;; ("it" "freestyle | Inbox | TODO" entry (file "/home/chriad/agenda/index.org") "* TODO %?")
-
-          ;; ("iw" "freestyle | Inbox | TODO | %a" entry (file "/home/chriad/agenda/index.org") "* TODO %? %a")
-
-          ;; ("in" "freestyle | Inbox | %a" entry (file "/home/chriad/agenda/index.org") "* %? %a")
-
-          ;; ("im" "freestyle | Inbox" entry (file "/home/chriad/agenda/index.org") "* %?")
-
-          ;; ("t" "Inbox multi TODO"
-          ;;  entry
-          ;;  (file+headline "/home/chriad/agenda/index.org")
-          ;;  "Inbox"
-          ;;  "* TODO %? [/]\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n")
-
-          ;; does not work
-          ;; ("o" "Inbox multi TODO"
-          ;;  entry
-          ;;  (file+headline  (function (lambda () (org-roam-find-file)) "Inbox")
-          ;;  "* TODO %?"))
-
-; ===
 
           ("b" "book=pdf (no-date-prefix)")
           ("bb" "freestyle | %a" entry
@@ -332,6 +321,11 @@ If NO-CONFIRM, assume that the user does not want to modify the initial prompt."
           ;;  "* TODO %?" :unnarrowed t)
 
           ; ===
+
+          ("f" "fortune from url" plain
+           #'chriad/fortune-append
+           "%i\n\n          -- %:link%(eval fortune-end-sep)" :immediate-finish t)
+
 
           ("x" "firefox Org Capture Selected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
            "* %?%i\n%u\n%a\n")
