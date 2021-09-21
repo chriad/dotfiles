@@ -1128,13 +1128,6 @@ With a prefix ARG, remove start location."
   ;; http://dnaeon.github.io/starting-with-common-lisp-in-2020/
   ;;(setq common-lisp-hyperspec-symbol-table
   ;;      (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))
-  (defun org-hide-src-block-delimiters()
-    (interactive)
-    (save-excursion (goto-char (point-max))
-                    (while (re-search-backward "#\\+BEGIN_SRC\\|#\\+END_SRC" nil t)
-                      (let ((ov (make-overlay (line-beginning-position)
-                                              (1+ (line-end-position)))))
-                        (overlay-put ov 'invisible t)))))
 
   (org-clock-persistence-insinuate)
   (setq spaceline-org-clock-p t)

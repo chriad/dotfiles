@@ -34,6 +34,11 @@
 (spacemacs/declare-prefix "oi" "info")
 (spacemacs/set-leader-keys "oii" 'helm-info)
 
+(spacemacs/declare-prefix "ot" "toggles")
+(spacemacs/set-leader-keys "otp" 'org-toggle-properties)
+(spacemacs/set-leader-keys "ots" 'org-hide-src-block-delimiters)
+
+
 (spacemacs/declare-prefix "oc" "customize")
 (spacemacs/set-leader-keys "ocg" 'customize-group)
 (spacemacs/set-leader-keys "ocv" 'customize-variable)

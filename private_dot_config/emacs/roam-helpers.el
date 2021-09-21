@@ -87,3 +87,11 @@ Org-mode properties drawer already, keep the headline and don’t insert
     (if (string= note next-note)
         (find-file note)
       (my/navigate-note nil next-note (org-roam-db--links-with-max-distance next-note 1)))))
+
+(defun org-hide-src-block-delimiters()
+  (interactive)
+  (save-excursion (goto-char (point-max))
+                  (while (re-search-backward "#\\+BEGIN_SRC\\|#\\+END_SRC" nil t)
+                    (let ((ov (make-overlay (line-beginning-position)
+                                            (1+ (line-end-position)))))
+                      (overlay-put ov 'invisible t)))))

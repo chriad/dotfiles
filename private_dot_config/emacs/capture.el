@@ -1,6 +1,6 @@
 ;;; capture.el --- My personal capture templates.
 ;;; Code:
-
+(setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
 (use-package org-capture
   :after org
   :hook
@@ -88,7 +88,9 @@ with the `org-roam-find-file' interface"
 ;;   (org-capture 0))
 
 (setq org-roam-dailies-capture-templates
-        '(("d" "eaf capture new pdf ressource with *" entry "* %? ⸤%a⸥"
+        '(
+
+          ("d" "eaf capture new pdf ressource with *" entry "* %? ⸤%a⸥"
            :head "#+title: %(org-capture-pdf-name)\n"
            :file-name "/home/chriad/roam/%(org-capture-pdf-name).org"
            :if-new (file+head "/home/chriad/roam/%(org-capture-pdf-name).org" "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-pdf-path)][%(org-capture-pdf-name)]]\n\n")
@@ -125,13 +127,6 @@ with the `org-roam-find-file' interface"
            "* %?"
            :file-name "/home/chriad/roam/%(org-capture-project)"
            :head "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: project %(org-roam-tag-add)\n\n#+begin_quote\n%i\n#+end_quote\n→ %a\n\n" :unnarrowed t)
-
-
-          ;; donsn't work
-          ;; ("x" "plain to Notes" plain #'org-roam-capture--get-point "- %? | %a" :file-name "${slug}" :head "#+title: ${title}\n#+roam_key: %a\n\n" :olp ("Notes"))
-
-          ;; ("o" "Buy"
-          ;;  plain (function (lambda () " "))  "%?")
           ))
 
 ;; DOCT
@@ -261,18 +256,18 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            "* %?\n%a"
            :kill-buffer t :unnarrowed t)
 
-          ("b" "book=pdf (no-date-prefix)")
-          ("bb" "freestyle | %a" entry
-           (function (lambda () (find-file (concat "/home/chriad/roam/"  (org-capture-pdf-name) ".org"))))
-           "* %? %a" :unnarrowed t)
+          ;; ("b" "book=pdf (no-date-prefix)")
+          ;; ("bb" "freestyle | %a" entry
+          ;;  (function (lambda () (find-file (concat "/home/chriad/roam/"  (org-capture-pdf-name) ".org"))))
+          ;;  "* %? %a" :unnarrowed t)
 
-          ("bs" "freestyle | %c %a" entry
-           (function (lambda () (find-file (concat "/home/chriad/roam/"  (org-capture-pdf-name) ".org"))))
-           "* %?%c %a")
+          ;; ("bs" "freestyle | %c %a" entry
+          ;;  (function (lambda () (find-file (concat "/home/chriad/roam/"  (org-capture-pdf-name) ".org"))))
+          ;;  "* %?%c %a")
 
-          ("bt" "freestyle | TODO | %a" entry
-           (function (lambda () (find-file (concat "/home/chriad/roam/" (org-capture-pdf-name) ".org"))))
-           "* TODO %? %a")
+          ;; ("bt" "freestyle | TODO | %a" entry
+          ;;  (function (lambda () (find-file (concat "/home/chriad/roam/" (org-capture-pdf-name) ".org"))))
+          ;;  "* TODO %? %a")
 
           ;; ("a" "roam-active-region-pdf" entry
           ;;  (function (lambda () (org-roam-find-file)))
@@ -312,9 +307,12 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 #+end_src\n")
 
 
-          ;; ("p" "Code" entry (file "~/workspace/org/code.org")
-          ;;  (file ,(concat org-capture-template-dir "code-snippet.capture")))
+          ;; ("p" "Code" entry (file "/home/chriad/agenda/code-review.org")
+          ;;  (file (lambda () (concat org-capture-template-dir "code-snippet.capture"))))
 
+          ("p" "Code" entry (file "/home/chriad/agenda/code-review.org")
+           (file "~/.config/emacs/capture-templates/code-snippet.capture"))
+          
           ("c" "custom")
           ("cm" "Maps"
            table-line
