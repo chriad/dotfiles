@@ -6,8 +6,6 @@
   :hook
   (org-capture-mode . evil-insert-state))
 
-
-
 (defun org-capture-pdf-active-region ()
   "Capture the active region of the pdf-view buffer."
   (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
@@ -35,7 +33,6 @@
             (eaf-get-path-or-url))
         (user-error "Buffer %S not alive." pdf-buf-name))))
 
-
   (defun org-capture-nov-path ()
     "Capture the active region of the pdf-view buffer."
     (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
@@ -44,7 +41,6 @@
           (with-current-buffer pdf-buf
             (eval nov-file-name))
         (user-error "Buffer %S not alive." pdf-buf-name))))
-
 
   (defun org-capture-project ()
     "Capture the active region of the pdf-view buffer."
@@ -63,9 +59,6 @@
           (with-current-buffer pdf-buf
             (projectile-project-root))
         (user-error "Buffer %S not alive." pdf-buf-name))))
-
-
-
 
 ;;; Commentary:
 ;; 
@@ -93,7 +86,6 @@ with the `org-roam-find-file' interface"
 ;;   "Insert an org capture template at point."
 ;;   (interactive)
 ;;   (org-capture 0))
-
 
 (setq org-roam-dailies-capture-templates
         '(("d" "eaf capture new pdf ressource with *" entry "* %? ⸤%a⸥"
@@ -142,8 +134,6 @@ with the `org-roam-find-file' interface"
           ;;  plain (function (lambda () " "))  "%?")
           ))
 
-
-
 ;; DOCT
 ;; https://github.com/progfolio/doct
 
@@ -169,8 +159,6 @@ with the `org-roam-find-file' interface"
 ;; =========
 
 ;; if DOCT doesnt work use this
-
-
 
 (defun my/org-roam-find-file (&optional initial-prompt completions filter-fn no-confirm)
   "Find and open an Org-roam file. Move point to the heading 'Notes'.
@@ -229,7 +217,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
     ;;   (if fortune-always-compile
 	  ;;       (fortune-compile file)))
     ))
-
 
 (defun org-ask-location ()
   (let ((hd "Notes"))
@@ -351,7 +338,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 
 
           ))
-
 
 (setq org-roam-capture-templates
       '(

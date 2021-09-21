@@ -23,7 +23,6 @@
       (org-show-properties)
     (org-hide-properties)))
 
-
 ; https://notes.alexkehayias.com/org-roam/
 (use-package helm-rg
   :ensure t
@@ -47,7 +46,6 @@
   (helm-add-action-to-source "Insert org-mode link"
                              'insert-org-mode-link-from-helm-result
                              helm-rg-process-source))
-
 
 ;; https://org-roam.discourse.group/t/creating-an-org-roam-note-from-an-existing-headline/978
 (defun org-roam-create-note-from-headline ()

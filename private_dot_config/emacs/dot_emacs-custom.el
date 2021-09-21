@@ -171,6 +171,10 @@
  '(org-roam-completion-system 'helm)
  '(org-roam-directory "/home/chriad/roam/")
  '(org-roam-file-completion-tag-position 'append)
+ '(org-roam-find-file-hook
+   '(org-roam-buffer--setup-redisplay-h org-roam--register-completion-functions-h org-roam--replace-roam-links-on-save-h org-roam-open-id-with-org-roam-db-h org-roam-db-autosync--setup-update-on-save-h
+                                        (lambda nil
+                                          (call-interactively #'org-hide-properties))))
  '(org-roam-index-file "~/roam/index.org")
  '(org-startup-with-inline-images nil)
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
