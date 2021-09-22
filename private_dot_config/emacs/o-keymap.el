@@ -24,7 +24,7 @@
 ;; o_
 ;; (spacemacs/set-leader-keys "on" 'org-noter)
 (spacemacs/set-leader-keys "oa" 'projectile-add-known-project)
-(spacemacs/set-leader-keys "ot" 'tab-bar-new-tab)
+;; (spacemacs/set-leader-keys "ot" 'tab-bar-new-tab)
 (spacemacs/set-leader-keys "ol" 'ace-link-org)
 (spacemacs/set-leader-keys "oh" 'eaf-open-pdf-from-history)
 

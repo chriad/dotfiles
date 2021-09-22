@@ -5,8 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
- '(bmkp-last-as-first-bookmark-file
-   "/media/chriad/nebula/spacemacs-fork/var/bmkp/current-bookmark.el")
+ '(bmkp-last-as-first-bookmark-file nil)
  '(bookmark-default-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
  '(dap-python-executable "/media/chriad/nebula/anaconda3/bin/python")
@@ -107,6 +106,7 @@
      ("FIXME" . "#dc752f")
      ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
+ '(ignored-local-variable-values '((org-confirm-babel-evaluate)))
  '(keyfreq-autosave-mode t)
  '(keyfreq-mode t)
  '(large-file-warning-threshold 100000000)
