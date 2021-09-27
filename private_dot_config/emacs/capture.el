@@ -115,11 +115,6 @@ with the `org-roam-find-file' interface"
           ;;  :head "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: project %(org-roam-tag-add)\n\n#+begin_quote\n%(org-capture-at-point)\n#+end_quote\n\n" :unnarrowed t)
 
 
-          ;; ("p" "capture current project write quote" entry #'org-roam-capture--get-point "* %(org-capture-project)"
-          ;;  :file-name "/home/chriad/roam/%(org-capture-project)"
-          ;;  :head "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: project %(org-roam-tag-add)\n\n#+begin_quote\n%^{PROMPT}\n#+end_quote\n\n" :unnarrowed t)
-
-
           ("f" "capture current project with quote from region" entry
            #'org-roam-capture--get-point
            "* %?"
@@ -249,6 +244,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            "* %?\n%U\n\n  %i\n  %a"
            :kill-buffer t)
 
+          ;; complete node headings
           ("h" "roam headline" entry
            (function (lambda () (my/helm-in-org-buffer (org-roam-find-file-name))))
            "* %?\n%a"
@@ -271,10 +267,10 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ;;  (function (lambda () (org-roam-find-file)))
           ;;  "* %(org-capture-pdf-active-region)\n%a")
 
-; 
-          ;; ("ft" "freestyle | TODO" entry          ; s = selection
-          ;;  (function (lambda () (org-roam-node-find)))
-          ;;  "* TODO %?" :unnarrowed t)
+          ;; capture some region from a webpage to a node
+          ("a" "webpage region to node" plain          ; s = selection
+           (function (lambda () (org-roam-node-find)))
+           "%i" :unnarrowed t)
 
           ; ===
 
@@ -294,15 +290,15 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ("w" "specialwords browser" plain (file "/home/chriad/Documents/specialwords.txt")
            "%i" :immediate-finish t)
 
-          ("l" "org-fc")
-          ("lx" "input" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
-           "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)        
+;;           ("l" "org-fc")
+;;           ("lx" "input" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
+;;            "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
 
-          ("ll" "code" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
-           "* %a
-#+begin_src %?
-%i
-#+end_src\n")
+;;           ("ll" "code" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
+;;            "* %a
+;; #+begin_src %?
+;; %i
+;; #+end_src\n")
 
 
           ;; ("p" "Code" entry (file "/home/chriad/agenda/code-review.org")
@@ -310,7 +306,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 
           ("p" "Code" entry (file "/home/chriad/agenda/code-review.org")
            (file "~/.config/emacs/capture-templates/code-snippet.capture"))
-          
+
           ("c" "custom")
           ("cm" "Maps"
            table-line
@@ -326,7 +322,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            :table-line-pos "I+1"
            :immediate-finish t)
 
-          ("cv" "Words"
+          ("cw" "Words"
            plain
            (file "~/Documents/specialwords.txt")
            "%^{word}"
@@ -369,18 +365,12 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
         ;;  :unnarrowed t
         ;;  :append)
 
-        ;; ("rr" "quote region, append *" entry "* %?"
-        ;;  :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n\n#+begin_quote\n%i\n#+end_quote\n" )
-        ;;  :file-name "${slug}"
-        ;;  :head "#+title: ${title}\n"
-        ;;  :unnarrowed t
-        ;;  :append)
-
         ))
 
 (setq org-roam-capture-ref-templates ;; :fox:
       '(
-        ("n" "ref" plain "%?"
+
+        ("n" "webpage no region" entry "* %?"
          :if-new (file+head "${slug}.org" "#+title: ${title}")
          :unnarrowed t)
 

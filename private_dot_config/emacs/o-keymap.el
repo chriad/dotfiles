@@ -54,8 +54,8 @@
 ;; same as RET; mouse-save-then-kill is dangerous
 (define-key dired-mode-map [mouse-3] 'dired-mouse-find-file) ; right click opens inplace
 
-(define-key spacemacs-pdf-view-mode-map (kbd "s a") 'pdf-view-auto-slice-minor-mode)
-(define-key pdf-view-mode-map (kbd "<tab>") 'other-window)
+;; (define-key spacemacs-pdf-view-mode-map (kbd "s a") 'pdf-view-auto-slice-minor-mode)
+;; (define-key pdf-view-mode-map (kbd "<tab>") 'other-window)
 
 (define-key org-noter-doc-mode-map (kbd "<f9>") 'org-noter-sync-current-page-or-chapter)
 (define-key org-noter-notes-mode-map (kbd "<f9>") 'org-noter-sync-current-note)
