@@ -219,4 +219,5 @@ Name[sv]=Öppna ett nytt privat fönster
 Name[tr]=Yeni gizli pencere aç
 Name[uk]=Відкрити нове вікно у потайливому режимі
 Name[zh_TW]=開啟新隱私瀏覽視窗
-Exec=firefox -P -no-remote -private-window
+# Exec=firefox -P -no-remote -private-window
+Exec=firefox

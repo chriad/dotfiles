@@ -60,8 +60,6 @@
             (projectile-project-root))
         (user-error "Buffer %S not alive." pdf-buf-name))))
 
-;;; Commentary:
-;; 
 
 (require 'helm-org)
 

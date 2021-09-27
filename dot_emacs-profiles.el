@@ -1,6 +1,6 @@
 (
- ("default" . ((user-emacs-directory . "~/.dotfiles/emacs.d")
-               (env . (("SPACEMACSDIR" . "/home/chriad")))))
+ ;; ("default" . ((user-emacs-directory . "~/.dotfiles/emacs.d")
+ ;;               (env . (("SPACEMACSDIR" . "/home/chriad")))))
 
  ;; ("nebula-default" . ((user-emacs-directory . "/media/chriad/nebula/spacemacs-default")
  ;;                      (env . (("SPACEMACSDIR" . "/media/chriad/nebula/spacemacs-default-config")))))
@@ -11,7 +11,7 @@
  ("ipython" . ((user-emacs-directory . "/media/chriad/nebula/ipython-bare/")
                (env . (("SPACEMACSDIR" . "/media/chriad/nebula/spacemacs-config-files/ipython")))))
 
- ("fork" . ((user-emacs-directory . "/media/chriad/nebula/spacemacs-fork/")
+ ("default" . ((user-emacs-directory . "/media/chriad/nebula/spacemacs-fork/")
                (env . (("SPACEMACSDIR" . "/home/chriad/.config/emacs")))))
 
  ("tmp" . ((user-emacs-directory . "/media/chriad/nebula/spacemacs-tmp/")
