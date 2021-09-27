@@ -57,8 +57,8 @@
 ;; (define-key spacemacs-pdf-view-mode-map (kbd "s a") 'pdf-view-auto-slice-minor-mode)
 ;; (define-key pdf-view-mode-map (kbd "<tab>") 'other-window)
 
-(define-key org-noter-doc-mode-map (kbd "<f9>") 'org-noter-sync-current-page-or-chapter)
-(define-key org-noter-notes-mode-map (kbd "<f9>") 'org-noter-sync-current-note)
+;; (define-key org-noter-doc-mode-map (kbd "<f9>") 'org-noter-sync-current-page-or-chapter)
+;; (define-key org-noter-notes-mode-map (kbd "<f9>") 'org-noter-sync-current-note)
 
 ;; nonstandard keys
 

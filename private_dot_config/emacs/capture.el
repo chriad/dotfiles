@@ -186,7 +186,7 @@ If NO-CONFIRM, assume that the user does not want to modify the initial prompt."
 
 If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
   (setq file (expand-file-name
-	            (substitute-in-file-name (or file fortune-file))))
+              (substitute-in-file-name (or file fortune-file))))
   (if (file-directory-p file)
       (error "Cannot append fortune to directory %s" file))
   (if interactive ; switch to file and return buffer
@@ -203,7 +203,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
     ;; (unless interactive
     ;;   (save-buffer)
     ;;   (if fortune-always-compile
-	  ;;       (fortune-compile file)))
+    ;;       (fortune-compile file)))
     ))
 
 (defun org-ask-location ()
@@ -338,6 +338,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
                             "#+title: ${title}\n")
          :unnarrowed t)
 
+        ;; heading known at capture time
         ("s" "prepend simple" item "%?"
          :target (file+head+olp "${slug}.org" "#+title: ${title}\n" ("KB"))
          :unnarrowed t

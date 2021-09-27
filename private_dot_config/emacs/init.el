@@ -974,9 +974,9 @@ before packages are loaded."
   (setq helm-file-preview-only-when-line-numbers t)
 
   ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/dired-plus/dired+.el")
-  (load "/media/chriad/nebula/spacemacs-fork/private/local/pp-plus/pp+.el")
-  (load "/media/chriad/nebula/spacemacs-fork/private/local/thingatpt-plus/thingatpt+.el")
-  (load "/media/chriad/nebula/spacemacs-fork/private/local/org-babel-hide-markers-mode/ob-hide-markers.el")
+  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/pp-plus/pp+.el")
+  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/thingatpt-plus/thingatpt+.el")
+  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/org-babel-hide-markers-mode/ob-hide-markers.el")
 
 
   ;; (add-hook 'pdf-view-mode-hook (lambda ()
@@ -1012,19 +1012,19 @@ before packages are loaded."
   ;; (defun my/org-pdftools-get-desc-default (file page &optional text)
   ;;   (concat "𝕡-" (file-name-sans-extension file)))
 
-  (load "/media/chriad/nebula/spacemacs-fork/private/local/nov/nov.el")
+  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/nov/nov.el")
   ;; (add-hook 'nov-mode-hook 'on-screen-mode)
-  (evil-set-initial-state 'nov-mode 'emacs)
+  ;; (evil-set-initial-state 'nov-mode 'emacs)
 
   (require 'window-purpose)
 
-  (require 'nov)
+  ;; (require 'nov)
   ;; (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
 
-  (defun my-nov-font-setup ()
-    (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
-                             :height 1.6))
-  (add-hook 'nov-mode-hook 'my-nov-font-setup)
+  ;; (defun my-nov-font-setup ()
+  ;;   (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
+  ;;                            :height 1.6))
+  ;; (add-hook 'nov-mode-hook 'my-nov-font-setup)
   ;; (setq nov-text-width 80)
 
   ;; (setq nov-text-width t)
@@ -1084,8 +1084,8 @@ before packages are loaded."
   ;;     (format "#+begin_quote\n%s\n#+end_quote" selection)))
 
 
-  (load "/media/chriad/nebula/spacemacs-fork/private/linkd/linkd.el")
-  (require 'linkd)
+  ;; (load "/media/chriad/nebula/spacemacs-fork/private/linkd/linkd.el")
+  ;; (require 'linkd)
 
   (good-scroll-mode 1)
 
@@ -1174,6 +1174,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
+ '(bmkp-last-as-first-bookmark-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
  '(dap-python-executable "/media/chriad/nebula/anaconda3/bin/python")
  '(default-frame-alist
@@ -1382,7 +1383,6 @@ This function is called at the very end of Spacemacs initialization."
      (javascript-backend . tern)
      (javascript-backend . lsp)
      (global-visual-line-mode . t)
-     ;; (eval load "/media/chriad/nebula/spacemacs-fork/private/linkd/linkd.el")
      (Lowercase . T)
      (Readtable . ZL)
      (Source-Optimizations . T)
