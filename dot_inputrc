@@ -1,0 +1,54 @@
+# To reload: bind -f ~/.inputrc
+#
+#
+# change to previous direcotry /undo directory change: meta + z
+# "\ez": 'cd -\015'
+
+# https://gist.github.com/ethagnawl/86a0284c990196ae31b7
+# note: the prompt will not be updated if you use a custom PS1 which contains a newline character
+
+# set editing-mode vi
+# set keymap vi-command
+# https://www.topbug.net/blog/2017/07/31/inputrc-for-humans/
+$include /etc/inputrc
+# "\C-p":history-search-backward
+# "\C-n":history-search-forward
+
+# set colored-stats On
+# set completion-ignore-case On
+# set completion-prefix-display-length 3
+# set mark-symlinked-directories On
+# set show-all-if-ambiguous On
+# set show-all-if-unmodified On
+# set visible-stats On
+# set show-mode-in-prompt on
+#https://stackoverflow.com/questions/2640141/is-there-a-way-to-switch-bash-or-zsh-from-emacs-mode-to-vi-mode-with-a-keystroke
+# set keymap emacs
+# "\ee": vi-editing-mode
+# "jk": "\eejk"
+# "kj": "\eejk"
+
+# set keymap vi-insert
+# "\ee": emacs-editing-mode
+# "jk": vi-movement-mode
+# "kj": vi-movement-mode
+
+# set keymap vi-command
+# "\ee": emacs-editing-mode
+
+
+# if it's configured correctly, your prompt will be prefixed with a `+` while in insert mode and a `:` when in command mode.
+# set editing-mode vi
+# set keymap vi
+#
+# set bell-style none
+# $if mode=vi
+#     set keymap vi-command
+#     "gg": beginning-of-history
+#     "G": end-of-history
+#     set keymap vi-insert       #notice how the "jj" movement is
+#     "jj": vi-movement-mode     #after 'set keymap vi-insert'?
+#     "\C-w": backward-kill-word
+#     "\C-p": history-search-backward
+# $endif
+#

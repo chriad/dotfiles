@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
- '(bmkp-last-as-first-bookmark-file nil)
+ '(bmkp-last-as-first-bookmark-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
  '(bookmark-default-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
  '(dap-python-executable "/media/chriad/nebula/anaconda3/bin/python")
@@ -15,6 +15,7 @@
  '(dired-auto-revert-buffer 'dired-directory-changed-p)
  '(dired-listing-switches "-alh")
  '(dired-recursive-deletes 'always)
+ '(eaf-config-location "/media/chriad/nebula/spacemacs-config-files/fork/eaf/")
  '(eaf-find-file-ext-blacklist '("epub"))
  '(eaf-markdown-extension-list '("md" "org"))
  '(eaf-org-override-pdf-links-store t)
