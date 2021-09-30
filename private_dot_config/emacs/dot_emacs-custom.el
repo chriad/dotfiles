@@ -127,6 +127,7 @@
  '(markdown-hide-markup t)
  '(org-M-RET-may-split-line '((default)))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
+ '(org-capture-mode-hook '(spacemacs//org-capture-start evil-insert-state) nil nil "Here the order is important. The evil-insert-state hook must come after.")
  '(org-clock-idle-time 10)
  '(org-clock-persist t)
  '(org-confirm-babel-evaluate nil)

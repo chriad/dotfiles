@@ -36,6 +36,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '(systemd
      rust
+     bookmark+
      helm-additional
      elisp-additional
      ;;org-additional
@@ -80,6 +81,7 @@ This function should only modify configuration layer settings."
                wakatime-cli-path "/usr/local/bin/wakatime")
      git
      ;; pdf
+     ;; eaf
      helm
      command-log
      lsp
@@ -88,7 +90,7 @@ This function should only modify configuration layer settings."
      (markdown :variables markdown-live-preview-engine 'vmd)
      multiple-cursors
      (org :variables
-          org-enable-org-journal-support t
+          ;; org-enable-org-journal-support t
           org-enable-roam-support t
           org-enable-roam-server t
           org-enable-github-support t)
@@ -185,12 +187,11 @@ This function should only modify configuration layer settings."
                                       epkg
                                       scrollkeeper
                                       org-web-tools
-                                      org-noter
-                                      org-pdftools
-                                      org-noter-pdftools
+                                      ;; org-noter
+                                      ;; org-pdftools
+                                      ;; org-noter-pdftools
                                       edit-indirect
                                       mpv
-                                      ;; org-roam-server
                                       yasnippet-classic-snippets
                                       )
 
@@ -774,9 +775,9 @@ before packages are loaded."
   (use-package org-roam
     ;; :after org
     ;; :hook (org-mode . org-roam-mode)
-    ;; :custom
+    :custom
     ;; (org-roam-directory "/home/chriad/roam/")
-    ;; (org-roam-dailies-directory "/home/chriad/roam/")
+    (org-roam-dailies-directory "/home/chriad/roam/journal")
     :bind
     ("C-c n t" . org-roam-tag-add)
     ("C-c n a" . org-roam-alias-add)
@@ -926,8 +927,8 @@ before packages are loaded."
 
 ;;;; org-roam-in-buffer-headings
 
-  (add-to-list 'load-path "/media/chriad/nebula/spacemacs-fork/private/bookmark-plus/")
-  (require 'bookmark+)
+  ;; (add-to-list 'load-path "/media/chriad/nebula/spacemacs-fork/private/bookmark-plus/")
+  ;; (require 'bookmark+)
   ;; (setq deft-directory "~/roam/")
 
 
@@ -1099,7 +1100,7 @@ before packages are loaded."
 
   (load "~/.config/emacs/capture.el")
   (load "~/.config/emacs/o-keymap.el")
-  (load "/media/chriad/nebula/spacemacs-config-files/fork/eaf-config.el")
+  ;; (load "/media/chriad/nebula/spacemacs-config-files/fork/eaf-config.el")
 
 
 
