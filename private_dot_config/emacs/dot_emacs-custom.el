@@ -14,7 +14,7 @@
       (buffer-predicate . spacemacs/useful-buffer-p)))
  '(dired-auto-revert-buffer 'dired-directory-changed-p)
  '(dired-listing-switches "-alh")
- '(eaf-config-location "/media/chriad/nebula/spacemacs-config-files/fork/eaf/")
+ '(dired-recursive-deletes 'always)
  '(eaf-find-file-ext-blacklist '("epub"))
  '(eaf-markdown-extension-list '("md" "org"))
  '(eaf-org-override-pdf-links-store t)

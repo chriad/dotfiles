@@ -1,10 +1,10 @@
 ;;; capture.el --- My personal capture templates.
 ;;; Code:
 (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
-(use-package org-capture
-  :after org
-  :hook
-  (org-capture-mode . evil-insert-state))
+;; (use-package org-capture
+;;   :after org
+;;   :hook
+;;   (org-capture-mode . evil-insert-state))
 
 (defun org-capture-pdf-active-region ()
   "Capture the active region of the pdf-view buffer."
@@ -87,27 +87,33 @@ with the `org-roam-find-file' interface"
 
 (setq org-roam-dailies-capture-templates
         '(
+          ("d" "default" plain
+           "%?"
+           :target (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n")
+           :unnarrowed t
+           :empty-lines-before 1)
 
-          ("d" "eaf capture new pdf ressource with *" entry "* %? ⸤%a⸥"
-           :head "#+title: %(org-capture-pdf-name)\n"
-           :file-name "/home/chriad/roam/%(org-capture-pdf-name).org"
-           :if-new (file+head "/home/chriad/roam/%(org-capture-pdf-name).org" "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-pdf-path)][%(org-capture-pdf-name)]]\n\n")
-           :unnarrowed t)
+;;           ("d" "eaf capture new pdf ressource with *" entry "* %? ⸤%a⸥"
+;;            :head "#+title: %(org-capture-pdf-name)\n"
+;;            :file-name "/home/chriad/roam/%(org-capture-pdf-name).org"
+;;            :if-new (file+head "/home/chriad/roam/%(org-capture-pdf-name).org" "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-pdf-path)][%(org-capture-pdf-name)]]\n\n")
+;;            :unnarrowed t)
 
-          ("e" "eaf capture new pdf ressource with definition from clipboard" plain
-           #'org-roam-capture--get-point
-           ""
-           :file-name "/home/chriad/roam/%(org-capture-pdf-name)"
-           :head "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-pdf-path)][%(org-capture-pdf-name)]]\n#+roam_tags: %(org-roam-tag-add)\n\n#+begin_quote\n%c\n#+end_quote\n-> %a\n\n" :unnarrowed t)
+;;           ("e" "eaf capture new pdf ressource with definition from clipboard" plain
+;;            #'org-roam-capture--get-point
+;;            ""
+;;            :file-name "/home/chriad/roam/%(org-capture-pdf-name)"
+;;            :head "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-pdf-path)][%(org-capture-pdf-name)]]\n#+roam_tags: %(org-roam-tag-add)\n\n#+begin_quote\n%c\n#+end_quote\n-> %a\n\n" :unnarrowed t)
 
-;; precondition: must have yanked text from pdf-viwer
-          ;; rationale: I have so many books, for each I need a good quote to remember it!
-          ("n" "eaf capture new nov ressource" entry
-           #'org-roam-capture--get-point
-           "* %? %a"
-           :file-name "/home/chriad/roam/%(org-capture-pdf-name)"
-           :head "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-nov-path)][%(org-capture-pdf-name)]]\n#+roam_tags: %(org-roam-tag-add)\n\n"
-           :unnarrowed t)
+;; ;; precondition: must have yanked text from pdf-viwer
+;;           ;; rationale: I have so many books, for each I need a good quote to remember it!
+;;           ("n" "eaf capture new nov ressource" entry
+;;            #'org-roam-capture--get-point
+;;            "* %? %a"
+;;            :file-name "/home/chriad/roam/%(org-capture-pdf-name)"
+;;            :head "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-nov-path)][%(org-capture-pdf-name)]]\n#+roam_tags: %(org-roam-tag-add)\n\n"
+;;            :unnarrowed t)
 
 
           ;; ("p" "capture current project write quote" entry #'org-roam-capture--get-point "* %(org-capture-project)"
@@ -115,11 +121,11 @@ with the `org-roam-find-file' interface"
           ;;  :head "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: project %(org-roam-tag-add)\n\n#+begin_quote\n%(org-capture-at-point)\n#+end_quote\n\n" :unnarrowed t)
 
 
-          ("f" "capture current project with quote from region" entry
-           #'org-roam-capture--get-point
-           "* %?"
-           :file-name "/home/chriad/roam/%(org-capture-project)"
-           :head "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: project %(org-roam-tag-add)\n\n#+begin_quote\n%i\n#+end_quote\n→ %a\n\n" :unnarrowed t)
+          ;; ("f" "capture current project with quote from region" entry
+          ;;  #'org-roam-capture--get-point
+          ;;  "* %?"
+          ;;  :file-name "/home/chriad/roam/%(org-capture-project)"
+          ;;  :head "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: project %(org-roam-tag-add)\n\n#+begin_quote\n%i\n#+end_quote\n→ %a\n\n" :unnarrowed t)
           ))
 
 ;; DOCT
@@ -396,8 +402,8 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
         )
       )
 
-(add-hook 'org-capture-mode-hook 'evil-insert-state)
-(add-hook 'org-capture-mode-hook 'evil-hybrid-state)
+;; (add-hook 'org-capture-mode-hook 'evil-insert-state)
+;; (add-hook 'org-capture-mode-hook 'evil-hybrid-state)
 
 (provide 'capture)
 
