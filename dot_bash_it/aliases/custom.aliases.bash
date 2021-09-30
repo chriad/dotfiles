@@ -115,6 +115,13 @@ ghist() {
     git log --oneline --name-only $1
 }
 
+
+# pipe this to file for reference for static playlists
+dump-playlist() {
+    youtube-dl -s "$1" -o "%(playlist_index)s    %(title)s"
+}
+
+
 git_diff_pdf() {
     yes | git difftool --tool=diffpdf $1
 }
