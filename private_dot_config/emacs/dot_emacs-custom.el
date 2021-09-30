@@ -89,6 +89,17 @@
  '(helm-file-preview-only-when-line-numbers nil)
  '(helm-lisp-fuzzy-completion t)
  '(helm-show-completion-display-function 'helm-display-buffer-popup-frame)
+ '(helm-type-bookmark-actions
+   '(("Jump to bookmark" . helm-bookmark-jump)
+     ("Jump to BM other window" . helm-bookmark-jump-other-window)
+     ("Jump to BM other frame" . helm-bookmark-jump-other-frame)
+     ("Bookmark edit annotation" . bookmark-edit-annotation)
+     ("Bookmark show annotation" . bookmark-show-annotation)
+     ("Delete bookmark(s)" . helm-delete-marked-bookmarks)
+     ("Edit Bookmark" . helm-bookmark-edit-bookmark)
+     ("Describe Bookmark" . bmkp-describe-bookmark)
+     ("Rename bookmark" . helm-bookmark-rename)
+     ("Relocate bookmark" . bookmark-relocate)))
  '(hl-sexp-background-colors '("white smoke" "white"))
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
