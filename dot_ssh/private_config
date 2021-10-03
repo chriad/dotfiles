@@ -1,0 +1,20 @@
+CheckHostIP no
+ForwardAgent yes
+ForwardX11 yes
+StrictHostKeyChecking no
+
+Host thinkpad
+User chriad
+Hostname thinkpad.local.local
+
+Host folio
+User chriad
+Hostname folio.local
+
+Host workstation
+User chriad
+Hostname workstation.local
+
+Host raspberry
+User chriad
+Hostname raspberrypi.local
