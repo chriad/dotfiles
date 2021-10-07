@@ -1,5 +1,6 @@
 # From laptop
 # to programatically untoggle caps lock if it is stuck
+alias fd=fdfind
 alias calibredb='flatpak run --command=calibredb com.calibre_ebook.calibre'
 alias tt='gio trash' # to trash
 alias nethogs="nethogs -v 3"
@@ -22,7 +23,7 @@ alias rescue-emacs="killall -s USR2 emacs"
 alias raspb-connect="screen /dev/ttyUSB0 115200"
 alias regexp-buddy="wine /home/chriad/.wine/dosdevices/c\:/Program\ Files\ \(x86\)/JGsoft/RegexBuddy3/RegexBuddy.exe"
 alias lisp-works="/usr/local/lib64/LispWorksPersonal/lispworks-personal-7-1-2-amd64-linux"
-alias ec="emacsclient --no-wait"
+alias et="emacsclient -t"
 alias e="emacsclient --no-wait"
 alias c2='cd ../../'
 alias xpdf="~/Desktop/XpdfReader-linux64-4.01.01/xpdf"
@@ -32,11 +33,8 @@ alias detox="detox --remove-trailing"
 alias mpvd="mpv --input-test --force-window --idle --osc=no" #mpv debug to show keybindings
 alias cat="batcat"
 alias ripgrep="rg"
-#alias emacs="sudo emacs"
-# alias youtube-dl-single='~/.youtube-dl-wrapper.sh'
 alias z="zathura"
 alias rsbcl='rlwrap sbcl'
-# alias wget='wget -a "downloads.log"'
 alias say='spd-say'
 alias lilipond='lilypond'
 alias git-aliases='bash-it help aliases git|fzf'

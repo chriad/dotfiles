@@ -212,18 +212,19 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
     ;;       (fortune-compile file)))
     ))
 
-(defun org-ask-location ()
-  (let ((hd "Notes"))
-    (goto-char (point-min))
-    (outline-next-heading)
-    (if (re-search-forward
-         (format org-complex-heading-regexp-format (regexp-quote hd))
-         nil t)
-        (goto-char (point-at-bol))
-      (goto-char (point-max))
-      (or (bolp) (insert "\n"))
-      (insert "* " hd "\n")))
-  (end-of-line))
+;; This can be done by using oldp Notes
+;; (defun org-ask-location ()
+;;   (let ((hd "Notes"))
+;;     (goto-char (point-min))
+;;     (outline-next-heading)
+;;     (if (re-search-forward
+;;          (format org-complex-heading-regexp-format (regexp-quote hd))
+;;          nil t)
+;;         (goto-char (point-at-bol))
+;;       (goto-char (point-max))
+;;       (or (bolp) (insert "\n"))
+;;       (insert "* " hd "\n")))
+;;   (end-of-line))
 
 (defun find-pdfs-roam-file-other-widow ()
   (interactive)
