@@ -36,10 +36,12 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '(systemd
      rust
+     ;; << private layers
      bookmark+
      helm-additional
      elisp-additional
-     ;;org-additional
+     org-additional
+     ;; >> private layers
      javascript
      pass
      (spacemacs-layouts :variables
@@ -779,13 +781,15 @@ before packages are loaded."
     ;; (org-roam-directory "/home/chriad/roam/")
     (org-roam-dailies-directory "/home/chriad/roam/journal")
     :bind
-    ("C-c n t" . org-roam-tag-add)
-    ("C-c n a" . org-roam-alias-add)
-    ("C-c n r" . org-roam-ref-find)
-    ("C-c n f" . org-roam-node-find)
     ("C-c n i" . org-roam-node-insert)
-    ("C-c n m" . org-roam-dailies-capture-today)
-    ("C-c n g" . org-roam-show-graph))
+    ("C-c n d" . org-roam-dailies-capture-today)
+    ("C-c n g" . org-roam-show-graph)
+    ("C-c n a t" . org-roam-tag-add)
+    ("C-c n a a" . org-roam-alias-add)
+    ("C-c n a r" . org-roam-ref-add)
+    ("C-c n f r" . org-roam-ref-find)
+    ("C-c n f n" . org-roam-node-find)
+    )
 
 
   (require 'org-roam-protocol)
