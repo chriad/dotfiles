@@ -25,6 +25,9 @@ user_pref("security.external_protocol_requires_permission", false);
 user_pref("browser.tabs.insertRelatedAfterCurrent", true)
 user_pref("browser.tabs.insertAfterCurrent", true)
 
+// open link in the same tab
+user_pref("browser.link.open_newwindow", 1)
+
 user_pref("_user.js.parrot", "overrides section successful");
 
 
