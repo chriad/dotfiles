@@ -36,6 +36,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '(systemd
      rust
+     (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
      ;; << private layers
      bookmark+
      helm-additional

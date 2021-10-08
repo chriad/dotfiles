@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+export MANPATH=$MANPATH:"/usr/local/texlive/2019/texmf-dist/doc/man"
+export INFOPATH="/usr/local/texlive/2019/texmf-dist/doc/info"
+export INFOPATH=$INFOPATH:/usr/share/info
+export INFOPATH=$INFOPATH:/usr/share/info/emacs
+export ALTERNATE_EDITOR=""
+export EDITOR="emacsclient"                  # $EDITOR opens in terminal
+export VISUAL="emacsclient -c -a emacs" 
+export PATH="/home/chriad/.cask/bin:$PATH"
+export PATH="/home/chriad/.roswell/bin/:$PATH"
+
+case "$TERM" in
+"dumb")
+    PS1="> "
+    ;;
+xterm*|rxvt*|eterm*|screen*)
+    PS1="my fancy multi-line \n prompt > "
+    ;;
+*)
+    PS1="> "
+    ;;
+esac
+
+
+# https://unix.stackexchange.com/questions/43601/how-can-i-set-my-default-shell-to-start-up-tmux
+#if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
+#  exec tmux
+#fi
+# Path to the bash it configuration
+# export PYTHONPATH="$PYTHONPATH:/home/chriad/anaconda3/pkgs:/usr/lib/python2.7/dist-packages/lldb:/usr/lib/python3/dist-packages/"
+LOLCOMMITS_DEVICE=/dev/video0
+
+# for girara library for zathura
+# export LD_LIBRARY_PATH="$LD_LIBRARY_LATH:/usr/local/lib/x86_64-linux-gnu"
+#
+# add Cabal's bin directory to the executable search PATH if it exists
+if [ -d "$HOME/.cabal/bin" ] ; then
+    PATH="$HOME/.cabal/bin:$PATH"
+fi
+# fdr - cd to selected parent directory
+# https://github.com/junegunn/fzf/wiki/Examples#searching-file-contents
+# add Stack's bin directory to the executable search PATH if it exists
+# if [ -d "$HOME/.local/bin" ] ; then
+#     PATH="$HOME/.local/bin:$PATH"
+# fi
+export PATH=$PATH:"/home/chriad/.local/bin:\
+                   /usr/lib/llvm-4.0/bin:\
+                   /home/chriad/.cargo/bin:\
+                   /home/chriad/ncmpvc/target/release\
+                   /usr/local/texlive/2019/bin/x86_64-linux"
+
+export BASH_IT="/home/chriad/.bash_it"
+
+# Your place for hosting Git repos. I use this for private repos.
+export GIT_HOSTING='git@git.domain.com'
+
+# Don't check mail when opening terminal.
+unset MAILCHECK
+
+# Change this to your console based IRC client of choice.
+export IRC_CLIENT='irssi'
+
+# Set this to the command you use for todo.txt-cli
+export TODO="t"
+
+# Set this to false to turn off version control status checking within the prompt for all themes
+export SCM_CHECK=false
+export HUGO_BASE_DIR="~/chriad-blog"
+
+# Set Xterm/screen/Tmux title with only a short username.
+# Uncomment this (or set SHORT_USER to something else),
+# Will otherwise fall back on $USER.
+#export SHORT_USER=${USER:0:8}
+
+# Set Xterm/screen/Tmux title with shortened command and directory.
+# Uncomment this to set.
+#export SHORT_TERM_LINE=true
+
+# Set vcprompt executable path for scm advance info in prompt (demula theme)
+# https://github.com/djl/vcprompt
+#export VCPROMPT_EXECUTABLE=~/.vcprompt/bin/vcprompt
+
+# (Advanced): Uncomment this to make Bash-it reload itself automatically
+# after enabling or disabling aliases, plugins, and completions.
+# export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
+
+# Load Bash It
+source "$BASH_IT"/bash_it.sh
+
+#http://owen.cymru/fzf-ripgrep-navigate-with-bash-faster-than-ever-before/
+# bind -x '"\C-g": vim $(fzf);'
+# export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+# export FZF_ALT_C_COMMAND="fd -t d . $HOME"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# PATH="/home/chriad/perl5/bin${PATH:+:${PATH}}"; export PATH;
+# PERL5LIB="/home/chriad/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+# PERL_LOCAL_LIB_ROOT="/home/chriad/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+# PERL_MB_OPT="--install_base \"/home/chriad/perl5\""; export PERL_MB_OPT;
+# PERL_MM_OPT="INSTALL_BASE=/home/chriad/perl5"; export PERL_MM_OPT;
+
+source "$HOME/.cargo/env"
+[ -f "/home/chriad/.ghcup/env" ] && source "/home/chriad/.ghcup/env" # ghcup-env
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/media/chriad/nebula/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/media/chriad/nebula/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/media/chriad/nebula/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/media/chriad/nebula/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+eval "$(jump shell)"
+
+source ~/.local/share/chezmoi/scripts/sync-history.sh
+source ~/.local/share/chezmoi/scripts/fzf-params.sh 
+
+eval "$(starship init bash)"
