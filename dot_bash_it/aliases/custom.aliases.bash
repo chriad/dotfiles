@@ -23,7 +23,7 @@ alias rescue-emacs="killall -s USR2 emacs"
 alias raspb-connect="screen /dev/ttyUSB0 115200"
 alias regexp-buddy="wine /home/chriad/.wine/dosdevices/c\:/Program\ Files\ \(x86\)/JGsoft/RegexBuddy3/RegexBuddy.exe"
 alias lisp-works="/usr/local/lib64/LispWorksPersonal/lispworks-personal-7-1-2-amd64-linux"
-alias et="emacsclient -t"
+alias ec="emacsclient --no-wait"
 alias e="emacsclient --no-wait"
 alias c2='cd ../../'
 alias xpdf="~/Desktop/XpdfReader-linux64-4.01.01/xpdf"
@@ -119,6 +119,9 @@ dump-playlist() {
     youtube-dl --get-filename "$1" -o "%(playlist_index)d    %(title)s"
 }
 
+dump-metadata() {
+	ffmpeg -i "$1" -f ffmetadata - 2> /dev/null
+}
 
 git_diff_pdf() {
     yes | git difftool --tool=diffpdf $1
