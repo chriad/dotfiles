@@ -1412,19 +1412,4 @@ This function is called at the very end of Spacemacs initialization."
  '(wakatime-python-bin nil)
  '(yas-snippet-dirs
    '("/media/chriad/nebula/spacemacs-fork/private/snippets/" "/usr/share/yasnippet-snippets" "/media/chriad/nebula/spacemacs-fork/layers/+completion/auto-completion/local/snippets" "/media/chriad/nebula/spacemacs-fork/elpa/28.0/develop/common-lisp-snippets-20180226.1523/snippets")))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(newsticker-treeview-old-face ((nil (:inherit 'newsticker-treeview-face :foreground "#7c7c75"))))
- '(org-default ((t (:inherit default :weight semi-light))))
- '(org-document-title ((t (:inherit bold :foreground "#6c3163" :underline nil :height 1.4))))
- '(org-ellipsis ((t (:foreground "#4f97d7" :weight ultra-light :height 0.8))))
- '(org-level-1 ((t (:inherit bold :extend nil :weight normal :height 1.01 :width extra-condensed))))
- '(org-level-2 ((t (:inherit bold :extend nil :foreground "dark green" :weight normal :height 1.01))))
- '(org-level-3 ((t (:foreground "red4" :weight semi-light :height 1.01))))
- '(org-link ((t (:foreground "#2aa1ae" :underline t :weight light))))
- '(org-meta-line ((t (:foreground "#da8b55" :slant normal :height 0.8))))
- '(org-todo ((t (:inherit bold :foreground "#dc752f" :weight semi-light)))))
 )

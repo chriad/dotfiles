@@ -153,6 +153,25 @@ with the `org-roam-find-file' interface"
 ;; =========
 
 ;; if DOCT doesnt work use this
+(cl-defun my/org-roam-node-find (&optional other-window initial-input filter-fn &key templates)
+  "Find and open an Org-roam node by its title or alias.
+INITIAL-INPUT is the initial input for the prompt.
+FILTER-FN is a function to filter out nodes: it takes an `org-roam-node',
+and when nil is returned the node will be filtered out.
+If OTHER-WINDOW, visit the NODE in another window.
+The TEMPLATES, if provided, override the list of capture templates (see
+`org-roam-capture-'.)"
+  (interactive current-prefix-arg)
+  (let ((node (org-roam-node-read initial-input filter-fn)))
+    (if (org-roam-node-file node)
+        (progn
+          ;; (org-roam-node-visit node other-window)
+          (my/helm-in-org-buffer (org-roam-find-file-name))
+          )
+      (org-roam-capture-
+       :node node
+       :templates templates
+       :props '(:finalize find-file)))))
 
 (defun my/org-roam-find-file (&optional initial-prompt completions filter-fn no-confirm)
   "Find and open an Org-roam file. Move point to the heading 'Notes'.
@@ -275,6 +294,17 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ;;  "* %(org-capture-pdf-active-region)\n%a")
 
           ;; capture some region from a webpage to a node
+
+          ("g" "Imaginary contentful microdialpgue"
+           ;; ...?
+           ;; Me: ...
+           ;; ...?
+           ;; Me: ...
+           ;; end
+           entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
+           "* %?\n%U\n\n  %i"
+           :kill-buffer t)
+
           ("a" "webpage region to node" plain          ; s = selection
            (function (lambda () (org-roam-node-find)))
            "%i" :unnarrowed t)
