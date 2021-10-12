@@ -1409,7 +1409,4 @@ This function is called at the very end of Spacemacs initialization."
  '(scroll-step 1)
  '(symex-highlight-p t)
  '(treemacs-icons-dired-mode t)
- '(wakatime-python-bin nil)
- '(yas-snippet-dirs
-   '("/media/chriad/nebula/spacemacs-fork/private/snippets/" "/usr/share/yasnippet-snippets" "/media/chriad/nebula/spacemacs-fork/layers/+completion/auto-completion/local/snippets" "/media/chriad/nebula/spacemacs-fork/elpa/28.0/develop/common-lisp-snippets-20180226.1523/snippets")))
-)
+ '(wakatime-python-bin nil)))
