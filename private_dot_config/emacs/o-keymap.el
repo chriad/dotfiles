@@ -75,6 +75,6 @@
 (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "ot" 'tiny-expand)
 
 
-(spacemacs/declare-prefix-for-mode 'org-mode "mo" "custom")
-(spacemacs/set-leader-keys-for-major-mode 'org-mode "op" 'org-toggle-properties)
-(spacemacs/set-leader-keys-for-major-mode 'org-mode "os" 'org-hide-src-block-delimiters)
+;; (spacemacs/declare-prefix-for-mode 'org-mode "mo" "custom")
+;; (spacemacs/set-leader-keys-for-major-mode 'org-mode "op" 'org-toggle-properties)
+;; (spacemacs/set-leader-keys-for-major-mode 'org-mode "os" 'org-hide-src-block-delimiters)
