@@ -10,7 +10,8 @@
 --write-info-json
 --write-thumbnail
 --write-description
-# --add-metadata
+--add-metadata
+--xattrs
 --write-auto-sub
 --sub-lang en
 ") 
