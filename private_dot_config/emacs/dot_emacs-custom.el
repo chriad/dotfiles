@@ -73,7 +73,9 @@
      ("FIXME" . "#dc752f")
      ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
- '(ignored-local-variable-values '((org-confirm-babel-evaluate)))
+ '(ignored-local-variable-values
+   '((magit-todos-exclude-globs "elpa/")
+     (org-confirm-babel-evaluate)))
  '(keyfreq-autosave-mode t)
  '(keyfreq-mode t)
  '(large-file-warning-threshold 100000000)
