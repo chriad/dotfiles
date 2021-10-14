@@ -154,7 +154,6 @@ This function should only modify configuration layer settings."
                                                          :files (:defaults "awk" "demo.org")))
                                       orca
                                       org-link-beautify
-                                      (org-link-minor-mode :location (recipe :fetcher github :repo "seanohalpin/org-link-minor-mode"))
                                       ;; buttons
                                       ;; keymap-utils
                                       good-scroll
