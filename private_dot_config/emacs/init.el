@@ -755,23 +755,6 @@ before packages are loaded."
   (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
   ;; (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hooks)
 
-  (defun abs--quick-capture ()
-    ;; redefine the function that splits the frame upon org-capture
-    (defun abs--org-capture-place-template-dont-delete-windows (oldfun args)
-      (cl-letf (((symbol-function 'org-switch-to-buffer-other-window) 'switch-to-buffer))
-        (apply oldfun args)))
-
-    ;; run-once hook to close window after capture
-    (defun abs--delete-frame-after-capture ()
-      (delete-frame)
-      (remove-hook 'org-capture-after-finalize-hook 'abs--delete-frame-after-capture)
-      )
-
-    ;; set frame title
-    (set-frame-name "emacs org capture")
-    (add-hook 'org-capture-after-finalize-hook 'abs--delete-frame-after-capture)
-    (abs--org-capture-place-template-dont-delete-windows 'org-capture nil)
-    )
 
   (use-package org-roam
     ;; :after org
@@ -1267,24 +1250,6 @@ This function is called at the very end of Spacemacs initialization."
  '(org-journal-time-prefix "- ")
  '(org-modules
    '(ol-bbdb ol-bibtex ol-docview ol-eww ol-gnus org-habit ol-info ol-irc ol-mhe ol-rmail org-tempo ol-w3m ol-git-link ol-man))
- '(org-noter-always-create-frame t)
- '(org-noter-auto-save-last-location t)
- '(org-noter-default-notes-file-names nil)
- '(org-noter-notes-search-path nil)
- '(org-noter-notes-window-behavior '(start scroll))
- '(org-noter-pdftools-free-pointer-color "#ffe4b5")
- '(org-noter-pdftools-free-pointer-icon "Insert")
- '(org-noter-pdftools-free-pointer-opacity 0.5)
- '(org-noter-pdftools-markup-pointer-opacity 0.5)
- '(org-noter-pdftools-use-pdftools-link-location t)
- '(org-pdftools-free-pointer-color "#FF8C00")
- '(org-pdftools-free-pointer-icon "Insert")
- '(org-pdftools-free-pointer-opacity 0.4)
- '(org-pdftools-get-desc-function 'my/org-pdftools-get-desc-default)
- '(org-pdftools-markup-pointer-color "#CAE1FF")
- '(org-pdftools-markup-pointer-function 'pdf-annot-add-highlight-markup-annotation)
- '(org-pdftools-markup-pointer-opacity 0.5)
- '(org-pdftools-use-freepointer-annot t)
  '(org-protocol-default-template-key nil)
  '(org-roam-completion-everywhere t)
  '(org-roam-completion-system 'helm)
@@ -1299,9 +1264,6 @@ This function is called at the very end of Spacemacs initialization."
    '(org-starless gist helm-firefox camcorder names toml-mode ron-mode racer rust-mode flycheck-rust cargo password-store-otp helm-pass password-store helm-bibtexkey helm-bibtex bibtex-completion biblio parsebib biblio-core symex helm-atoms run-command niceify-info elx helm-recoll comment-or-uncomment-sexp clhs ascii-table helm-emmet dyncloze dired-git-info nix-mode helm-nixos-options company-nixos-options nixos-options lsp-focus tiny tern npm-mode nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl helm-gtags ggtags counsel-gtags no-littering howdoyou poker org-variable-pitch org-roam evil-lispy org-mru-clock esup monkeytype speed-type typit org-page git mustache lisp-extra-font-lock highlight-indent-guides elisp-def sr-speedbar ein polymode anaphora websocket lispy achievements org-fc doct justify-kp dash-functional buttons keymap-utils dired-open dired-hacks-utils olivetti nov on-screen ob-sml sml-mode mic-paren helm-posframe stickyfunc-enhance srefactor highlight-defined sicp pdfgrep edebug-x helm-file-preview csv-mode org-roam-server ox-gfm scrollkeeper beacon lsp-ui lsp-treemacs lsp-origami origami helm-lsp lsp-mode flycheck-pos-tip pos-tip web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode prettier-js impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css counsel swiper ivy company-web web-completion-data add-node-modules-path evil-motion-trainer edit-indirect helpful elisp-refs mmm-mode markdown-toc gh-md yaml-mode xterm-color vterm terminal-here shell-pop multi-term eshell-z eshell-prompt-extras esh-help pdf-tools tablist keycast command-log-mode orgit org-rich-yank org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download org-cliplink org-brain htmlize helm-org-rifle gnuplot evil-org wakatime-mode yasnippet-snippets unfill treemacs-magit smeargle mwim magit-svn magit-section magit-gitflow magit-popup helm-gitignore helm-git-grep helm-company helm-c-yasnippet gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy forge markdown-mode magit ghub closql emacsql-sqlite emacsql treepy git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil treemacs cfrs ht pfuture posframe toc-org symon symbol-overlay string-inflection spaceline-all-the-icons memoize all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-superstar open-junk-file nameless multi-line shut-up move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck flycheck-elsa flx-ido flx fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection annalist evil-cleverparens smartparens evil-args evil-anzu anzu eval-sexp-fu emr iedit clang-format projectile paredit list-utils pkg-info epl elisp-slime-nav editorconfig dumb-jump s dired-quick-sort devdocs define-word dash column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el hydra lv hybrid-mode font-lock+ evil goto-chg dotenv-mode diminish bind-map bind-key async))
  '(paradox-automatically-star nil)
  '(paren-sexp-mode t)
- '(pdf-outline-display-labels t)
- '(pdf-view-display-size 'fit-height)
- '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
  '(pdfgrep-options " -H -n -r ")
  '(persp-use-workgroups t)
  '(projectile-project-search-path '("/home/chriad" "/home/chriad/emacs-projects"))

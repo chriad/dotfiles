@@ -115,8 +115,8 @@ ghist() {
 
 
 # pipe this to file for reference for static playlists
-dump-playlist() {
-    youtube-dl --get-filename "$1" -o "%(playlist_index)d    %(title)s"
+dump-playlist-here() {
+    youtube-dl --get-filename "$1" -o "%(playlist_index)d    %(title)s.%(ext)s" &> "$1".dump
 }
 
 dump-metadata() {

@@ -210,6 +210,7 @@ If NO-CONFIRM, assume that the user does not want to modify the initial prompt."
   "Append STRING to the fortune FILE.
 
 If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
+  (require 'fortune)
   (setq file (expand-file-name
               (substitute-in-file-name (or file fortune-file))))
   (if (file-directory-p file)
@@ -432,6 +433,24 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
         ;;  :unnarrowed t)
         )
       )
+
+(defun abs--quick-capture ()
+  ;; redefine the function that splits the frame upon org-capture
+  (defun abs--org-capture-place-template-dont-delete-windows (oldfun args)
+    (cl-letf (((symbol-function 'org-switch-to-buffer-other-window) 'switch-to-buffer))
+      (apply oldfun args)))
+
+  ;; run-once hook to close window after capture
+  (defun abs--delete-frame-after-capture ()
+    (delete-frame)
+    (remove-hook 'org-capture-after-finalize-hook 'abs--delete-frame-after-capture)
+    )
+
+  ;; set frame title
+  (set-frame-name "emacs org capture")
+  (add-hook 'org-capture-after-finalize-hook 'abs--delete-frame-after-capture)
+  (abs--org-capture-place-template-dont-delete-windows 'org-capture nil)
+  )
 
 ;; (add-hook 'org-capture-mode-hook 'evil-insert-state)
 ;; (add-hook 'org-capture-mode-hook 'evil-hybrid-state)
