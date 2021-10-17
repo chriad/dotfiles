@@ -2,6 +2,7 @@
 # to programatically untoggle caps lock if it is stuck
 alias fd=fdfind
 alias calibredb='flatpak run --command=calibredb com.calibre_ebook.calibre'
+alias quodlibet='flatpak run --command=quodlibet io.github.quodlibet.QuodLibet' # use like: quodlibet --help
 alias tt='gio trash' # to trash
 alias nethogs="nethogs -v 3"
 alias fzfp="fzf --preview='batcat --color=always {}'"
@@ -125,6 +126,11 @@ dump-metadata() {
 
 git_diff_pdf() {
     yes | git difftool --tool=diffpdf $1
+}
+
+emby-poster-here() {
+	# first copy pic from firefox contex menu into clipboard: "Copy Image"
+	xclip -selection clipboard -t image/png -o > poster.png
 }
 
 youtube-dl-audio() {
