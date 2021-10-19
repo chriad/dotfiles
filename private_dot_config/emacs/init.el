@@ -80,8 +80,8 @@ This function should only modify configuration layer settings."
      (ipython-notebook :variables ein-backend 'jupyter)
      emacs-lisp
      (wakatime :variables
-               ;; use the actual wakatime path
-               wakatime-cli-path "/usr/local/bin/wakatime")
+               wakatime-cli-path "wakatime"
+               wakatime-python-bin "python")
      git
      ;; pdf
      ;; eaf
@@ -1271,5 +1271,4 @@ This function is called at the very end of Spacemacs initialization."
  '(scroll-margin 1)
  '(scroll-step 1)
  '(symex-highlight-p t)
- '(treemacs-icons-dired-mode t)
- '(wakatime-python-bin nil)))
+ '(treemacs-icons-dired-mode t)))

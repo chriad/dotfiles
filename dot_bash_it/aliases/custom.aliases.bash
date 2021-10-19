@@ -1,8 +1,6 @@
 # From laptop
 # to programatically untoggle caps lock if it is stuck
 alias fd=fdfind
-alias calibredb='flatpak run --command=calibredb com.calibre_ebook.calibre'
-alias quodlibet='flatpak run --command=quodlibet io.github.quodlibet.QuodLibet' # use like: quodlibet --help
 alias tt='gio trash' # to trash
 alias nethogs="nethogs -v 3"
 alias fzfp="fzf --preview='batcat --color=always {}'"

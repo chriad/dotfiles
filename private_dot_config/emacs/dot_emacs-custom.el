@@ -169,7 +169,6 @@
  '(scroll-step 1)
  '(symex-highlight-p t)
  '(treemacs-icons-dired-mode t)
- '(wakatime-python-bin nil)
  '(yas-snippet-dirs
    '("/media/chriad/nebula/spacemacs-fork/private/snippets/" "/media/chriad/nebula/spacemacs-fork/layers/+completion/auto-completion/local/snippets" yasnippet-snippets-dir)))
 (custom-set-faces
