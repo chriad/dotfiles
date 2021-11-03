@@ -21,6 +21,8 @@ set $term /home/chriad/.local/bin/kitty
 #set $menu dmenu_path | dmenu | xargs swaymsg exec --
 set $menu rofi -show drun | xargs swaymsg exec --
 
+set $screencast wf-recorder -g "$(slurp)" --audio --file=recording_with_audio.mp4
+bindsym Alt+1 exec $screencast
 # Preferred applications
 	set $editor emacs
 	set $browser firefox
@@ -30,7 +32,7 @@ exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 exec hash dbus-update-activation-environment 2>/dev/null && \
      dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
 
-
+bindsym $mod+Shift+s exec systemctl suspend
 
 ### Output configuration
 #
@@ -269,3 +271,4 @@ bar {
 }
 
 include /usr/local/etc/sway/config.d/*
+include /home/chriad/.local/etc/sway/config.d/*
