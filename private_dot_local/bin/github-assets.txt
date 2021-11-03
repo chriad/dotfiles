@@ -1,0 +1,1 @@
+https://github.com/RasmusLindroth/i3keys/releases/download/0.0.14/i3keys
