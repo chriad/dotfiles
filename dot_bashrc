@@ -202,7 +202,6 @@ source "$BASH_IT"/bash_it.sh
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-eval "$(starship init bash)"
 
 
 # >>> conda initialize >>>
@@ -220,3 +219,9 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+eval "$(jump shell)"
+
+source ~/.local/share/chezmoi/scripts/sync-history.sh
+source ~/.local/share/chezmoi/scripts/fzf-params.sh 
+
+eval "$(starship init bash)"
