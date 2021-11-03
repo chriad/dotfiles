@@ -21,8 +21,9 @@ set $term /home/chriad/.local/bin/kitty
 #set $menu dmenu_path | dmenu | xargs swaymsg exec --
 set $menu rofi -show drun | xargs swaymsg exec --
 
-set $screencast wf-recorder -g "$(slurp)" --audio --file=recording_with_audio.mp4
-bindsym Alt+1 exec $screencast
+bindsym Ctrl+Shift+Print exec wf-recorder -g "$(slurp)" -f /home/chriad/Videos/recording_$(date +"%Y-%m-%d_%H:%M:%S.mp4")
+bindsym Ctrl+Shift+BackSpace exec killall -s SIGINT wf-recorder
+
 # Preferred applications
 	set $editor emacs
 	set $browser firefox
