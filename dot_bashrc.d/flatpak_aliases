@@ -1,2 +1,3 @@
 alias quodlibet='flatpak run --command=quodlibet io.github.quodlibet.QuodLibet'
 alias calibredb='flatpak run --command=calibredb com.calibre_ebook.calibre'
+alias exfalso='flatpak run --command=exfalso io.github.quodlibet.QuodLibet'

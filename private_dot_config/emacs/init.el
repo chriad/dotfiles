@@ -81,7 +81,7 @@ This function should only modify configuration layer settings."
      emacs-lisp
      (wakatime :variables
                wakatime-cli-path "wakatime"
-               wakatime-python-bin "python")
+               wakatime-python-bin nil)
      git
      ;; pdf
      ;; eaf
