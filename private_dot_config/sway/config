@@ -35,6 +35,9 @@ exec hash dbus-update-activation-environment 2>/dev/null && \
 
 bindsym $mod+Shift+s exec systemctl suspend
 
+bindsym $mod+c exec "/home/chriad/.local/bin/ecapture"
+for_window [title="emacs org capture"] floating enable, focus, border none
+
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/local/share/backgrounds/sway/)
@@ -262,7 +265,8 @@ bar {
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
-    status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
+    # status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
+    status_command i3status
 
     colors {
         statusline #ffffff
