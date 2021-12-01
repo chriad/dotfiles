@@ -225,3 +225,25 @@ source ~/.local/share/chezmoi/scripts/sync-history.sh
 source ~/.local/share/chezmoi/scripts/fzf-params.sh 
 
 eval "$(starship init bash)"
+
+# emacsclient {
+#     flatpak run --command=emacsclient org.rh.gccemacs "$@"
+# }
+
+# export -f emacsclient
+
+tv-single() {
+    youtube-dl --config-location ~/.config/youtube-dl/config.embed \
+               -o '/media/chriad/lenovo/TV/%(extractor)s/%(title)s/%(title)s.%(ext)s' \
+               "$@"
+}
+
+yt-single() {
+    youtube-dl --config-location ~/.config/youtube-dl/config.embed \
+               -o '/media/chriad/lenovo/%(extractor)s/%(channel)s/%(title)s.%(ext)s' \
+               "$@"
+}
+
+mdw() { pandoc "$@" | w3m -T text/html; }
+
+wno() { wn "$1" -over; }
