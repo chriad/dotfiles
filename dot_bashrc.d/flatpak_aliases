@@ -1,4 +1,6 @@
 alias quodlibet='flatpak run --command=quodlibet io.github.quodlibet.QuodLibet'
 alias calibredb='flatpak run --command=calibredb com.calibre_ebook.calibre'
 alias exfalso='flatpak run --command=exfalso io.github.quodlibet.QuodLibet'
-alias obs='flatpak run --command=obs com.obsproject.Studio'
+alias emacs='flatpak run org.rh.gccemacs'
+alias emacsclient='flatpak run --command=emacsclient org.rh.gccemacs --socket-name /run/user/1000/app/org.rh.gccemacs/server'
+alias gpo='flatpak run --branch=stable --arch=x86_64 --command=/app/bin/gpo org.gpodder.gpodder'

@@ -198,7 +198,7 @@ unset MAILCHECK
 
 # Load Bash It
 source "$BASH_IT"/bash_it.sh
-
+unalias gpo # installed by bashit, conflicts with gpodder executable
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
