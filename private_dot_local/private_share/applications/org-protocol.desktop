@@ -1,7 +1,12 @@
 [Desktop Entry]
 Name=org-protocol
 Exec=emacsclient %u
+Exec=/usr/bin/flatpak run --command=emacsclient org.rh.gccemacs --socket-name /run/user/1000/app/org.rh.gccemacs/server %u
 Type=Application
 Terminal=false
 Categories=System;
 MimeType=x-scheme-handler/org-protocol;
+Icon=
+Comment=
+Path=
+StartupNotify=false

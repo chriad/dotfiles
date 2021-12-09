@@ -11,7 +11,7 @@ esac
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 PATH=$PATH:/home/chriad/.local/bin:/home/chriad/.fzf/bin
-
+PATH=$PATH:/home/chriad/.local/bin/platform-tools
 export EDITOR="emacsclient"                  # $EDITOR opens in terminal
 export VISUAL="emacsclient -c -a emacs" 
 export HUGO_BASE_DIR="~/chriad-blog"
