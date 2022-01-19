@@ -1,4 +1,7 @@
 GPODDER_DOWNLOAD_DIR=/media/chriad/lenovo/GPODDER
-QT_QPA_PLATFORM=wayland
+#QT_QPA_PLATFORM=wayland
 CALIBRE_USE_SYSTEM_THEME=1
 CALIBRE_USE_DARK_PALETTE=1
+TESSDATA_PREFIX=/usr/share/tesseract-ocr/
+#XDG_CONFIG_HOME=/home/chriad/.config
+MPV_HOME=/home/chriad/.config/mpv

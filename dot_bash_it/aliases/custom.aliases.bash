@@ -9,7 +9,7 @@ alias fzfp="fzf --preview='batcat --color=always {}'"
 alias uncaps='xdotool key Caps_Lock'
 alias bdfr='conda run -n py39 python3 -m bdfr'
 alias cs='chezmoi status'
-alias cm='chezmoi managed --include files,symlinks | fzf'
+alias cm="chezmoi managed --include files,symlinks | fzf --bind='enter:execute(chezmoi merge ~/{})'"
 alias cc='chezmoi cd'
 # alias firefox="firefox -P -no-remote" # multiple concurrent profiles
 alias jpdf="java -jar /home/chriad/jpdftweak-linux-x64-1.1/jpdftweak.jar"
@@ -135,7 +135,7 @@ emby-poster-here() {
 }
 
 youtube-dl-audio() {
-    /usr/local/bin/youtube-dl--extract-audio --restrict-filenames --write-info-json --write-description --write-auto-sub --sub-lang en --audio-format mp3 "$1"
+    /usr/local/bin/youtube-dl --extract-audio --restrict-filenames --write-info-json --write-description --write-auto-sub --sub-lang en --audio-format mp3 "$1"
 }
 # youtube-dl-playlist() {
 #     /usr/local/bin/youtube-dl -i -c -o '/media/chriad/E/YOUTUBE-PLAYLISTS/%(channel)s/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s' --write-info-json --write-thumbnail --write-description --add-metadata --write-auto-sub --sub-lang en "$1"
