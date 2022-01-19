@@ -68,16 +68,6 @@ xterm*|rxvt*)
     ;;
 esac
 
-# flatpak aliases
-if [ -d ~/.bashrc.d ]; then
-    for rc in ~/.bashrc.d/*; do
-        if [ -f "$rc" ]; then
-            . "$rc"
-        fi
-    done
-fi
-
-unset rc
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -198,7 +188,7 @@ unset MAILCHECK
 
 # Load Bash It
 source "$BASH_IT"/bash_it.sh
-unalias gpo # installed by bashit, conflicts with gpodder executable
+# unalias gpo # installed by bashit, conflicts with gpodder executable
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
@@ -221,19 +211,26 @@ unset __conda_setup
 
 eval "$(jump shell)"
 
-source ~/.local/share/chezmoi/scripts/sync-history.sh
-source ~/.local/share/chezmoi/scripts/fzf-params.sh 
+source ~/.local/bin/{sync-history.sh,fzf-params.sh}
 
 eval "$(starship init bash)"
 
-# emacsclient {
-#     flatpak run --command=emacsclient org.rh.gccemacs "$@"
-# }
 
-# export -f emacsclient
+iplayer-single() {
+    youtube-dl --config-location ~/.config/youtube-dl/config.embed \
+               --extract-audio --audio-format mp3 \
+               --yes-playlist -o '/media/chriad/lenovo/AUDIOBOOKS/%(extractor)s/%(playlist_title)s/%(title)s.%(ext)s' \
+               "$@"
+}
 
 tv-single() {
     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
+               -o '/media/chriad/lenovo/TV/%(extractor)s/%(title)s/%(title)s.%(ext)s' \
+               "$@"
+}
+
+tv-srf() {
+    youtube-dl --config-location ~/.config/youtube-dl/config.embed --hls-prefer-ffmpeg \
                -o '/media/chriad/lenovo/TV/%(extractor)s/%(title)s/%(title)s.%(ext)s' \
                "$@"
 }
@@ -244,6 +241,55 @@ yt-single() {
                "$@"
 }
 
+
+# pipe this to file for reference for static playlists
+dump-playlist-here() {
+    youtube-dl --get-title "$1" -o "%(playlist_index)d    %(title)s.%(ext)s" &> "$1".dump
+}
+
+dump-metadata() {
+	  ffmpeg -i "$1" -f ffmetadata - 2> /dev/null
+}
+
+git_diff_pdf() {
+    yes | git difftool --tool=diffpdf $1
+}
+
+emby-poster-here() {
+	  # first copy pic from firefox contex menu into clipboard: "Copy Image"
+	  xclip -selection clipboard -t image/png -o > folder.png
+}
+
+youtube-dl-audio() {
+    /usr/local/bin/youtube-dl --extract-audio --restrict-filenames --write-info-json --write-description --write-auto-sub --sub-lang en --audio-format mp3 "$1"
+}
+# youtube-dl-playlist() {
+#     /usr/local/bin/youtube-dl -i -c -o '/media/chriad/E/YOUTUBE-PLAYLISTS/%(channel)s/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s' --write-info-json --write-thumbnail --write-description --add-metadata --write-auto-sub --sub-lang en "$1"
+# }
+
 mdw() { pandoc "$@" | w3m -T text/html; }
 
 wno() { wn "$1" -over; }
+
+dlocate() { locate -0 "$1" | xargs -0 rm -rf; }
+
+dirlocate() { locate -r "/$1$"; }
+
+m4b_get_cover() {
+    ffmpeg -i "$1" -map 0:v -map -0:V -c copy cover.jpg
+}
+
+
+
+
+
+
+# flatpak aliases
+if [ -d ~/.bashrc.d ]; then
+    for rc in ~/.bashrc.d/*; do
+        if [ -f "$rc" ]; then
+            . "$rc"
+        fi
+    done
+fi
+unset rc
