@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python2 /media/chriad/ext4/SOFTWARE/peepdf/peepdf.py "$@"
