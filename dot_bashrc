@@ -13,7 +13,7 @@ esac
 PATH=$PATH:/home/chriad/.local/bin:/home/chriad/.fzf/bin
 PATH=$PATH:/home/chriad/.local/bin/platform-tools
 export EDITOR="emacsclient"                  # $EDITOR opens in terminal
-export VISUAL="emacsclient -c -a emacs" 
+#export VISUAL="emacsclient -c -a emacs" 
 export HUGO_BASE_DIR="~/chriad-blog"
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -216,12 +216,12 @@ source ~/.local/bin/{sync-history.sh,fzf-params.sh}
 eval "$(starship init bash)"
 
 
-iplayer-single() {
-    youtube-dl --config-location ~/.config/youtube-dl/config.embed \
-               --extract-audio --audio-format mp3 \
-               --yes-playlist -o '/media/chriad/lenovo/AUDIOBOOKS/%(extractor)s/%(playlist_title)s/%(title)s.%(ext)s' \
-               "$@"
-}
+# iplayer-single() {
+#     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
+#                --extract-audio --audio-format mp3 \
+#                --yes-playlist -o '/media/chriad/lenovo/AUDIOBOOKS/%(extractor)s/%(playlist_title)s/%(title)s.%(ext)s' \
+#                "$@"
+# }
 
 tv-single() {
     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
@@ -235,11 +235,11 @@ tv-srf() {
                "$@"
 }
 
-yt-single() {
-    youtube-dl --config-location ~/.config/youtube-dl/config.embed \
-               -o '/media/chriad/lenovo/%(extractor)s/%(channel)s/%(title)s.%(ext)s' \
-               "$@"
-}
+# yt-single() {
+#     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
+#                -o '/media/chriad/lenovo/%(extractor)s/%(channel)s/%(title)s.%(ext)s' \
+#                "$@"
+# }
 
 
 # pipe this to file for reference for static playlists
@@ -273,16 +273,54 @@ wno() { wn "$1" -over; }
 
 dlocate() { locate -0 "$1" | xargs -0 rm -rf; }
 
-dirlocate() { locate -r "/$1$"; }
+# dirlocate() { locate -r "/$1$"; }
+dirlocate() { locate -r "/*$1*"; }
 
 m4b_get_cover() {
     ffmpeg -i "$1" -map 0:v -map -0:V -c copy cover.jpg
 }
 
+iplayer-here() { get_iplayer --type=radio --radio-quality=std --pid="$1" --pid-recursive; }
 
 
+yt-parallel() {
+    youtube-dl --get-id "$1" | xargs -I '{}' -P "$2" yt-single 'https://youtube.com/watch?v={}'
+}
+
+yt-parallel-playlist() {
+    prefix="/media/chriad/lenovo"
+    youtube-dl --get-id "$1" | xargs -I '{}' -P "$2" youtube-dl --get-filename --no-playlist --config-location ~/.config/youtube-dl/config.embed -o "$prefix/%(extractor)s/%(channel)s/%(playlist)s/%(playlist_index)s -- %(title)s.%(ext)s" "https://youtube.com/watch?v={}&list=$1"
+}
+
+ffprobeh() {
+    ffprobe -v quiet -print_format json -show_format -show_streams "$1"
+}
+
+youtube-dl-probe-audio() {
+    # 1 for code, 2 for url
+    youtube-dl -f "$1"  -o - "$2" | mpv -
+}
+
+pdftk-d() {
+    pdf="$1"
+    pdftk "$pdf" dump_data_utf8 >"${pdf%pdf}"outline.txt
+}
+
+pdftk-u() {
+    pdf="$1"
+    pdftk "$pdf" update_info_utf8 "${pdf%pdf}"outline.txt output "${pdf%pdf}"out.pdf
+}
+
+flatapps() {
+    flatpak list | cut -f 2 | fzf
+}
+
+export GOROOT=$HOME/go
+export PATH=$PATH:$GOROOT/bin
+export PATH=$PATH:/var/lib/flatpak/exports/bin
 
 
+export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
 
 # flatpak aliases
 if [ -d ~/.bashrc.d ]; then
@@ -293,3 +331,7 @@ if [ -d ~/.bashrc.d ]; then
     done
 fi
 unset rc
+
+# BEGIN_KITTY_SHELL_INTEGRATION
+if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
+# END_KITTY_SHELL_INTEGRATION
