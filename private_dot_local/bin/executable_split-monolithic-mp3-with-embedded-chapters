@@ -1,0 +1,16 @@
+#!/bin/bash
+# Description: Split an
+# Requires: ffmpeg, jq
+# Author: Hasan Arous
+# License: MIT
+# https://unix.stackexchange.com/questions/499179/using-ffmpeg-to-split-an-audible-audio-book-into-chapters
+
+in="$1"
+out="$2"
+splits=""
+while read start end title; do
+    newTitle=$(echo "$title" | sed "s/ /_/g")
+    splits="$splits -c copy -ss $start -to $end $out/$newTitle.mp3"
+done <<<$(ffprobe -i "$in" -print_format json -show_chapters \
+              | jq -r '.chapters[] | .start_time + " " + .end_time + " " + (.tags.title | sub(" "; "_"))')
+ffmpeg -i "$in" $splits
