@@ -12,8 +12,12 @@ esac
 # See bash(1) for more options
 PATH=$PATH:/home/chriad/.local/bin:/home/chriad/.fzf/bin
 PATH=$PATH:/home/chriad/.local/bin/platform-tools
+PATH=$PATH:/usr/lib/stardict-tools
+
+export TEXINPUT=.:/home/chriad/.local/share/mystyles/:$TEXINPUTS # for tex2page
+export LISP=sbcl
 export EDITOR="emacsclient"                  # $EDITOR opens in terminal
-#export VISUAL="emacsclient -c -a emacs" 
+#export VISUAL="emacsclient -c -a emacs"
 export HUGO_BASE_DIR="~/chriad-blog"
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -192,8 +196,6 @@ source "$BASH_IT"/bash_it.sh
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-
-
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/media/chriad/ssd-45/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
@@ -215,6 +217,9 @@ source ~/.local/bin/{sync-history.sh,fzf-params.sh}
 
 eval "$(starship init bash)"
 
+CALIBRE_ROOT=/media/chriad/ssd-45
+GPODDER_ROOT=/media/chriad/ssd-45
+QUADERNO_ROOT=/media/chriad/ext4/dpt-mirror # use $QUADERNO_ROOT/dpt
 
 # iplayer-single() {
 #     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
@@ -241,13 +246,41 @@ tv-srf() {
 #                "$@"
 # }
 
+# --objstm          parse stream of /ObjStm objects
+pdf--pdfid-objstm() { pdf-parser.py --type /ObjStm --filter --raw "$1" | pdfid.py --force; }
+
+pdf--extract-cover() {
+    convert -thumbnail x300 -background white -alpha remove "${1}"[0] cover.png
+}
+
+pdf--thumbnail() {
+    pdftoppm -f 1 -l 1 -scale-to 1024 -png  $1 thumb
+}
+
+pdf--pdfx-extract-urls ()
+{
+    pdfx -v "$1" -o urls.txt
+}
+
+# pdf--pdfx-metadata() {
+#     pdfx -v $1 -o ${1%.pdf}.pdf-metadata
+# }
+
+# pdf--pdfgrep-fzf() {
+#     # cd media/chriad/E/CALIBRE_LIBRARIES/NEXUS_QUARANTINE;
+#     fzf -m --print0 | xargs -0 -I {} sh -c "pdfgrep -m 10 -n -C 3 \"${1}\" '{}' | fzf"
+# }
+
+pdf--pdfx-browse-refs-json() {
+    pdfx -v --json "${1}" |jid '.references'
+}
 
 # pipe this to file for reference for static playlists
 dump-playlist-here() {
     youtube-dl --get-title "$1" -o "%(playlist_index)d    %(title)s.%(ext)s" &> "$1".dump
 }
 
-dump-metadata() {
+ffmpeg--dump-metadata() {
 	  ffmpeg -i "$1" -f ffmetadata - 2> /dev/null
 }
 
@@ -276,7 +309,7 @@ dlocate() { locate -0 "$1" | xargs -0 rm -rf; }
 # dirlocate() { locate -r "/$1$"; }
 dirlocate() { locate -r "/*$1*"; }
 
-m4b_get_cover() {
+m4b--cover() {
     ffmpeg -i "$1" -map 0:v -map -0:V -c copy cover.jpg
 }
 
@@ -292,7 +325,7 @@ yt-parallel-playlist() {
     youtube-dl --get-id "$1" | xargs -I '{}' -P "$2" youtube-dl --get-filename --no-playlist --config-location ~/.config/youtube-dl/config.embed -o "$prefix/%(extractor)s/%(channel)s/%(playlist)s/%(playlist_index)s -- %(title)s.%(ext)s" "https://youtube.com/watch?v={}&list=$1"
 }
 
-ffprobeh() {
+ffmpeg--fprobe-json() {
     ffprobe -v quiet -print_format json -show_format -show_streams "$1"
 }
 
@@ -301,18 +334,296 @@ youtube-dl-probe-audio() {
     youtube-dl -f "$1"  -o - "$2" | mpv -
 }
 
-pdftk-d() {
+pdf--pdftk-d() {
     pdf="$1"
     pdftk "$pdf" dump_data_utf8 >"${pdf%pdf}"outline.txt
 }
 
-pdftk-u() {
+pdf--pdftk-u() {
     pdf="$1"
     pdftk "$pdf" update_info_utf8 "${pdf%pdf}"outline.txt output "${pdf%pdf}"out.pdf
 }
 
+
+pdf--pdftoc2txt() {
+    env _JAVA_AWT_WM_NONREPARENTING=1 java -jar /home/chriad/.local/bin/pdfbox-app-3.0.0-alpha2.jar export:text --input="${1}"
+}
+
+folderjail() {
+    # wrap single file to folder with same name
+    fname=`echo "$1" | inline-detox`
+    mkdir "${fname%%.*}"
+    mv "$1" "${fname%%.*}"
+}
+
+epub--subchaps() {
+    zipgrep "${1}" "${2}"  > subchaps.txt
+}
+
+epub--sort() {
+    dos2unix "${1}"
+    csplit \
+        --quiet \
+        --prefix=split- \
+        --suffix-format=%02d.txt \
+        --suppress-matched \
+        "${1}" /^$/ {*}
+    rm "${1}"
+    for f in *.txt ; do head -n 1 "${f}" >> 1.txt; echo "${f}" >> 2.txt; done
+    x=`paste 1.txt 2.txt | sort -k1 | cut -f2 | tr '\n' ' '`
+    for i in $x;do cat $i >> output.txt;done
+    rm 1.txt 2.txt split-*
+    sed -i '/^[[:space:]]*$/d' output.txt
+    sed -i 's/.*\(\.xhtml:\|\.html:\)[ \t]*//g' output.txt
+    links2 -dump output.txt | egrep -v '^$' > res.txt
+}
+
+links2--textify-html-toc() {
+    # toc downloaded as html node
+   links2 -dump "${1}" | egrep -v '^$'
+}
+
+links2--chdump() {
+    links2 -dump "${1}" > chapters.txt
+    cp chapters.txt chaps.txt
+}
+
+sed--remove-leading-whitespaces() {
+    sed -i -e 's/^[ \t]*//' "${1}"
+}
+
+sed--remove-empty-lines() {
+    sed -i '/^[[:space:]]*$/d' "${1}"
+}
+
+epub--sed-remove-epubzip-file-prefix() {
+    sed -i 's/.*\(\.xhtml:\|\.html:\)[ \t]*//g' "${1}"
+}
+
+epub--list-file-sizes() {
+    zipinfo -l --h --t "${1}" |tr -s ' ' | cut -f4 -d' ' |sort -n|numfmt --to=iec-i
+}
+
+epub--extract-images-here() {
+    unzip "${1}" OEBPS/images/*
+}
+
+m4a--prefixcut-inplace ()
+{
+    mkdir out
+    for f in *.m4a ; do
+        ffmpeg -ss 00:00:"${1}" -i "${f}" -c:v copy -c:a copy ./out/"${f}";
+        /usr/bin/mv -f ./out/"${f}" "${f}"; done
+    rm -rf ./out
+}
+
+
+
+# example: mp3--bulk-title-here chaps.txt
+# chaps.txt: file with titles each on one line
+mp3--bulk-title-here() {
+    dos2unix "${1}"
+    operon clear 'title' *.mp3
+    ls -1 *.mp3 > flist.txt
+    paste flist.txt "$1" > out.txt
+    while IFS=$'\t' read -r fname title ; do
+        operon add 'title' "${title}" "${fname}"
+        # printf '%s\n' "$fname"
+        # printf '%s\n' "$title"
+    done < out.txt
+    rm flist.txt out.txt
+}
+
+arte-merge-streams() {
+    vid="$1"
+    aud="$2"
+    sub="$3"
+    name="$4"
+    ffmpeg -i "${vid}" -i "${aud}" -i "${sub}" -map 0:v -map 1:a -map 2 -c:v copy -c:a copy -c:s mov_text -metadata:s:s:0 language=eng "${name}".mp4
+}
+
+arte-merge-combined() {
+    vid_aud="$1"
+    sub="$2"
+    name="$3"
+    ffmpeg -hide_banner -loglevel warning -nostats -i "${vid_aud}" -i "${sub}" -map 0:v -map 0:a -map 1 -c:v copy -c:a copy -c:s mov_text -metadata:s:s:0 language=eng "${name}".mp4
+}
+
+calibre--search-title() { calibredb list -s title:"${1}"; }
+
+quaderno--download() { dptrp1 --addr 192.168.1.210 download "${1}" ./ ; }
+
+quaderno--delete() { dptrp1 --addr 192.168.1.210 delete "${1}" ; }
+
+bachsplit() {
+    flacsplt -o @b__@t__@A__@n -c "$1" "$2"
+}
+
+cpdf--graft-annots() {
+    source="$1"
+    target="$2"
+    cpdf -copy-annotations "$source" "$target" -o "${target%pdf}"grafted.pdf
+}
+
+
+# cpdf-embed-annots-texts() {
+#     # expect a pdf file with annotations without embedded text
+#     source="$1"
+#     cp "${source}" "${source%pdf}"bak.pdf
+#     cpdf -remove-annotations "${source%pdf}"bak.pdf -o "${source%pdf}"blank.pdf
+#     cpdf -copy-annotations "$source" "${source%pdf}"blank.pdf -o "${target%pdf}"annots-text-embedded.pdf
+# }
+
+quodlibet--sort-queries() {
+    fp='/home/chriad/.var/app/io.github.quodlibet.QuodLibet/config/quodlibet/lists/'
+    out=$(paste -sd"\t\n" ${fp}queries.saved | sort -k 2 | tr "\t" "\n" > ${fp}queries.saved.sorted)
+    exec $out
+    mv ${fp}queries.saved /home/chriad/queries.saved.backup
+    mv ${fp}queries.saved.sorted ${fp}queries.saved
+}
+
+mp3--prefixcut() {
+   for f in *.mp3 ; do mp3splt "${f}" 0."${1}" EOF -o out/@f ; done
+}
+
+m4b--prefixcut() {
+    for f in *.m4b ; do ffmpeg -ss 00:00:"${1}" -i "${f}" -c:v copy -c:a copy ./out/"${f}" ; done
+}
+
+sed--quote-lines() {
+    sed 's/^.*$/"&"/g'
+}
+
+mp3--merge-chapters() {
+    local a
+    local b
+    a="${1}"
+    b="${2}"
+    tr '"' '`' < "$b" > "${b%txt}"clean.txt
+    sed 's/^.*$/"&"/g' "${b%txt}"clean.txt > "${b%txt}"quoted.txt
+    paste "${a}" "${b%txt}"quoted.txt |tr -d '\t' > "${b%txt}"out.csv
+}
+
+cpdf--dump-annot-to-file() {
+    pdf="$1"
+    cpdf -list-annotations-json "$pdf" > "${pdf%pdf}"annots.json
+}
+
+# mutool-clean() {
+#     pdf="$1"
+#     mutool clean -gggg "$pdf" "${pdf%pdf}"clean.pdf
+# }
+
+pdf--gartenfreund() {
+    pdf="$1"
+    ocrmypdf -l deu --force-ocr "$pdf" "${pdf%pdf}".ocr.pdf
+}
+
+calibre--list-data-folders() {
+    local d
+    d=$CALIBRE_ROOT/reflowable
+    fd --prune -t d --base-directory $d --glob "data" |fzf
+}
+
+calibre--switch-data-folders() {
+    local d
+    d=$CALIBRE_ROOT/reflowable
+    DIR=`fd --prune -t d --base-directory $d --glob "data" | fzf-tmux` && cd $d/"$DIR"
+}
+
+pdf--convert-grayscale() {
+    # https://superuser.com/questions/104656/convert-a-pdf-to-greyscale-on-the-command-line-in-floss
+    source="$1"
+    ghostscript \
+        -dAutoRotatePages=/None \
+        -sOutputFile="${source%pdf}greyscaled".pdf \
+        -sDEVICE=pdfwrite \
+        -sColorConversionStrategy=Gray \
+        -dProcessColorModel=/DeviceGray \
+        -dCompatibilityLevel=1.4 \
+        -dNOPAUSE \
+        -dBATCH \
+        "$source"
+}
+
+quaderno--pdffd() {
+    local path="$QUADERNO_ROOT/dpt"
+    fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(flatpak run org.kde.okular {} &)+abort'
+    # fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(sioyek {} &)+abort'
+}
+
+# mvdoc() {
+    
+# }
+
 flatapps() {
     flatpak list | cut -f 2 | fzf
+}
+
+# from linux phrasebook
+listfunc () {
+    for func in $(compgen -A function | grep -v _);
+    do
+        declare -f $func;
+        echo -e "\r";
+    done
+}
+
+pdf--drop-pdfimages () {
+    # pdfimages -all -p -f 11 -l 30 War\ Lord_\ Khalifa\ Haftar\ and\ the\ Future\ of\ -\ John\ Oakes.pdf ./images/image-
+    mkdir images
+    pdfimages -p "$1" ./images/image-
+}
+
+function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+
+## m4b functions
+
+function m4b--rmlyrics() {
+    # remove lyrics from source file before using LosslessCut
+    fil="$1"
+    case $fil in
+      *.m4b)
+        mp4tags -r "lyrics" "${fil}"
+        ;;
+
+      *.mp3)
+        operon clear lyrics "${fil}"
+        ;;
+
+      *)
+        exit 1
+        ;;
+    esac
+}
+
+schimanski-missing() {
+    cat <<EOF
+Der Fall Schimanski
+Gebrochene Blueten
+Spielverderber
+Schwarzes Wochenende
+Doppelspiegel
+EOF
+}
+
+audacity--labels-to-csv() {
+    # some file exported by audacity called Labels.txt
+    fil="$1"
+    csvformat -t -D, "${fil}" > "${fil%txt}"csv
+}
+
+function m4b--title() {
+    # Set title to filename in LosslessCut output
+    for rc in *.m4b; do
+        operon fill --dry-run "<title>.m4b" "$rc"
+        operon fill "<title>.m4b" "$rc"
+    done
+    for rc in *.mp3; do
+        operon fill --dry-run "<title>.mp3" "$rc"
+        operon fill "<title>.mp3" "$rc"
+    done
+
 }
 
 export GOROOT=$HOME/go
@@ -331,6 +642,11 @@ if [ -d ~/.bashrc.d ]; then
     done
 fi
 unset rc
+
+TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+
+# opam configuration
+test -r /home/chriad/.opam/opam-init/init.sh && . /home/chriad/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
 
 # BEGIN_KITTY_SHELL_INTEGRATION
 if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
