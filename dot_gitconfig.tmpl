@@ -2,9 +2,10 @@
 	email = {{ .email }}
 	name = {{ .git.name }}
 [core]
-	# fileMode = false
+	filemode = false
 	excludesfile = {{ .chezmoi.homeDir }}/.gitignore
 	pager = diff-so-fancy | less --tabs=4 -RFX
+	autocrlf = false
 [diff]
     tool = meld
 [difftool]
@@ -32,3 +33,5 @@
 	helper = !/usr/bin/gh auth git-credential
 [pull]
 	rebase = false
+[submodule]
+	recurse = true
