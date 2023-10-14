@@ -221,12 +221,35 @@ CALIBRE_ROOT=/media/chriad/ssd-45
 GPODDER_ROOT=/media/chriad/ssd-45
 QUADERNO_ROOT=/media/chriad/ext4/dpt-mirror # use $QUADERNO_ROOT/dpt
 
-# iplayer-single() {
-#     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
-#                --extract-audio --audio-format mp3 \
-#                --yes-playlist -o '/media/chriad/lenovo/AUDIOBOOKS/%(extractor)s/%(playlist_title)s/%(title)s.%(ext)s' \
-#                "$@"
-# }
+# select a parent directory of the current, means cd parent
+cd--p() {
+    local declare dirs=()
+    get_parent_dirs() {
+        if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
+        if [[ "${1}" == '/' ]]; then
+            for _dir in "${dirs[@]}"; do echo $_dir; done
+        else
+            get_parent_dirs $(dirname "$1")
+        fi
+    }
+    local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux --tac)
+    cd "$DIR"
+}
+
+# Another fd - cd into the selected directory
+# This one differs from the above, by only showing the sub directories and not
+#  showing the directories within those.
+cd--d() {
+    # DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf-tmux` \
+        DIR=`fdfind ".*" -d 1 --type d 2> /dev/null | fzf-tmux` \
+            && cd "$DIR"
+}
+
+cd--mkcdir ()
+{
+    mkdir -p -- "$1" &&
+        cd -P -- "$1"
+}
 
 tv-single() {
     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
@@ -313,7 +336,17 @@ m4b--cover() {
     ffmpeg -i "$1" -map 0:v -map -0:V -c copy cover.jpg
 }
 
-iplayer-here() { get_iplayer --type=radio --radio-quality=std --pid="$1" --pid-recursive; }
+iplayer-series() { get_iplayer --type=radio --radio-quality=std --pid="$1" --pid-recursive; }
+# iplayer-single b044j7pd --versions=original,podcast
+# iplayer-single() { get_iplayer --type=radio --radio-quality=high,std --pid="$1" "$@"; }
+iplayer-single() {
+    : <<'COMMENT'
+--versions=original,podcast
+COMMENT
+    get_iplayer --type=radio --radio-quality=high,std --pid="$1" "$@"
+                 }
+iplayer-list() { get_iplayer --type=radio --pid="$1" --pid-recursive-list --sort=firstbcast; }
+iplayer-info() { get_iplayer --pid="$1" --info | tee info."$1".txt |egrep "version|qualities"; }
 
 
 yt-parallel() {
@@ -570,7 +603,7 @@ listfunc () {
 }
 
 pdf--drop-pdfimages () {
-    # pdfimages -all -p -f 11 -l 30 War\ Lord_\ Khalifa\ Haftar\ and\ the\ Future\ of\ -\ John\ Oakes.pdf ./images/image-
+    # pdfimages -all -p -f 11 -l 30 <file>.pdf ./images/image-
     mkdir images
     pdfimages -p "$1" ./images/image-
 }
