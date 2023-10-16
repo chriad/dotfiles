@@ -4,6 +4,7 @@ export FZF_DEFAULT_OPTS="--multi --bind='f1:execute(less -f {}),`
 `ctrl-h:execute(python ~/fzf-optparse.py|less -f),`
 `ctrl-b:execute(echo {} | xargs -d '\n' feh -w),`
 `ctrl-f:execute(feh {}),`
+`ctrl-v:execute(mpv --really-quiet {} &),`
 `ctrl-e:execute(chezmoi edit {}),`
 `ctrl-x:execute(chezmoi merge ~/{}),`
 `ctrl-o:execute(cat {} >> ~/bla.file)+abort'"

@@ -2,6 +2,8 @@ IFS_BAK=$IFS
 IFS="
 "
 
+calibre --shutdown-running-calibre
+
 for line in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
     xattr=$(xattr -p user.xdg.origin.url "$line")
     if [[ -z $xattr ]]; then

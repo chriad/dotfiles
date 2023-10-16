@@ -11,26 +11,29 @@ alias nethogs="nethogs -v 3"
 alias fzfp="fzf --preview='batcat --color=always {}'"
 alias uncaps='xdotool key Caps_Lock'
 alias bdfr='conda run -n py39 python3 -m bdfr'
+
+# chezmoi
 alias cs='chezmoi status'
-alias cm="chezmoi managed --include files,symlinks | fzf --bind='enter:execute(chezmoi merge ~/{})'"
+# alias cm="chezmoi managed --include files,symlinks | fzf --bind='enter:execute(chezmoi merge ~/{})'"
+alias cm="chezmoi status|cut -f2 -d' ' | fzf --bind='enter:execute(chezmoi merge ~/{})'"
 alias cc='chezmoi cd'
+
 # alias firefox="firefox -P -no-remote" # multiple concurrent profiles
 alias jpdf="java -jar /media/chriad/ext4/SOFTWARE/jpdftweak-linux-x64-1.1/jpdftweak.jar" # use flatpak version
 alias ls-git-cwd='find . -name "*.git" -type d'
 alias git-summary='/home/chriad/git-summary/git-summary'
-alias retro-term="/home/chriad/github_scripts/cool-retro-term/Cool-Retro-Term-1.1.1-x86_64.AppImage"
-alias bio="recoll -c /media/chriad/E/BOOKS-and-CODE/.recoll/"
-alias recr="recoll -c /media/chriad/E/CALIBRE_LIBRARIES/R/.recoll/"
-alias rasp="recoll -c /media/chriad/E/CALIBRE_LIBRARIES/raspberrypi/.recoll/"
-alias pyth="recoll -c /media/chriad/E/CALIBRE_LIBRARIES/PYTHON/.recoll/"
-alias rescue-emacs="killall -s USR2 emacs"
+# alias bio="recoll -c /media/chriad/E/BOOKS-and-CODE/.recoll/"
+# alias recr="recoll -c /media/chriad/E/CALIBRE_LIBRARIES/R/.recoll/"
+# alias rasp="recoll -c /media/chriad/E/CALIBRE_LIBRARIES/raspberrypi/.recoll/"
+# alias pyth="recoll -c /media/chriad/E/CALIBRE_LIBRARIES/PYTHON/.recoll/"
+# alias rescue-emacs="killall -s USR2 emacs"
 alias raspb-connect="screen /dev/ttyUSB0 115200"
 alias regexp-buddy="wine /home/chriad/.wine/dosdevices/c\:/Program\ Files\ \(x86\)/JGsoft/RegexBuddy3/RegexBuddy.exe"
 alias lisp-works="/usr/local/lib64/LispWorksPersonal/lispworks-personal-7-1-2-amd64-linux"
 alias et="emacsclient -t"
 alias e="emacsclient --no-wait"
 alias c2='cd ../../'
-alias xpdf="~/Desktop/XpdfReader-linux64-4.01.01/xpdf"
+# alias xpdf="~/Desktop/XpdfReader-linux64-4.01.01/xpdf"
 alias gsadd='git submodule add'
 alias bfg="java -jar /home/chriad/bfg-1.13.0.jar"
 alias detox="detox --remove-trailing"

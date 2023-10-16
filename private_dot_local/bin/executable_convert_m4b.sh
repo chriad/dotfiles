@@ -29,11 +29,14 @@
 track=1
 
 #assumes ( if there are multiple files Part 01/Part 02) that they are in alphabetical order
-for i in *.m4[ab];
+for i in *.m[p4][ab3];
 do
     name=`echo $i | cut -d'.' -f1`;
     echo $name;
-    ffmpeg -i "$i" -acodec libmp3lame -ar 22050 -ab 64k "$name.mp3"
+    if [[ $i != *.mp3 ]]; then
+       # ffmpeg -i "$i" -vsync 0 -acodec libmp3lame -ar 22050 -ab 64k "$name.mp3"
+        ffmpeg -i "$i"  -max_muxing_queue_size 9999 -vsync 0 -acodec libmp3lame "$name.mp3"
+    fi
     full_file_path="$name.mp3"
 
     #split chapters
@@ -59,6 +62,8 @@ do
     done <tmp.txt
 
     rm tmp.txt
-    rm "$full_file_path"
+    if [[ $i != *.mp3 ]]; then
+        rm "$full_file_path"
+    fi
 
 done;
