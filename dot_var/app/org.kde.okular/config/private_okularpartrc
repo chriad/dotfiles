@@ -1,0 +1,34 @@
+[Core General]
+ExternalEditor=Emacsclient
+ObeyDRM=false
+
+[Core Performance]
+MemoryLevel=Aggressive
+TextHinting=Enabled
+
+[Dlg Accessibility]
+HighlightLinks=true
+
+[Document]
+ChangeColors=true
+
+[General]
+ttsEngine=flite
+ttsVoice=kal16
+
+[Main View]
+ShowBottomBar=true
+SplitterSizes=540,1376
+
+[PageView]
+MouseMode=TextSelect
+TrimMargins=true
+ViewColumns=2
+ViewContinuous=false
+ViewMode=FacingFirstCentered
+
+[Reviews]
+QuickAnnotationTools=<tool default="true" name="Yellow Highlighter" id="1" type="highlight"><engine color="#ffff00" type="TextSelector"><annotation color="#ffffff00" type="Highlight"/></engine><shortcut>1</shortcut></tool>,<tool default="true" name="Green Highlighter" id="2" type="highlight"><engine color="#00ff00" type="TextSelector"><annotation color="#ff00ff00" type="Highlight"/></engine><shortcut>2</shortcut></tool>,<tool id="3" type="underline"><engine color="#ff0000" type="TextSelector"><annotation color="#ffff0000" type="Underline"/></engine><shortcut>3</shortcut></tool>,<tool default="true" name="Insert Text" id="4" type="typewriter"><engine block="true" type="PickPoint"><annotation textColor="#000000" color="#00ffffff" width="0" type="Typewriter"/></engine><shortcut>4</shortcut></tool>,<tool id="5" type="note-inline"><engine block="true" color="#ffff00" hoverIcon="tool-note-inline" type="PickPoint"><annotation textColor="#ff000000" color="#ffffff00" type="FreeText"/></engine><shortcut>5</shortcut></tool>,<tool id="6" type="note-linked"><engine color="#ffff00" hoverIcon="tool-note" type="PickPoint"><annotation color="#ffffff00" icon="Note" type="Text"/></engine><shortcut>6</shortcut></tool>
+
+[Zoom]
+ZoomMode=3
