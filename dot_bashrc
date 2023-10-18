@@ -552,10 +552,22 @@ pdf--gartenfreund() {
     ocrmypdf -l deu --force-ocr "$pdf" "${pdf%pdf}".ocr.pdf
 }
 
+calibre--ebook-edit() {
+    local d
+    d=$CALIBRE_ROOT/reflowable
+    ebook-edit "$d/$(fd --prune -e epub --base-directory $d |fzf)"
+}
+
+calibre--ebook-view() {
+    local d
+    d=$CALIBRE_ROOT/reflowable
+    ebook-viewer "$d/$(fd --prune -e epub --base-directory $d |fzf)"
+}
+
 calibre--cd-data-folders() {
     local d
     d=$CALIBRE_ROOT/reflowable
-    cd "$d/$(fd --prune -t d --base-directory $d --glob "data" |fzf)"
+    cd "$d/$(fd --prune -t d --base-directory $d --glob "data" |fzf --preview 'ls {}')"
     # fd --prune -t d --base-directory $d --glob "data" |fzf --bind  "enter:execute(cd \"/media/chriad/ssd-45/reflowable/{+}\")+accept"
 }
 

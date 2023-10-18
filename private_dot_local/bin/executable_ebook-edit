@@ -1,0 +1,5 @@
+#!/bin/bash
+# from /var/lib/flatpak/exports/share/applications/com.calibre_ebook.calibre.ebook-edit.desktop
+
+
+/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=ebook-edit --file-forwarding com.calibre_ebook.calibre --detach "$@"
