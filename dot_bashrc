@@ -413,7 +413,7 @@ epub--sort() {
 
 links2--textify-html-toc() {
     # toc downloaded as html node
-   links2 -dump "${1}" | egrep -v '^$'
+    links2 -dump "${1}" | egrep -v '^$' | sed -e 's/^[ \t]*//' | grep --only-matching --extended-regexp "^[0-9]{1,2}.*"
 }
 
 links2--chdump() {
@@ -552,10 +552,12 @@ pdf--gartenfreund() {
     ocrmypdf -l deu --force-ocr "$pdf" "${pdf%pdf}".ocr.pdf
 }
 
+# TODO make it so that enter cd to selected candidate
 calibre--list-data-folders() {
     local d
     d=$CALIBRE_ROOT/reflowable
-    fd --prune -t d --base-directory $d --glob "data" |fzf
+    fd -a --prune -t d --base-directory $d --glob "data" |fzf --bind  "enter:execute(cd {})+abort"
+    # fd --prune -t d --base-directory $d --glob "data" |fzf --bind  "enter:execute(cd \"/media/chriad/ssd-45/reflowable/{+}\")+accept"
 }
 
 calibre--switch-data-folders() {
