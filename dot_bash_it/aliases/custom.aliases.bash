@@ -52,6 +52,8 @@ alias quaderno--upload="dptrp1 --addr 192.168.1.210 upload"
 
 
 alias ipynb-view="jupyter nbconvert --stdout --to markdown"
+alias cl-repl="sbcl --eval '(ql:quickload :cl-repl)' --eval '(cl-repl:main)' --quit"
+alias remote-diff='git diff master..origin/master'
 alias gpol='gpo -q list 2> /dev/null | paste -sd"\t\n" | fzf --delimiter="\t" --with-nth=1 --bind "enter:execute(echo {2})+abort"'
 alias tt='gio trash' # to trash
 alias nethogs="nethogs -v 3"
@@ -85,23 +87,13 @@ alias gsadd='git submodule add'
 alias bfg="java -jar /home/chriad/bfg-1.13.0.jar"
 alias mpv--debug="mpv --input-test --force-window --idle --osc=no" #mpv debug to show keybindings
 alias rsbcl='rlwrap sbcl'
-alias say='spd-say'
-alias lilipond='lilypond'
 alias git-aliases='bash-it help aliases git|fzf'
-alias lisp="clisp"
-alias mv="mv -ivu"
-alias cp="cp -ivu"
-alias rmd="sudo rm -r"
-alias cpd="sudo cp -r"
 # alias xc='xclip -selection clipboard'
 # alias remotek='telnet 192.168.0.6 2323'
 # exact match by default
 # alias=fzf='fzf -e'
-alias ls="ls --color=auto -h"
 alias ls="exa"
 alias enw="emacs -nw"
-alias rmff='rm -rf'
-alias pdf2text='pdftotext'
 alias pretty-json="python2 -mjson.tool"
 #Unfortunately doesn't work
 #alias ;s=ls
@@ -139,8 +131,7 @@ alias findbigdir="/usr/bin/find ./ -maxdepth 1 -type d -print0 | xargs -0 du --m
 # alias sckill='kill $(ps -C screenkey -o pid=)'
 # Path to the bash it configuration
 # alias clip='xclip -selection clipboard'
-alias bashit_active_aliases="bashit show aliases | grep '\[x\]'"
-alias n='nautilus .'
+alias bashit--active-aliases="bashit show aliases | grep '\[x\]'"
 alias lst='ls -snew|tail'
 alias fuzb='source ~/fzf-chrome-bookmarks/fzf-chrome-bookmarks.sh'
 alias catf='cat <<eof>README.org'
@@ -151,8 +142,7 @@ alias scan-home-network="sudo nmap -sn 192.168.1.0/24"
 # alias keycode="xev | grep -A2 --line-buffered '^KeyRelease' | sed -n '/keycode /s/^.*keycode \([0-9]*\).* (.*, \(.*\)).*$/\1 \2/p'"
 # alias which="type -p"
 alias git-summary='/home/chriad/git-summary/git-summary'
-alias pdf-txt='pdftotext -layout -eol unix -nopgbrk'
-alias powershell='pwsh'
+alias pdf--txt='pdftotext -layout -eol unix -nopgbrk'
 alias ipinfo='curl ipinfo.io'
 # alias pvcli=protonvpn-cli
 # alias subscriptions='ytcc -o xsv subscriptions -a name|fzf'
@@ -170,7 +160,6 @@ alias retro-term="/home/chriad/github_scripts/cool-retro-term/Cool-Retro-Term-1.
 ghist() {
     git log --oneline --name-only $1
 }
-
 
 # pipe this to file for reference for static playlists
 dump-playlist-here() {
@@ -247,80 +236,18 @@ pdf-metadata() {
     pdfx -v $1 -o ${1%.pdf}.pdf-metadata
 }
 
-fzf_pdf() {
-    # cd media/chriad/E/CALIBRE_LIBRARIES/NEXUS_QUARANTINE;
-    fzf -m --print0 | xargs -0 -I {} sh -c "pdfgrep -m 10 -n -C 3 $1 '{}' | fzf"
-}
-# select a parent directory of the current, means cd parent
-p() {
-  local declare dirs=()
-  get_parent_dirs() {
-    if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
-    if [[ "${1}" == '/' ]]; then
-      for _dir in "${dirs[@]}"; do echo $_dir; done
-    else
-      get_parent_dirs $(dirname "$1")
-    fi
-  }
-  local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux --tac)
-  cd "$DIR"
-}
-# Another fd - cd into the selected directory
-# This one differs from the above, by only showing the sub directories and not
-#  showing the directories within those.
-d() {
-  # DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf-tmux` \
-  DIR=`fdfind ".*" -d 1 --type d 2> /dev/null | fzf-tmux` \
-    && cd "$DIR"
-}
 
 # fdd- cd to selected directory
 # mnemonic cd down -> show all subdirectories
-cdd() {
-  local dir
-  dir=$(/usr/bin/find ${1:-.} -path '*/\.*' -prune \
-                  -o -type d -print 2> /dev/null | fzf +m) &&
-  cd "$dir"
-}
 
-mendel () {
-    WD=$(pwd)
-    cd /home/chriad/Zotero/storage/
-    local DIR open
-    declare -A already
-    DIR="${HOME}/.cache/pdftotext"
-    mkdir -p "${DIR}"
-    if [ "$(uname)" = "Darwin" ]; then
-        open=open
-    else
-        open="gio open"
-    fi
+# cdd() {
+#   local dir
+#   dir=$(/usr/bin/find ${1:-.} -path '*/\.*' -prune \
+#                   -o -type d -print 2> /dev/null | fzf +m) &&
+#   cd "$dir"
+# }
 
-    {
-    ag -g ".pdf$"; # fast, without pdftotext
-    ag -g ".pdf$" \
-    | while read -r FILE; do
-        local EXPIRY HASH CACHE
-        HASH=$(md5sum "$FILE" | cut -c 1-32)
-        # Remove duplicates (file that has same hash as already seen file)
-        [ ${already[$HASH]+abc} ] && continue # see https://stackoverflow.com/a/13221491
-        already[$HASH]=$HASH
-        EXPIRY=$(( 86400 + $RANDOM * 20 )) # 1 day (86400 seconds) plus some random
-        CMD="pdftotext -f 1 -l 1 '$FILE' - 2>/dev/null | tr \"\n\" \"_\" "
-        CACHE="$DIR/$HASH"
-        test -f "${CACHE}" && [ $(expr $(date +%s) - $(date -r "$CACHE" +%s)) -le $EXPIRY ] || eval "$CMD" > "${CACHE}"
-        echo -e "$FILE\t$(cat ${CACHE})"
-    done
-    } | fzf -e  -d '\t' \
-        --preview-window up:75% \
-        --preview '
-                v=$(echo {q} | tr " " "|");
-                echo {1} | grep -E "^|$v" -i --color=always;
-                pdftotext -f 1 -l 1 {1} - | grep -E "^|$v" -i --color=always' \
-        | awk 'BEGIN {FS="\t"; OFS="\t"}; {print "\""$1"\""}' \
-        | xargs $open > /dev/null 2> /dev/null
-    cd $WD
-            }
+
 
 # alias acro='"/mnt/c/Program Files (x86)\Adobe\Acrobat 11.0\Acrobat\Acrobat.exe"'
 # cf - fuzzy cd from anywhere

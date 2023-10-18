@@ -552,11 +552,10 @@ pdf--gartenfreund() {
     ocrmypdf -l deu --force-ocr "$pdf" "${pdf%pdf}".ocr.pdf
 }
 
-# TODO make it so that enter cd to selected candidate
-calibre--list-data-folders() {
+calibre--cd-data-folders() {
     local d
     d=$CALIBRE_ROOT/reflowable
-    fd -a --prune -t d --base-directory $d --glob "data" |fzf --bind  "enter:execute(cd {})+abort"
+    cd "$d/$(fd --prune -t d --base-directory $d --glob "data" |fzf)"
     # fd --prune -t d --base-directory $d --glob "data" |fzf --bind  "enter:execute(cd \"/media/chriad/ssd-45/reflowable/{+}\")+accept"
 }
 
