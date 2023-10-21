@@ -29,31 +29,36 @@ This function should only modify configuration layer settings."
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '(
-                                           "/media/chriad/nebula/spacemacs-fork/private"
+                                           "/media/chriad/nebula/spacemacs-fork/private/"
                                            )
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(systemd
-     rust
-     (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
+   '(rust
+     ocaml
+     asciidoc
+     lua
+     systemd
+     ;; rust
+     ;; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
      ;; << private layers
      bookmark+
+     chezmoi
      helm-additional
      elisp-additional
      org-additional
      ;; >> private layers
      javascript
      pass
+     bibtex
      (spacemacs-layouts :variables
                         spacemacs-layouts-restrict-spc-tab t
                         persp-autokill-buffer-on-remove 'kill-weak)
      ;; sml
 
-     toc
-     ;; nixos
+     ;; toc
      (calibre :variables
-              calibredb-root-dir "/media/chriad/E/BAYES2")
+              calibredb-root-dir "/media/chriad/ext4/fixed-layout")
      csv
      djvu
      html
@@ -77,11 +82,11 @@ This function should only modify configuration layer settings."
      ;; emoji
      better-defaults
      common-lisp
-     (ipython-notebook :variables ein-backend 'jupyter)
+     ;; (ipython-notebook :variables ein-backend 'jupyter)
      emacs-lisp
-     (wakatime :variables
-               wakatime-cli-path "wakatime"
-               wakatime-python-bin nil)
+     ;; (wakatime :variables
+     ;;           wakatime-cli-path "wakatime"
+     ;;           wakatime-python-bin nil)
      git
      ;; pdf
      ;; eaf
@@ -105,7 +110,7 @@ This function should only modify configuration layer settings."
      ;; version-control
      neotree
      ;; treemacs
-     racket
+     ;; racket
      semantic
      )
 
@@ -120,8 +125,16 @@ This function should only modify configuration layer settings."
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
                                       ;; mic-paren ;; customize paren-face-match
+                                      geiser ;; installed with guix
+                                      geiser-guile ;; installed with guix
+                                      magit-popup ;; guix
                                       ;; m-buffer
-                                      minions
+                                      ;; shackle
+                                      ;; sway
+                                      minions ;; minions-minor-mode-menu
+                                      ink-mode
+                                      dired-git-info
+                                      fountain-mode
                                       camcorder
                                       org-gtd
                                       ;; org-edna
@@ -134,20 +147,21 @@ This function should only modify configuration layer settings."
                                       ;; ascii-table
                                       clhs
                                       org-roam
-                                      djvu
+                                      ;; djvu
                                       evil-lispy
                                       org-mru-clock
                                       org-page
                                       lisp-extra-font-lock
                                       highlight-indent-guides
                                       elisp-def
-                                      sr-speedbar
+                                      key-quiz
+                                      ;; sr-speedbar
                                       lispy
                                       achievements
                                       doct
                                       common-lisp-snippets
-                                      sly
-                                      jupyter
+                                      ;; sly
+                                      ;; jupyter
                                       (org-fc
                                        :location (recipe :fetcher git
                                                          :url "https://git.sr.ht/~l3kn/org-fc"
@@ -163,7 +177,7 @@ This function should only modify configuration layer settings."
                                       epc
                                       orca
                                       olivetti
-                                      (nov :location local)
+                                      ;; (nov :location local)
                                       (code-spelunk :location local)
                                       (screenshot :location local)
                                       ;; helm-posframe
@@ -182,7 +196,7 @@ This function should only modify configuration layer settings."
                                       ;; beacon
                                       xr ;;     Convert string regexp to rx notation
                                       ;; (mplayer-mode :location (recipe :fetcher github :repo "markhepburn/mplayer-mode"))
-                                      (justify-kp :location (recipe :fetcher github :repo "Fuco1/justify-kp"))
+                                      ;; (justify-kp :location (recipe :fetcher github :repo "Fuco1/justify-kp"))
                                       (evil-motion-trainer :location (recipe :fetcher github :repo "martinbaillie/evil-motion-trainer"))
                                       keyfreq
                                       epkg
@@ -219,9 +233,13 @@ It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   ;; If non-nil then enable support for the portable dumper. You'll need
-   ;; to compile Emacs 27 from source following the instructions in file
+   ;; If non-nil then enable support for the portable dumper. You'll need to
+   ;; compile Emacs 27 from source following the instructions in file
    ;; EXPERIMENTAL.org at to root of the git repository.
+   ;;
+   ;; WARNING: pdumper does not work with Native Compilation, so it's disabled
+   ;; regardless of the following setting when native compilation is in effect.
+   ;;
    ;; (default nil)
    dotspacemacs-enable-emacs-pdumper nil
 
@@ -306,6 +324,13 @@ It should only modify the values of Spacemacs settings."
    ;; If the value is nil then no banner is displayed. (default 'official)
    dotspacemacs-startup-banner 'official
 
+   ;; Scale factor controls the scaling (size) of the startup banner. Default
+   ;; value is `auto' for scaling the logo automatically to fit all buffer
+   ;; contents, to a maximum of the full image height and a minimum of 3 line
+   ;; heights. If set to a number (int or float) it is used as a constant
+   ;; scaling factor for the default logo size.
+   dotspacemacs-startup-banner-scale 'auto
+
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
@@ -321,6 +346,17 @@ It should only modify the values of Spacemacs settings."
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
+
+   ;; Show numbers before the startup list lines. (default t)
+   dotspacemacs-show-startup-list-numbers t
+
+   ;; The minimum delay in seconds between number key presses. (default 0.4)
+   dotspacemacs-startup-buffer-multi-digit-delay 0.4
+
+   ;; If non-nil, show file icons for entries and headings on Spacemacs home buffer.
+   ;; This has no effect in terminal or if "all-the-icons" package or the font
+   ;; is not installed. (default nil)
+   dotspacemacs-startup-buffer-show-icons nil
 
    ;; Default major mode for a new empty buffer. Possible values are mode
    ;; names such as `text-mode'; and `nil' to use Fundamental mode.
@@ -402,7 +438,7 @@ It should only modify the values of Spacemacs settings."
    ;; and TAB or `C-m' and `RET'.
    ;; In the terminal, these pairs are generally indistinguishable, so this only
    ;; works in the GUI. (default nil)
-   dotspacemacs-distinguish-gui-tab t
+   dotspacemacs-distinguish-gui-tab nil
 
    ;; Name of the default layout (default "Default")
    dotspacemacs-default-layout-name "Default"
@@ -413,7 +449,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil then the last auto saved layouts are resumed automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts t
+   dotspacemacs-auto-resume-layouts nil
 
    ;; If non-nil, auto-generate layout name when creating new layouts. Only has
    ;; effect when using the "jump to layout by number" commands. (default nil)
@@ -474,8 +510,8 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-maximized-at-startup nil
 
    ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
-   ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
-   ;; borderless fullscreen. (default nil)
+   ;; variable with `dotspacemacs-maximized-at-startup' to obtain fullscreen
+   ;; without external boxes. Also disables the internal border. (default nil)
    dotspacemacs-undecorated-at-startup nil
 
    ;; A value from the range (0..100), in increasing opacity, which describes
@@ -487,6 +523,11 @@ It should only modify the values of Spacemacs settings."
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
    dotspacemacs-inactive-transparency 90
+
+   ;; A value from the range (0..100), in increasing opacity, which describes the
+   ;; transparency level of a frame background when it's active or selected. Transparency
+   ;; can be toggled through `toggle-background-transparency'. (default 90)
+   dotspacemacs-background-transparency 90
 
    ;; If non-nil show the titles of transient states. (default t)
    dotspacemacs-show-transient-state-title t
@@ -512,8 +553,8 @@ It should only modify the values of Spacemacs settings."
    ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
    ;; `prog-mode' and `text-mode' derivatives. If set to `relative', line
    ;; numbers are relative. If set to `visual', line numbers are also relative,
-   ;; but lines are only visual lines are counted. For example, folded lines
-   ;; will not be counted and wrapped lines are counted as multiple lines.
+   ;; but only visual lines are counted. For example, folded lines will not be
+   ;; counted and wrapped lines are counted as multiple lines.
    ;; This variable can also be set to a property list for finer control:
    ;; '(:relative nil
    ;;   :visual nil
@@ -532,9 +573,14 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
 
-   ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
+   ;; If non-nil and `dotspacemacs-activate-smartparens-mode' is also non-nil,
+   ;; `smartparens-strict-mode' will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
+
+   ;; If non-nil smartparens-mode will be enabled in programming modes.
+   ;; (default t)
+   dotspacemacs-activate-smartparens-mode t
 
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
    ;; over any automatically added closing parenthesis, bracket, quote, etc...
@@ -582,6 +628,9 @@ It should only modify the values of Spacemacs settings."
    ;; %n - Narrow if appropriate
    ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
    ;; %Z - like %z, but including the end-of-line format
+   ;; If nil then Spacemacs uses default `frame-title-format' to avoid
+   ;; performance issues, instead of calculating the frame title by
+   ;; `spacemacs/title-prepare' all the time.
    ;; (default "%I@%S")
    dotspacemacs-frame-title-format "%I@%a"
 
@@ -589,7 +638,9 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil - same as frame-title-format)
    dotspacemacs-icon-title-format nil
 
-   ;; Show trailing whitespace (default t)
+   ;; Color highlight trailing whitespace in all prog-mode and text-mode derived
+   ;; modes such as c++-mode, python-mode, emacs-lisp, html-mode, rst-mode etc.
+   ;; (default t)
    dotspacemacs-show-trailing-whitespace t
 
    ;; Delete whitespace while saving buffer. Possible values are `all'
@@ -599,12 +650,15 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
 
-   ;; If non nil activate `clean-aindent-mode' which tries to correct
-   ;; virtual indentation of simple modes. This can interfer with mode specific
+   ;; If non-nil activate `clean-aindent-mode' which tries to correct
+   ;; virtual indentation of simple modes. This can interfere with mode specific
    ;; indent handling like has been reported for `go-mode'.
    ;; If it does deactivate it here.
    ;; (default t)
    dotspacemacs-use-clean-aindent-mode t
+
+   ;; Accept SPC as y for prompts if non-nil. (default nil)
+   dotspacemacs-use-SPC-as-y nil
 
    ;; If non-nil shift your number row to match the entered keyboard layout
    ;; (only in insert state). Currently supported keyboard layouts are:
@@ -623,7 +677,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-pretty-docs nil
 
    ;; If nil the home buffer shows the full path of agenda items
-   ;; and todos. If non nil only the file name is shown.
+   ;; and todos. If non-nil only the file name is shown.
    dotspacemacs-home-shorten-agenda-source nil
 
    ;; If non-nil then byte-compile some of Spacemacs files.
@@ -635,7 +689,8 @@ This function defines the environment variables for your Emacs session. By
 default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
-  (spacemacs/load-spacemacs-env))
+  (spacemacs/load-spacemacs-env)
+)
 
 (defun dotspacemacs/user-init ()
   "Initialization for user code:
@@ -645,7 +700,7 @@ It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
 
-  (setq org-roam-v2-ack t)
+  ;; (setq org-roam-v2-ack t)
   ;; The default is 800 kilobytes.  Measured in bytes.
   (setq gc-cons-threshold (* 50 1000 1000))
 
@@ -667,7 +722,8 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included in the
 dump."
-  )
+)
+
 
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
@@ -676,50 +732,65 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  ;; ;;; TODO
+  ;; (setq backup-directory-alist
+  ;;       `((".*" . temporary-file-directory))
+  ;;       auto-save-file-name-transforms
+  ;;       `((".*" ,temporary-file-directory t)))
 
-  (setq epa-pinentry-mode 'loopback)
+  ;; (setq epa-pinentry-mode 'loopback)
+  ;; (load-library "~/.config/emacs/secrets.el.gpg")
 
-  (load-library "~/.config/emacs/secrets.el.gpg")
+  ;; (setq shackle-default-rule '(:frame t)
+  ;;       shackle-display-buffer-frame-function 'sway-shackle-display-buffer-frame)
 
-  (use-package org-gtd
-    :after org
-    ;; :pin melpa-stable ;; or :pin melpa as you prefer
-    :demand t ;; without this, the package won't be loaded, so org-agenda won't be configured
-    :custom
-    ;; where org-gtd will put its files. This value is also the default one.
-    (org-gtd-directory "/home/chriad/gtd/")
-    ;; package: https://github.com/Malabarba/org-agenda-property
-    ;; this is so you can see who an item was delegated to in the agenda
-    (org-agenda-property-list '("DELEGATED_TO"))
-    ;; I think this makes the agenda easier to read
-    (org-agenda-property-position 'next-line)
-    ;; package: https://www.nongnu.org/org-edna-el/
-    ;; org-edna is used to make sure that when a project task gets DONE,
-    ;; the next TODO is automatically changed to NEXT.
-    (org-edna-use-inheritance t)
-    :config
-    (org-edna-load)
-    :bind
-    (("C-c d c" . org-gtd-capture)     ;; add item to inbox
-     ("C-c d a" . org-agenda-list)     ;; see what's on your plate today
-     ("C-c d p" . org-gtd-process-inbox) ;; process entire inbox
-     ("C-c d n" . org-gtd-show-all-next) ;; see all NEXT items
-     ("C-c d s" . org-gtd-show-stuck-projects)) ;; see projects that don't have a NEXT item
-    :init
-    (bind-key "C-c c" 'org-gtd-clarify-finalize)) ;; the keybinding to hit when you're done editing an item in the processing phase
+  ;; (sway-socket-tracker-mode)
+  ;; (sway-undertaker-mode) ;; If you want to use :dedicate, read below.
+  ;; (sway-x-focus-through-sway-mode) ;; Temporary workaround for Sway bug 6216
 
-  (use-package org-agenda
-    :ensure nil ;; this is how you tell use-package to manage a sub-package
-    :after org-gtd ;; because we need to add the org-gtd directory to the agenda files
-    :custom
-    ;; use as-is if you don't have an existing org-agenda setup
-    ;; otherwise push the directory to the existing list
-    (org-agenda-files `(,org-gtd-directory))
-    ;; a useful view to see what can be accomplished today
-    (org-agenda-custom-commands '(("g" "Scheduled today and all NEXT items" ((agenda "" ((org-agenda-span 1))) (todo "NEXT"))))))
+  ;; capture directly without goin through dispatcher
+  (define-key global-map (kbd "C-c x")
+    (lambda () (interactive) (org-capture nil "t")))
+
+  ;; (use-package org-gtd
+  ;;   :after org
+  ;;   ;; :pin melpa-stable ;; or :pin melpa as you prefer
+  ;;   :demand t ;; without this, the package won't be loaded, so org-agenda won't be configured
+  ;;   :custom
+  ;;   ;; where org-gtd will put its files. This value is also the default one.
+  ;;   (org-gtd-directory "/home/chriad/gtd/")
+  ;;   ;; package: https://github.com/Malabarba/org-agenda-property
+  ;;   ;; this is so you can see who an item was delegated to in the agenda
+  ;;   (org-agenda-property-list '("DELEGATED_TO"))
+  ;;   ;; I think this makes the agenda easier to read
+  ;;   (org-agenda-property-position 'next-line)
+  ;;   ;; package: https://www.nongnu.org/org-edna-el/
+  ;;   ;; org-edna is used to make sure that when a project task gets DONE,
+  ;;   ;; the next TODO is automatically changed to NEXT.
+  ;;   (org-edna-use-inheritance t)
+  ;;   :config
+  ;;   (org-edna-load)
+  ;;   :bind
+  ;;   (("C-c d c" . org-gtd-capture)     ;; add item to inbox
+  ;;    ("C-c d a" . org-agenda-list)     ;; see what's on your plate today
+  ;;    ("C-c d p" . org-gtd-process-inbox) ;; process entire inbox
+  ;;    ("C-c d n" . org-gtd-show-all-next) ;; see all NEXT items
+  ;;    ("C-c d s" . org-gtd-show-stuck-projects)) ;; see projects that don't have a NEXT item
+  ;;   :init
+  ;;   (bind-key "C-c c" 'org-gtd-clarify-finalize)) ;; the keybinding to hit when you're done editing an item in the processing phase
+
+  ;; (use-package org-agenda
+  ;;   :ensure nil ;; this is how you tell use-package to manage a sub-package
+  ;;   :after org-gtd ;; because we need to add the org-gtd directory to the agenda files
+  ;;   :custom
+  ;;   ;; use as-is if you don't have an existing org-agenda setup
+  ;;   ;; otherwise push the directory to the existing list
+  ;;   (org-agenda-files `(,org-gtd-directory))
+  ;;   ;; a useful view to see what can be accomplished today
+  ;;   (org-agenda-custom-commands '(("g" "Scheduled today and all NEXT items" ((agenda "" ((org-agenda-span 1))) (todo "NEXT"))))))
 
   ;; for pylookup
-  (setq browse-url-handlers '(("\\`file:" . eaf-open-browser)))
+  ;; (setq browse-url-handlers '(("\\`file:" . eaf-open-browser)))
 
 ;;;  breaks helm-info
   ;; (add-hook 'Info-selection-hook #'niceify-info)
@@ -730,14 +801,12 @@ before packages are loaded."
                            (require 'lsp-pyright)
                            (lsp))))     ; or lsp-deferred
 
-  (global-wakatime-mode 1)
+  ;; (global-wakatime-mode 1)
   ;; (global-emojify-mode)
   ;; (load (expand-file-name "~/quicklisp/slime-helper.el"))
   ;; required so that yasnippets are loaded
   
   ;; (load "/usr/share/emacs/site-lisp/elpa-src/yasnippet-snippets-0.20/yasnippet-snippets.el")
-
-
 
   (require 'common-lisp-snippets)
 
@@ -761,7 +830,7 @@ before packages are loaded."
     ;; :hook (org-mode . org-roam-mode)
     :custom
     ;; (org-roam-directory "/home/chriad/roam/")
-    (org-roam-dailies-directory "/home/chriad/roam/journal")
+    (org-roam-dailies-directory "journal/")
     :bind
     ("C-c n i" . org-roam-node-insert)
     ("C-c n d" . org-roam-dailies-capture-today)
@@ -814,99 +883,9 @@ before packages are loaded."
     (kbd "q") 'org-fc-review-quit)
 
 
-  ;; org-noter
-  ;; (use-package org-noter
-  ;;   :config
-  ;;   (require 'org-noter-pdftools))
-
-  ;; (use-package org-pdftools
-  ;;   :hook (org-mode . org-pdftools-setup-link))
-
-;;   (use-package org-noter-pdftools
-;;     :after org-noter
-;;     :config
-;;     ;; Add a function to ensure precise note is inserted
-;;     (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
-;;       (interactive "P")
-;;       (org-noter--with-valid-session
-;;        (let ((org-noter-insert-note-no-questions (if toggle-no-questions
-;;                                                      (not org-noter-insert-note-no-questions)
-;;                                                    org-noter-insert-note-no-questions))
-;;              (org-pdftools-use-isearch-link t)
-;;              (org-pdftools-use-freestyle-annot t))
-;;          (org-noter-insert-note (org-noter--get-precise-info)))))
-
-;;     ;; fix https://github.com/weirdNox/org-noter/pull/93/commits/f8349ae7575e599f375de1be6be2d0d5de4e6cbf
-;;     (defun org-noter-set-start-location (&optional arg)
-;;       "When opening a session with this document, go to the current location.
-;; With a prefix ARG, remove start location."
-;;       (interactive "P")
-;;       (org-noter--with-valid-session
-;;        (let ((inhibit-read-only t)
-;;              (ast (org-noter--parse-root))
-;;              (location (org-noter--doc-approx-location (when (called-interactively-p 'any) 'interactive))))
-;;          (with-current-buffer (org-noter--session-notes-buffer session)
-;;            (org-with-wide-buffer
-;;             (goto-char (org-element-property :begin ast))
-;;             (if arg
-;;                 (org-entry-delete nil org-noter-property-note-location)
-;;               (org-entry-put nil org-noter-property-note-location
-;;                              (org-noter--pretty-print-location location))))))))
-;;     (with-eval-after-load 'pdf-annot
-;;       (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
-
-  ;; ;; https://stackoverflow.com/questions/17478260/completely-hide-the-properties-drawer-in-org-mode
-  ;; (defun org-cycle-hide-drawers (state)
-  ;;   "Re-hide all drawers after a visibility state change."
-  ;;   (when (and (derived-mode-p 'org-mode)
-  ;;              (not (memq state '(overview folded contents))))
-  ;;     (save-excursion
-  ;;       (let* ((globalp (memq state '(contents all)))
-  ;;              (beg (if globalp
-  ;;                     (point-min)
-  ;;                     (point)))
-  ;;              (end (if globalp
-  ;;                     (point-max)
-  ;;                     (if (eq state 'children)
-  ;;                       (save-excursion
-  ;;                         (outline-next-heading)
-  ;;                         (point))
-  ;;                       (org-end-of-subtree t)))))
-  ;;         (goto-char beg)
-  ;;         (while (re-search-forward org-drawer-regexp end t)
-  ;;           (save-excursion
-  ;;             (beginning-of-line 1)
-  ;;             (when (looking-at org-drawer-regexp)
-  ;;               (let* ((start (1- (match-beginning 0)))
-  ;;                      (limit
-  ;;                        (save-excursion
-  ;;                          (outline-next-heading)
-  ;;                            (point)))
-  ;;                      (msg (format
-  ;;                             (concat
-  ;;                               "org-cycle-hide-drawers:  "
-  ;;                               "`:END:`"
-  ;;                               " line missing at position %s")
-  ;;                             (1+ start))))
-  ;;                 (if (re-search-forward "^[ \t]*:END:" limit t)
-  ;;                   (outline-flag-region start (point-at-eol) t)
-  ;;                   (user-error msg))))))))))
-
   (require 'org-protocol)
 
-
-;;;; org-pdf-capture-active-region
-
-;;;; org-capture-templates
-
-;;;; org-capture-helpers
-
-  ;; (defun current-project-folder-name ()
-  ;;   (f-filename (projectile-project-root)))
-
-;;;; org-roam-dailies-capture-templates
-
-  (load "~/.config/emacs/roam-helpers.el")
+  ;; (load "~/.config/emacs/roam-helpers.el")
 
   ;; (require 'mplayer-mode)
 
@@ -940,7 +919,7 @@ before packages are loaded."
 
 
 
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
   ;; (use-package beacon
   ;;   :ensure t
@@ -1102,8 +1081,8 @@ before packages are loaded."
 
 
 
-  (setq org-refile-targets '((nil :maxlevel . 3)
-                             (org-agenda-files :maxlevel . 3)))
+  ;; (setq org-refile-targets '((nil :maxlevel . 3)
+  ;;                            (org-agenda-files :maxlevel . 3)))
   (setq org-outline-path-complete-in-steps nil) ; Refile in a single go
   (setq org-refile-use-outline-path t)          ; Show full paths for refiling
 
@@ -1164,18 +1143,15 @@ This function is called at the very end of Spacemacs initialization."
  '(bmkp-last-as-first-bookmark-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
  '(dap-python-executable "/media/chriad/nebula/anaconda3/bin/python")
- '(default-frame-alist
-    '((fullscreen . fullboth)
-      (buffer-predicate . spacemacs/useful-buffer-p)))
  '(dired-auto-revert-buffer 'dired-directory-changed-p)
  '(dired-listing-switches "-alh")
  '(emacs-lisp-mode-hook
-   '(eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode eldoc-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode spacemacs//define-elisp-comment-text-object multi-line-emacs-lisp-mode-hook spacemacs//init-company-emacs-lisp-mode company-mode))
+   '(eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode eldoc-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode))
  '(enable-local-variables t)
  '(evil-insert-state-modes
    '(org-capture-mode eaf-edit-mode comint-mode erc-mode eshell-mode geiser-repl-mode gud-mode inferior-apl-mode inferior-caml-mode inferior-emacs-lisp-mode inferior-j-mode inferior-python-mode inferior-scheme-mode inferior-sml-mode internal-ange-ftp-mode prolog-inferior-mode reb-mode shell-mode slime-repl-mode term-mode wdired-mode))
  '(evil-move-cursor-back nil)
- '(evil-org-use-additional-insert t)
+ '(evil-org-use-additional-insert t t)
  '(evil-want-Y-yank-to-eol nil)
  '(gist-ask-for-description t)
  '(gist-ask-for-filename t)
@@ -1256,10 +1232,10 @@ This function is called at the very end of Spacemacs initialization."
  '(org-roam-directory "/home/chriad/roam/")
  '(org-roam-file-completion-tag-position 'append)
  '(org-roam-index-file "~/roam/index.org")
- '(org-startup-with-inline-images nil)
+ '(org-startup-with-inline-images nil t)
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
  '(package-selected-packages
-   '(org-starless gist helm-firefox camcorder names toml-mode ron-mode racer rust-mode flycheck-rust cargo password-store-otp helm-pass password-store helm-bibtexkey helm-bibtex bibtex-completion biblio parsebib biblio-core symex helm-atoms run-command niceify-info elx helm-recoll comment-or-uncomment-sexp clhs ascii-table helm-emmet dyncloze dired-git-info nix-mode helm-nixos-options company-nixos-options nixos-options lsp-focus tiny tern npm-mode nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl helm-gtags ggtags counsel-gtags no-littering howdoyou poker org-variable-pitch org-roam evil-lispy org-mru-clock esup monkeytype speed-type typit org-page git mustache lisp-extra-font-lock highlight-indent-guides elisp-def sr-speedbar ein polymode anaphora websocket lispy achievements org-fc doct justify-kp dash-functional buttons keymap-utils dired-open dired-hacks-utils olivetti nov on-screen ob-sml sml-mode mic-paren helm-posframe stickyfunc-enhance srefactor highlight-defined sicp pdfgrep edebug-x helm-file-preview csv-mode org-roam-server ox-gfm scrollkeeper beacon lsp-ui lsp-treemacs lsp-origami origami helm-lsp lsp-mode flycheck-pos-tip pos-tip web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode prettier-js impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css counsel swiper ivy company-web web-completion-data add-node-modules-path evil-motion-trainer edit-indirect helpful elisp-refs mmm-mode markdown-toc gh-md yaml-mode xterm-color vterm terminal-here shell-pop multi-term eshell-z eshell-prompt-extras esh-help pdf-tools tablist keycast command-log-mode orgit org-rich-yank org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download org-cliplink org-brain htmlize helm-org-rifle gnuplot evil-org wakatime-mode yasnippet-snippets unfill treemacs-magit smeargle mwim magit-svn magit-section magit-gitflow magit-popup helm-gitignore helm-git-grep helm-company helm-c-yasnippet gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy forge markdown-mode magit ghub closql emacsql-sqlite emacsql treepy git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil treemacs cfrs ht pfuture posframe toc-org symon symbol-overlay string-inflection spaceline-all-the-icons memoize all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-superstar open-junk-file nameless multi-line shut-up move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck flycheck-elsa flx-ido flx fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection annalist evil-cleverparens smartparens evil-args evil-anzu anzu eval-sexp-fu emr iedit clang-format projectile paredit list-utils pkg-info epl elisp-slime-nav editorconfig dumb-jump s dired-quick-sort devdocs define-word dash column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el hydra lv hybrid-mode font-lock+ evil goto-chg dotenv-mode diminish bind-map bind-key async))
+   '(org-starless gist helm-firefox camcorder names toml-mode ron-mode racer rust-mode flycheck-rust cargo password-store-otp helm-pass password-store helm-bibtexkey helm-bibtex bibtex-completion biblio parsebib biblio-core symex helm-atoms run-command niceify-info elx helm-recoll comment-or-uncomment-sexp clhs ascii-table helm-emmet dyncloze dired-git-info nix-mode helm-nixos-options company-nixos-options nixos-options lsp-focus tiny tern npm-mode nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl helm-gtags ggtags counsel-gtags no-littering howdoyou poker org-variable-pitch org-roam evil-lispy org-mru-clock esup monkeytype speed-type typit org-page git mustache lisp-extra-font-lock highlight-indent-guides elisp-def sr-speedbar ein polymode anaphora websocket lispy achievements org-fc doct justify-kp dash-functional buttons keymap-utils dired-open dired-hacks-utils olivetti nov on-screen ob-sml sml-mode mic-paren helm-posframe stickyfunc-enhance srefactor highlight-defined sicp pdfgrep edebug-x helm-file-preview csv-mode org-roam-server ox-gfm scrollkeeper beacon lsp-ui lsp-treemacs lsp-origami origami helm-lsp lsp-mode flycheck-pos-tip pos-tip web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode prettier-js impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css counsel swiper ivy company-web web-completion-data add-node-modules-path evil-motion-trainer edit-indirect helpful elisp-refs mmm-mode markdown-toc gh-md yaml-mode xterm-color vterm terminal-here shell-pop multi-term eshell-z eshell-prompt-extras esh-help pdf-tools tablist keycast command-log-mode orgit org-rich-yank org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download org-cliplink org-brain htmlize helm-org-rifle gnuplot evil-org wakatime-mode yasnippet-snippets unfill treemacs-magit smeargle mwim magit-svn magit-section magit-gitflow magit-popup helm-gitignore helm-git-grep helm-company helm-c-yasnippet gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy forge markdown-mode magit ghub closql emacsql-sqlite emacsql treepy git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil treemacs cfrs ht pfuture posframe toc-org symon symbol-overlay string-inflection spaceline-all-the-icons memoize all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-superstar open-junk-file nameless shut-up move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck flycheck-elsa flx-ido flx fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection annalist evil-cleverparens smartparens evil-args evil-anzu anzu eval-sexp-fu emr iedit clang-format projectile paredit list-utils pkg-info epl elisp-slime-nav editorconfig dumb-jump s dired-quick-sort devdocs define-word dash column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el hydra lv hybrid-mode font-lock+ evil goto-chg dotenv-mode diminish bind-map bind-key async))
  '(paradox-automatically-star nil)
  '(paren-sexp-mode t)
  '(pdfgrep-options " -H -n -r ")
@@ -1271,4 +1247,12 @@ This function is called at the very end of Spacemacs initialization."
  '(scroll-margin 1)
  '(scroll-step 1)
  '(symex-highlight-p t)
- '(treemacs-icons-dired-mode t)))
+ '(treemacs-icons-dired-mode t)
+ '(warning-suppress-types '((comp))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)
