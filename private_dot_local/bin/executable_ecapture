@@ -1,3 +1,12 @@
 #!/bin/bash
 
-emacsclient -c -e "(abs--quick-capture)"
+# . /home/chriad/.bashrc.d/flatpak_aliases
+
+#flatpak run \
+#        --branch=master \
+#        --arch=x86_64 \
+#        --command=emacsclient --file-forwarding org.gnu.emacs-pgtk -c -e "(abs--quick-capture)" \
+#        --socket-name /run/user/1000/app/org.gnu.emacs-pgtk/server
+# guix
+# emacsclient -c -e "(abs--quick-capture)"
+emacsclient -c

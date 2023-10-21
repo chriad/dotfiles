@@ -42,25 +42,6 @@
             (eval nov-file-name))
         (user-error "Buffer %S not alive." pdf-buf-name))))
 
-  (defun org-capture-project ()
-    "Capture the active region of the pdf-view buffer."
-    (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-           (pdf-buf (get-buffer pdf-buf-name)))
-      (if (buffer-live-p pdf-buf)
-          (with-current-buffer pdf-buf
-            (f-filename (projectile-project-root)))
-        (user-error "Buffer %S not alive." pdf-buf-name))))
-
-  (defun org-capture-project-root ()
-    "Capture the active region of the pdf-view buffer."
-    (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-           (pdf-buf (get-buffer pdf-buf-name)))
-      (if (buffer-live-p pdf-buf)
-          (with-current-buffer pdf-buf
-            (projectile-project-root))
-        (user-error "Buffer %S not alive." pdf-buf-name))))
-
-
 (require 'helm-org)
 
 (defun my/helm-in-org-buffer (filename &optional preselect)
@@ -93,39 +74,6 @@ with the `org-roam-find-file' interface"
                               "#+title: %<%Y-%m-%d>\n")
            :unnarrowed t
            :empty-lines-before 1)
-
-;;           ("d" "eaf capture new pdf ressource with *" entry "* %? ⸤%a⸥"
-;;            :head "#+title: %(org-capture-pdf-name)\n"
-;;            :file-name "/home/chriad/roam/%(org-capture-pdf-name).org"
-;;            :if-new (file+head "/home/chriad/roam/%(org-capture-pdf-name).org" "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-pdf-path)][%(org-capture-pdf-name)]]\n\n")
-;;            :unnarrowed t)
-
-;;           ("e" "eaf capture new pdf ressource with definition from clipboard" plain
-;;            #'org-roam-capture--get-point
-;;            ""
-;;            :file-name "/home/chriad/roam/%(org-capture-pdf-name)"
-;;            :head "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-pdf-path)][%(org-capture-pdf-name)]]\n#+roam_tags: %(org-roam-tag-add)\n\n#+begin_quote\n%c\n#+end_quote\n-> %a\n\n" :unnarrowed t)
-
-;; ;; precondition: must have yanked text from pdf-viwer
-;;           ;; rationale: I have so many books, for each I need a good quote to remember it!
-;;           ("n" "eaf capture new nov ressource" entry
-;;            #'org-roam-capture--get-point
-;;            "* %? %a"
-;;            :file-name "/home/chriad/roam/%(org-capture-pdf-name)"
-;;            :head "#+title: %(org-capture-pdf-name)\n#+roam_key: [[file:%(org-capture-nov-path)][%(org-capture-pdf-name)]]\n#+roam_tags: %(org-roam-tag-add)\n\n"
-;;            :unnarrowed t)
-
-
-          ;; ("p" "capture current project write quote" entry #'org-roam-capture--get-point "* %(org-capture-project)"
-          ;;  :file-name "/home/chriad/roam/%(org-capture-project)"
-          ;;  :head "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: project %(org-roam-tag-add)\n\n#+begin_quote\n%(org-capture-at-point)\n#+end_quote\n\n" :unnarrowed t)
-
-
-          ;; ("f" "capture current project with quote from region" entry
-          ;;  #'org-roam-capture--get-point
-          ;;  "* %?"
-          ;;  :file-name "/home/chriad/roam/%(org-capture-project)"
-          ;;  :head "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: project %(org-roam-tag-add)\n\n#+begin_quote\n%i\n#+end_quote\n→ %a\n\n" :unnarrowed t)
           ))
 
 ;; DOCT
@@ -252,14 +200,8 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 
 (setq org-capture-templates
         '(
-          ;; ("p" "register projects")
-          ;; ("pq" "capture project write quote" plain ; :floppy_disk: -> :link: :books: -> :writing-hand: :scroll: ->
-          ;;  (function (lambda () (find-file (concat "/home/chriad/roam/" (org-capture-project) ".org"))))
-          ;;  "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: project %(org-roam-tag-add)\n \n#+begin_quote\n%?\n#+end_quote\n\n* Inbox" :unnarrowed t :empty-lines 1)
-
-          ;; ("py" "capture project region quote" plain ; :floppy_disk: -> :key: :books: -> :link: :file-folder: -> :crayon: :scroll: -> ·
-          ;;  (function (lambda () (find-file (concat "/home/chriad/roam/" (org-capture-project) ".org"))))
-          ;;  "#+title: %(org-capture-project)\n#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]\n#+roam_tags: \"project\" %(org-roam-tag-add)\n \n#+begin_quote\n%i\n#+end_quote\n->%a\n\n* Inbox" :unnarrowed t :empty-lines 1)
+          ("t" "Todo" entry (file+headline "~/tmp/gtd.org" "Tasks")
+           "* TODO %?\n  %i\n  %a")
 
           ("i" "Inbox"
            entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
@@ -276,25 +218,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            (function (lambda () (my/helm-in-org-buffer (org-roam-find-file-name))))
            "* %?\n%a"
            :kill-buffer t :unnarrowed t)
-
-          ;; ("b" "book=pdf (no-date-prefix)")
-          ;; ("bb" "freestyle | %a" entry
-          ;;  (function (lambda () (find-file (concat "/home/chriad/roam/"  (org-capture-pdf-name) ".org"))))
-          ;;  "* %? %a" :unnarrowed t)
-
-          ;; ("bs" "freestyle | %c %a" entry
-          ;;  (function (lambda () (find-file (concat "/home/chriad/roam/"  (org-capture-pdf-name) ".org"))))
-          ;;  "* %?%c %a")
-
-          ;; ("bt" "freestyle | TODO | %a" entry
-          ;;  (function (lambda () (find-file (concat "/home/chriad/roam/" (org-capture-pdf-name) ".org"))))
-          ;;  "* TODO %? %a")
-
-          ;; ("a" "roam-active-region-pdf" entry
-          ;;  (function (lambda () (org-roam-find-file)))
-          ;;  "* %(org-capture-pdf-active-region)\n%a")
-
-          ;; capture some region from a webpage to a node
 
           ("g" "Imaginary contentful microdialpgue"
            ;; ...?
