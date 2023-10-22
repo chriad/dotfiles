@@ -9,4 +9,4 @@
 #        --socket-name /run/user/1000/app/org.gnu.emacs-pgtk/server
 # guix
 # emacsclient -c -e "(abs--quick-capture)"
-emacsclient -c
+emacsclient --create-frame
