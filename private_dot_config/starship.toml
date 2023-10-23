@@ -11,7 +11,7 @@ success_symbol = "[➜](bold green)"     # The "success_symbol" segment is being
 disabled = true
 
 [conda]
-disabled = true
+disabled = false
 format = "[$symbol$environment](dimmed green) "
 ignore_base = true
 

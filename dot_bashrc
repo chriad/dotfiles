@@ -196,21 +196,6 @@ source "$BASH_IT"/bash_it.sh
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/media/chriad/ssd-45/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/media/chriad/ssd-45/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/media/chriad/ssd-45/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/media/chriad/ssd-45/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
 eval "$(jump shell)"
 
 source ~/.local/bin/{sync-history.sh,fzf-params.sh}
@@ -697,3 +682,19 @@ test -r /home/chriad/.opam/opam-init/init.sh && . /home/chriad/.opam/opam-init/i
 # BEGIN_KITTY_SHELL_INTEGRATION
 if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
 # END_KITTY_SHELL_INTEGRATION
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/chriad/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/chriad/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/chriad/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/chriad/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+

@@ -5,6 +5,8 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
+ '(backup-by-copying t)
+ '(backup-directory-alist '(("\".\"" . "\"~/.saves\"")))
  '(bibtex-completion-bibliography '("/home/chriad/.config/bibliographies/fixed-layout.bib"))
  '(bibtex-completion-pdf-field "file")
  '(blink-matching-delay 2)
@@ -22,6 +24,7 @@
      (width text-pixels . 1920)
      (top . 0)
      (left . 0)))
+ '(delete-old-versions t)
  '(dired-auto-revert-buffer 'dired-directory-changed-p)
  '(dired-listing-switches "-alh")
  '(dired-recursive-deletes 'always)
@@ -174,6 +177,7 @@
  '(symex-highlight-p t)
  '(treemacs-icons-dired-mode t)
  '(undo-tree-auto-save-history nil)
+ '(version-control t)
  '(wakatime-cli-path "wakatime")
  '(wakatime-python-bin "python" t)
  '(warning-suppress-log-types '(((tar link)) (comp)))
