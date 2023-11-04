@@ -422,8 +422,9 @@ epub--list-file-sizes() {
     zipinfo -l --h --t "${1}" |tr -s ' ' | cut -f4 -d' ' |sort -n|numfmt --to=iec-i
 }
 
+# use in top book dir in calibre
 epub--extract-images-here() {
-    unzip "${1}" OEBPS/images/*
+    unzip -j "${1}" OEBPS/images/* -d data/IMAGES
 }
 
 m4a--prefixcut-inplace ()
@@ -626,6 +627,10 @@ function m4b--rmlyrics() {
         exit 1
         ;;
     esac
+}
+
+calibre--favorites() {
+    calibredb list -s "#rating:true" | fzf --header-lines 1
 }
 
 schimanski-missing() {
