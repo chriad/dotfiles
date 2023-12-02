@@ -321,6 +321,10 @@ m4b--cover() {
     ffmpeg -i "$1" -map 0:v -map -0:V -c copy cover.jpg
 }
 
+m4b--remove-chaps() {
+    for f in *.m4b ; do mp4chaps -r "${f}"; done
+}
+
 iplayer-series() { get_iplayer --type=radio --radio-quality=std --pid="$1" --pid-recursive; }
 # iplayer-single b044j7pd --versions=original,podcast
 # iplayer-single() { get_iplayer --type=radio --radio-quality=high,std --pid="$1" "$@"; }
@@ -453,6 +457,22 @@ mp3--bulk-title-here() {
     rm flist.txt out.txt
 }
 
+
+rename-from-2c-tsv() {
+    fd -a -e mkv -S +5m > flist.txt
+    paste flist.txt titles.txt > out.txt
+    dos2unix out.txt
+    local i=1
+    while IFS=$'\t' read -r fname title ; do
+        # mv "${fname}" "S${1}E${i} - ${title}.mkv"
+        printf '%s %s\n' "${fname}" "S${1}E${i} - ${title}.mkv"
+        cp "${fname}" "S${1}E${i} - ${title}.mkv"
+        # printf '%s\n' "S${1}E${i} - ${title}.mkv"
+        # printf '%s\n' "$fname"
+        ((i++))
+    done < out.txt
+}
+
 arte-merge-streams() {
     vid="$1"
     aud="$2"
@@ -503,6 +523,11 @@ quodlibet--sort-queries() {
 
 mp3--prefixcut() {
    for f in *.mp3 ; do mp3splt "${f}" 0."${1}" EOF -o out/@f ; done
+}
+
+
+mp3--postfixcut() {
+   for f in *.mp3 ; do mp3splt "${f}" 0.0 EOF-0."${1}" -o out/@f ; done
 }
 
 m4b--prefixcut() {
