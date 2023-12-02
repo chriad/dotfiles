@@ -23,5 +23,8 @@
 # m h  dom mon dow   command
 0 0 * * 0 tldr -u
 0 0 * * 0 guix pull && guix package -u emacs
+0 0 * * 0  cd /media/chriad/nebula/spacemacs-fork && git pull --rebase
+0 0 * * 0 crontab -l > /home/chriad/.local/share/chezmoi/crontab.backup 
 0 0 * * * git-autocommit.sh /home/chriad/book-metadata-koreader-home-folder
 0 0 * * * git-autocommit.sh /home/chriad/koreader
+0 0 1 * * cd ~/.fzf && git pull && ./install --all

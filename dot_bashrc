@@ -544,6 +544,7 @@ calibre--ebook-edit() {
     ebook-edit "$d/$(fd --prune -e epub --base-directory $d |fzf)"
 }
 
+# TODO check for empty result and abort
 calibre--ebook-view() {
     local d
     d=$CALIBRE_ROOT/reflowable
@@ -583,6 +584,24 @@ quaderno--pdffd() {
     fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(flatpak run org.kde.okular {} &)+abort'
     # fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(sioyek {} &)+abort'
 }
+
+# # use gdebi instead of dpkg
+# dpkg () {
+#     local OPTIND OPTARG
+#     local real_command="gdebi"
+#     local command_args=()
+#     while getopts :i opt; do
+#         case $opt in
+#             i) command_args+=( "--apt-line" ) ;;
+#             ?) echo "unknown option: -$OPTARG" >&2
+#             return 1
+#             ;;
+#         esac
+#     done
+#     shift $((OPTIND - 1))
+
+#     "$real_command" "${command_args[@]}" "$@"
+# }
 
 # mvdoc() {
     

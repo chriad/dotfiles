@@ -3,6 +3,7 @@ alias n='nautilus . &'
 alias a="alias|fzf"
 alias T="task|fzf"
 alias zz="ls|fzf"
+alias recollcmd=recollq
 
 # ffmpeg
 # alias ffmpeg='ffmpeg -hide_banner -loglevel warning -nostats '
