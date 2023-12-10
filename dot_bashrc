@@ -405,7 +405,12 @@ links2--textify-html-toc() {
     links2 -dump "${1}" | egrep -v '^$' | sed -e 's/^[ \t]*//' | grep --only-matching --extended-regexp "^[0-9]{1,2}.*"
 }
 
-links2--chdump() {
+is-1001() {
+    #wget 'https://www.imdb.com/list/ls024863935/export?ref_=ttls_otexp' -N -O ~/scratch/1001.txt
+    csvcut -c6 ~/scratch/1001.txt | fzf --header-lines 1
+}
+
+chdump() {
     links2 -dump "${1}" > chapters.txt
     cp chapters.txt chaps.txt
 }

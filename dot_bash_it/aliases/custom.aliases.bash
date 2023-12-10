@@ -1,5 +1,6 @@
 # 1 letter
 alias n='nautilus . &'
+alias e="emacsclient --no-wait -c"
 alias a="alias|fzf"
 alias T="task|fzf"
 alias zz="ls|fzf"
@@ -81,7 +82,6 @@ alias raspb-connect="screen /dev/ttyUSB0 115200"
 alias regexp-buddy="wine /home/chriad/.wine/dosdevices/c\:/Program\ Files\ \(x86\)/JGsoft/RegexBuddy3/RegexBuddy.exe"
 alias lisp-works="/usr/local/lib64/LispWorksPersonal/lispworks-personal-7-1-2-amd64-linux"
 alias et="emacsclient -t"
-alias e="emacsclient --no-wait"
 alias c2='cd ../../'
 # alias xpdf="~/Desktop/XpdfReader-linux64-4.01.01/xpdf"
 alias gsadd='git submodule add'
