@@ -58,7 +58,7 @@ This function should only modify configuration layer settings."
 
      ;; toc
      (calibre :variables
-              calibredb-root-dir "/media/chriad/ext4/fixed-layout")
+              calibredb-root-dir "/media/chriad/ssd-45/reflowable")
      csv
      djvu
      html
@@ -125,9 +125,15 @@ This function should only modify configuration layer settings."
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
                                       ;; mic-paren ;; customize paren-face-match
+                                      helm-apt
+                                      helm-dired-history
                                       geiser ;; installed with guix
                                       geiser-guile ;; installed with guix
                                       magit-popup ;; guix
+                                      ;; (director :location (recipe
+                                      ;;                     :fetcher github
+                                      ;;                     :repo "bard/emacs-director"
+                                      ;;                     :files (:defaults "*.el")))
                                       ;; m-buffer
                                       ;; shackle
                                       ;; sway
@@ -840,6 +846,7 @@ before packages are loaded."
     ("C-c n a r" . org-roam-ref-add)
     ("C-c n f r" . org-roam-ref-find)
     ("C-c n f n" . org-roam-node-find)
+    ("C-c n f r" . org-roam-node-random)
     )
 
 
