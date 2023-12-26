@@ -224,7 +224,7 @@ cd--p() {
 # Another fd - cd into the selected directory
 # This one differs from the above, by only showing the sub directories and not
 #  showing the directories within those.
-cd--d() {
+d() {
     # DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf-tmux` \
         DIR=`fdfind ".*" -d 1 --type d 2> /dev/null | fzf-tmux` \
             && cd "$DIR"
@@ -380,6 +380,10 @@ folderjail() {
 
 epub--subchaps() {
     zipgrep "${1}" "${2}"  > subchaps.txt
+}
+
+epub--remove-blank-beginners() {
+    grep -v "^ .*" "${1}"
 }
 
 epub--sort() {
@@ -614,6 +618,7 @@ quaderno--pdffd() {
     fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(flatpak run org.kde.okular {}  &>/dev/null &)+abort'
     # fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(sioyek {} &)+abort'
 }
+alias pdffd=quaderno--pdffd
 
 # # use gdebi instead of dpkg
 # dpkg () {

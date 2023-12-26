@@ -30,6 +30,7 @@ alias pdf2text=pdftotext
 alias powershell=pwsh
 alias info=pinfo
 alias lisp=clisp
+alias open-kernel-handbook="www-browser /usr/share/doc/debian-kernel-handbook/kernel-handbook.html"
 
 # first order alias
 alias detox="detox --remove-trailing"
