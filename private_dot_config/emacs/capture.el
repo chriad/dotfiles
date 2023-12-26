@@ -55,11 +55,11 @@ FILENAME is the org file to filter PRESELECT is the default entry"
         :preselect preselect
         :buffer "*helm org in buffers*"))
 
-(defun org-roam-find-file-name ()
-  "Find and return the path to an org-roam file
-with the `org-roam-find-file' interface"
-  (interactive)
-  (save-window-excursion (org-roam-node-find) buffer-file-name))
+;; (defun org-roam-find-file-name ()
+;;   "Find and return the path to an org-roam file
+;; with the `org-roam-find-file' interface"
+;;   (interactive)
+;;   (save-window-excursion (org-roam-node-find) buffer-file-name))
 
 ;; (defun org-capture-at-point ()
 ;;   "Insert an org capture template at point."
@@ -194,14 +194,14 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 ;;       (insert "* " hd "\n")))
 ;;   (end-of-line))
 
-(defun find-pdfs-roam-file-other-widow ()
-  (interactive)
-  (find-file-other-window (concat "/home/chriad/roam/"  (org-capture-pdf-name) ".org")))
+;; (defun find-pdfs-roam-file-other-widow ()
+;;   (interactive)
+;;   (find-file-other-window (concat "/home/chriad/roam/"  (org-capture-pdf-name) ".org")))
 
 (setq org-capture-templates
         '(
-          ("t" "Todo" entry (file+headline "~/tmp/gtd.org" "Tasks")
-           "* TODO %?\n  %i\n  %a")
+          ;; ("t" "Todo" entry (file+headline "~/tmp/gtd.org" "Tasks")
+          ;;  "* TODO %?\n  %i\n  %a")
 
           ("i" "Inbox"
            entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
@@ -219,7 +219,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            "* %?\n%a"
            :kill-buffer t :unnarrowed t)
 
-          ("g" "Imaginary contentful microdialpgue"
+          ("g" "Imaginary contentful microdialogue"
            ;; ...?
            ;; Me: ...
            ;; ...?
@@ -245,9 +245,18 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ("y" "firefox Org Capture Unselected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
            "* %?\n%u\n%a\n")
 
-          ("z" "video" plain (file "/home/chriad/Documents/video-urls.txt")
-           "%:link" :immediate-finish t)
+          ;; ("z" "video" plain (file "/home/chriad/Documents/video-urls.txt")
+          ;;  "%:link" :immediate-finish t)
 
+          ;; javascript:location.href='org-protocol://capture?template=o&url='
+          ;; +encodeURIComponent(location.href)+'&title='
+          ;; +encodeURIComponent(document.title)+'&body='
+          ;; +encodeURIComponent(window.getSelection())
+
+          ("o" "notes" plain (file "/home/chriad/Documents/notes.org")
+           "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
+
+          ;; add marked word to specialwords
           ("w" "specialwords browser" plain (file "/home/chriad/Documents/specialwords.txt")
            "%i" :immediate-finish t)
 
@@ -289,7 +298,11 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            "%^{word}"
            :immediate-finish t)
 
-
+          ("cq" "q&a"
+           plain
+           (file "~/Documents/q-and-a.txt")
+           "%^{Question}?"
+           :immediate-finish t)
           ))
 
 (setq org-roam-capture-templates
