@@ -27,6 +27,7 @@
 
 (spacemacs/declare-prefix "oi" "info")
 (spacemacs/set-leader-keys "oii" 'helm-info)
+(spacemacs/set-leader-keys "oih" 'helm-info-use-package)
 
 (spacemacs/declare-prefix "om" "menu")
 (spacemacs/set-leader-keys "omm" 'minions-minor-modes-menu)

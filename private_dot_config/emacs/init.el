@@ -58,7 +58,10 @@ This function should only modify configuration layer settings."
 
      ;; toc
      (calibre :variables
-              calibredb-root-dir "/media/chriad/ssd-45/reflowable")
+              calibredb-root-dir "/media/chriad/ssd-45/reflowable"
+              calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
+              calibredb-library-alist '(("/media/chriad/ssd-45/fixed-layout")
+                                              ("/Users/damonchan/Documents/Books Library")))
      csv
      djvu
      html
@@ -830,6 +833,8 @@ before packages are loaded."
   (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
   ;; (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hooks)
 
+
+  (add-hook 'pdf-annot-list-mode-hook 'pdf-annot-list-follow-minor-mode)
 
   (use-package org-roam
     ;; :after org
