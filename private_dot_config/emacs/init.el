@@ -130,10 +130,10 @@ This function should only modify configuration layer settings."
                                       geiser ;; installed with guix
                                       geiser-guile ;; installed with guix
                                       magit-popup ;; guix
-                                      ;; (director :location (recipe
-                                      ;;                     :fetcher github
-                                      ;;                     :repo "bard/emacs-director"
-                                      ;;                     :files (:defaults "*.el")))
+                                      (director :location (recipe
+                                                          :fetcher github
+                                                          :repo "bard/emacs-director"
+                                                          :files (:defaults "util/*.el" "examples/demo/*.el")))
                                       ;; m-buffer
                                       ;; shackle
                                       ;; sway
@@ -846,7 +846,7 @@ before packages are loaded."
     ("C-c n a r" . org-roam-ref-add)
     ("C-c n f r" . org-roam-ref-find)
     ("C-c n f n" . org-roam-node-find)
-    ("C-c n f r" . org-roam-node-random)
+    ("C-c n r" . org-roam-node-random)
     )
 
 
