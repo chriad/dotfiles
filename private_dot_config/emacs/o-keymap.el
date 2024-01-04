@@ -11,7 +11,7 @@
 (global-set-key (kbd "s-j") 'bookmark-jump)
 ;; (global-set-key (kbd "s-s") 'select-frame-by-name)
 (global-set-key (kbd "s-b") 'org-roam-switch-to-buffer)
-(global-set-key (kbd "s-y") 'spacemacs/helm-yas)
+(keymap-global-set "s-y" 'spacemacs/helm-yas)
 
 ;; -----------------
 
@@ -20,7 +20,7 @@
 (spacemacs/set-leader-keys "oa" 'projectile-add-known-project)
 ;; (spacemacs/set-leader-keys "ot" 'tab-bar-new-tab)
 (spacemacs/set-leader-keys "ol" 'ace-link-org)
-(spacemacs/set-leader-keys "oh" 'eaf-open-pdf-from-history)
+;; (spacemacs/set-leader-keys "oh" 'eaf-open-pdf-from-history)
 
 ;; (spacemacs/declare-prefix "oc" "useful commands")
 ;; (spacemacs/set-leader-keys "oce" 'epkg-list-packages)
@@ -42,9 +42,9 @@
 
 (spacemacs/declare-prefix "os" "search")
 
-(spacemacs/declare-prefix "or" "roam")
-(spacemacs/set-leader-keys "orn" 'my/navigate-note)
-(spacemacs/set-leader-keys "orh" 'org-roam-create-note-from-headline)
+;; (spacemacs/declare-prefix "or" "roam")
+;; (spacemacs/set-leader-keys "orn" 'my/navigate-note)
+;; (spacemacs/set-leader-keys "orh" 'org-roam-create-note-from-headline)
 
 ;; ----------------
 

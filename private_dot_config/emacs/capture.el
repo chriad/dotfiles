@@ -1,46 +1,48 @@
 ;;; capture.el --- My personal capture templates.
 ;;; Code:
+
 (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
+
 ;; (use-package org-capture
 ;;   :after org
 ;;   :hook
 ;;   (org-capture-mode . evil-insert-state))
 
-(defun org-capture-pdf-active-region ()
-  "Capture the active region of the pdf-view buffer."
-  (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-         (pdf-buf (get-buffer pdf-buf-name)))
-    (if (buffer-live-p pdf-buf)
-        (with-current-buffer pdf-buf
-          (car (pdf-view-active-region-text)))
-      (user-error "Buffer %S not alive." pdf-buf-name))))
+;; (defun org-capture-pdf-active-region ()
+;;   "Capture the active region of the pdf-view buffer."
+;;   (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
+;;          (pdf-buf (get-buffer pdf-buf-name)))
+;;     (if (buffer-live-p pdf-buf)
+;;         (with-current-buffer pdf-buf
+;;           (car (pdf-view-active-region-text)))
+;;       (user-error "Buffer %S not alive." pdf-buf-name))))
 
-  (defun org-capture-pdf-name ()
-    "Capture the active region of the pdf-view buffer."
-    (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-           (pdf-buf (get-buffer pdf-buf-name)))
-      (if (buffer-live-p pdf-buf)
-          (with-current-buffer pdf-buf
-            (f-no-ext (buffer-name)))
-        (user-error "Buffer %S not alive." pdf-buf-name))))
+;;   (defun org-capture-pdf-name ()
+;;     "Capture the active region of the pdf-view buffer."
+;;     (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
+;;            (pdf-buf (get-buffer pdf-buf-name)))
+;;       (if (buffer-live-p pdf-buf)
+;;           (with-current-buffer pdf-buf
+;;             (f-no-ext (buffer-name)))
+;;         (user-error "Buffer %S not alive." pdf-buf-name))))
 
-  (defun org-capture-pdf-path ()
-    "Capture the active region of the pdf-view buffer."
-    (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-           (pdf-buf (get-buffer pdf-buf-name)))
-      (if (buffer-live-p pdf-buf)
-          (with-current-buffer pdf-buf
-            (eaf-get-path-or-url))
-        (user-error "Buffer %S not alive." pdf-buf-name))))
+;;   (defun org-capture-pdf-path ()
+;;     "Capture the active region of the pdf-view buffer."
+;;     (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
+;;            (pdf-buf (get-buffer pdf-buf-name)))
+;;       (if (buffer-live-p pdf-buf)
+;;           (with-current-buffer pdf-buf
+;;             (eaf-get-path-or-url))
+;;         (user-error "Buffer %S not alive." pdf-buf-name))))
 
-  (defun org-capture-nov-path ()
-    "Capture the active region of the pdf-view buffer."
-    (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-           (pdf-buf (get-buffer pdf-buf-name)))
-      (if (buffer-live-p pdf-buf)
-          (with-current-buffer pdf-buf
-            (eval nov-file-name))
-        (user-error "Buffer %S not alive." pdf-buf-name))))
+;;   (defun org-capture-nov-path ()
+;;     "Capture the active region of the pdf-view buffer."
+;;     (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
+;;            (pdf-buf (get-buffer pdf-buf-name)))
+;;       (if (buffer-live-p pdf-buf)
+;;           (with-current-buffer pdf-buf
+;;             (eval nov-file-name))
+;;         (user-error "Buffer %S not alive." pdf-buf-name))))
 
 (require 'helm-org)
 
@@ -203,15 +205,15 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ;; ("t" "Todo" entry (file+headline "~/tmp/gtd.org" "Tasks")
           ;;  "* TODO %?\n  %i\n  %a")
 
-          ("i" "Inbox"
-           entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
-           "* %?\n%U\n\n  %i"
-           :kill-buffer t)
+          ;; ("i" "Inbox"
+          ;;  entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
+          ;;  "* %?\n%U\n\n  %i"
+          ;;  :kill-buffer t)
 
-          ("u" "Todo with link"
-           entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
-           "* %?\n%U\n\n  %i\n  %a"
-           :kill-buffer t)
+          ;; ("u" "Todo with link"
+          ;;  entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
+          ;;  "* %?\n%U\n\n  %i\n  %a"
+          ;;  :kill-buffer t)
 
           ;; complete node headings
           ("h" "roam headline" entry
@@ -239,11 +241,11 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            #'chriad/fortune-append
            "%i\n\n          -- %:link%(eval fortune-end-sep)" :immediate-finish t)
 
-          ("x" "firefox Org Capture Selected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
-           "* %?%i\n%u\n%a\n")
+          ;; ("x" "firefox Org Capture Selected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
+          ;;  "* %?%i\n%u\n%a\n")
 
-          ("y" "firefox Org Capture Unselected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
-           "* %?\n%u\n%a\n")
+          ;; ("y" "firefox Org Capture Unselected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
+          ;;  "* %?\n%u\n%a\n")
 
           ;; ("z" "video" plain (file "/home/chriad/Documents/video-urls.txt")
           ;;  "%:link" :immediate-finish t)
@@ -261,7 +263,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            "%i" :immediate-finish t)
 
 ;;           ("l" "org-fc")
-;;           ("lx" "input" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
+;;           ("lx" "input" entry (file+headline "/home/chriad/Documents/org-fc.org" "org-fc")
 ;;            "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
 
 ;;           ("ll" "code" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
@@ -278,10 +280,25 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            (file "~/.config/emacs/capture-templates/code-snippet.capture"))
 
           ("c" "custom")
-          ("cm" "Maps"
+          ("cf" "_ _"
            table-line
            (file "~/Documents/vocabulary-map.org")
            "|%^{stimulus}|%^{response}|"
+           :table-line-pos "I+1"
+           :immediate-finish t)
+
+          ("cs" "_ r"
+           table-line
+           (file "~/Documents/vocabulary-map.org")
+           "|%^{stimulus}|%i|"
+           :table-line-pos "I+1"
+           :immediate-finish t)
+
+
+          ("cr" "s _"
+           table-line
+           (file "~/Documents/vocabulary-map.org")
+           "|%i|%^{response}|"
            :table-line-pos "I+1"
            :immediate-finish t)
 
@@ -292,7 +309,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            :table-line-pos "I+1"
            :immediate-finish t)
 
-          ("cw" "Words"
+          ("cw" "_"
            plain
            (file "~/Documents/specialwords.txt")
            "%^{word}"
@@ -306,41 +323,10 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ))
 
 (setq org-roam-capture-templates
-      '(
-        ("d" "default" plain "%?"
-         :target (file+head "${slug}.org"
-                            "#+title: ${title}\n")
-         :unnarrowed t)
-
-        ;; heading known at capture time
-        ("s" "prepend simple" item "%?"
-         :target (file+head+olp "${slug}.org" "#+title: ${title}\n" ("KB"))
-         :unnarrowed t
-         :prepend)
-
-        ;; ("x" "append *" entry "* %?"
-        ;;  :file-name "${slug}"
-        ;;  :head "#+title: ${title}\n"
-        ;;  :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n" )
-        ;;  :unnarrowed t
-        ;;  :append)
-        
-        ;; ("t" "append * [link]" entry "* %?\n%a"
-        ;;  :file-name "${slug}"
-        ;;  :head "#+title: ${title}\n"
-        ;;  :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n" )
-        ;;  :unnarrowed t
-        ;;  :append)
-
-        ;; ("r" "region")
-        ;; ("rv" "enter quote, append *" entry "* %?"
-        ;;  :if-new (file+head "${slug}.org" "#+title: ${title}\n#+filetags: ${filetags}\n\n#+begin_quote\n${quote}\n#+end_quote\n" )
-        ;;  :file-name "${slug}"
-        ;;  :head "#+title: ${title}\n"
-        ;;  :unnarrowed t
-        ;;  :append)
-
-        ))
+      '(("d" "default" plain "%?"
+          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                             "#+title: ${title}\nlink: %a\nregion: %i")
+          :unnarrowed t)))
 
 (setq org-roam-capture-ref-templates ;; :fox:
       '(
