@@ -273,9 +273,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 ;; #+end_src\n")
 
 
-          ;; ("p" "Code" entry (file "/home/chriad/agenda/code-review.org")
-          ;;  (file (lambda () (concat org-capture-template-dir "code-snippet.capture"))))
-
           ("p" "Code" entry (file "/home/chriad/agenda/code-review.org")
            (file "~/.config/emacs/capture-templates/code-snippet.capture"))
 
@@ -323,10 +320,17 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ))
 
 (setq org-roam-capture-templates
-      '(("d" "default" plain "%?"
+      '(
+        ("d" "default" plain "%?"
           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                             "#+title: ${title}\nlink: %a\nregion: %i")
-          :unnarrowed t)))
+                             "#+title: ${title}")
+          :unnarrowed t)
+
+        ("c" "context" plain "link: %A\nregion: %i\ncomment: %?"
+          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                             "#+title: ${title}")
+          :unnarrowed t))
+      )
 
 (setq org-roam-capture-ref-templates ;; :fox:
       '(
