@@ -60,8 +60,8 @@ This function should only modify configuration layer settings."
      (calibre :variables
               calibredb-root-dir "/media/chriad/ssd-45/reflowable"
               calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
-              calibredb-library-alist '(("/media/chriad/ssd-45/fixed-layout")
-                                              ("/Users/damonchan/Documents/Books Library")))
+              calibredb-library-alist '(("/media/chriad/ssd-45/reflowable"
+                                         "/media/chriad/ssd-45/fixed-layout")))
      csv
      djvu
      html
@@ -846,6 +846,7 @@ before packages are loaded."
     ("C-c n i" . org-roam-node-insert)
     ("C-c n d" . org-roam-dailies-capture-today)
     ("C-c n g" . org-roam-show-graph)
+    ("C-c n r" . org-roam-refile)
     ("C-c n a t" . org-roam-tag-add)
     ("C-c n a a" . org-roam-alias-add)
     ("C-c n a r" . org-roam-ref-add)
