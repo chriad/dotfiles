@@ -15,32 +15,32 @@
 
 ;; -----------------
 
+;; note to self: order alphabetically
 (spacemacs/declare-prefix "o" "private keymap")
-
 (spacemacs/set-leader-keys "oa" 'projectile-add-known-project)
+(spacemacs/set-leader-keys "ob" 'describe-bindings)
+(spacemacs/declare-prefix "oc" "customize")
+(spacemacs/set-leader-keys "ocg" 'customize-group)
+(spacemacs/set-leader-keys "ocv" 'customize-variable)
+(spacemacs/declare-prefix "oo" "org related")
+(spacemacs/set-leader-keys "ool" 'ace-link-org)
+(spacemacs/set-leader-keys "oor" 'org-ref-cite-insert-helm)
+(spacemacs/declare-prefix "ooC" "org clocks")
+(spacemacs/set-leader-keys "ooCi" 'org-mru-clock-in)
+(spacemacs/set-leader-keys "ooCr" 'org-mru-clock-select-recent-task)
+(spacemacs/declare-prefix "oi" "info")
+(spacemacs/set-leader-keys "oii" 'helm-info)
+(spacemacs/set-leader-keys "oih" 'helm-info-use-package)
+(spacemacs/declare-prefix "om" "menu")
+(spacemacs/set-leader-keys "omm" 'minions-minor-modes-menu)
+(spacemacs/declare-prefix "os" "search")
+(spacemacs/set-leader-keys "ot" 'terminal-here-launch)
+
 ;; (spacemacs/set-leader-keys "ot" 'tab-bar-new-tab)
-(spacemacs/set-leader-keys "ol" 'ace-link-org)
 ;; (spacemacs/set-leader-keys "oh" 'eaf-open-pdf-from-history)
 
 ;; (spacemacs/declare-prefix "oc" "useful commands")
 ;; (spacemacs/set-leader-keys "oce" 'epkg-list-packages)
-
-(spacemacs/declare-prefix "oi" "info")
-(spacemacs/set-leader-keys "oii" 'helm-info)
-(spacemacs/set-leader-keys "oih" 'helm-info-use-package)
-
-(spacemacs/declare-prefix "om" "menu")
-(spacemacs/set-leader-keys "omm" 'minions-minor-modes-menu)
-
-(spacemacs/declare-prefix "oc" "customize")
-(spacemacs/set-leader-keys "ocg" 'customize-group)
-(spacemacs/set-leader-keys "ocv" 'customize-variable)
-
-(spacemacs/declare-prefix "oC" "Clocks")
-(spacemacs/set-leader-keys "oCi" 'org-mru-clock-in)
-(spacemacs/set-leader-keys "oCr" 'org-mru-clock-select-recent-task)
-
-(spacemacs/declare-prefix "os" "search")
 
 ;; (spacemacs/declare-prefix "or" "roam")
 ;; (spacemacs/set-leader-keys "orn" 'my/navigate-note)
