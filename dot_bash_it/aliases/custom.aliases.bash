@@ -151,12 +151,17 @@ alias ipinfo='curl ipinfo.io'
 # alias subscriptions='ytcc -o xsv subscriptions -a name|fzf'
 
 # execs
-alias pdf--pdfbox='env _JAVA_AWT_WM_NONREPARENTING=1 java -jar /home/chriad/.local/bin/debugger-app-3.0.0-alpha2.jar'
+alias pdf--pdfbox-debugger-app='env _JAVA_AWT_WM_NONREPARENTING=1 java -jar /home/chriad/.local/bin/debugger-app-3.0.0-alpha2.jar'
+alias pdf--pdfbox-app='env _JAVA_AWT_WM_NONREPARENTING=1 java -jar /home/chriad/.local/bin/pdfbox-app-3.0.0-alpha2.jar'
 alias epub--epubcheck='java -jar ~/.local/bin/epubcheck.jar'
 alias textricator='~/textricator-9.2.56/textricator'
 alias jpdf="java -jar /media/chriad/ext4/SOFTWARE/jpdftweak-linux-x64-1.1/jpdftweak.jar" # use flatpak version
 alias retro-term="/home/chriad/github_scripts/cool-retro-term/Cool-Retro-Term-1.1.1-x86_64.AppImage"
 
+# chriad-mount sdi1 usb
+chriad-mount() {
+   sudo mount -o uid=chriad,gid=chriad,rw,defaults /dev/"${1}" /home/chriad/"${2}"
+}
 
 #call with asciimux "session_name_here" "file_name_here", must
 #have ""

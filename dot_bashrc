@@ -499,9 +499,21 @@ arte-merge-combined() {
 
 calibre--search-title() { calibredb list -s title:"${1}"; }
 
-quaderno--download() { dptrp1 --addr 192.168.1.210 download "${1}" ./ ; }
+QUADERNO_STATIC_IP="192.168.2.199"
 
-quaderno--delete() { dptrp1 --addr 192.168.1.210 delete "${1}" ; }
+quaderno--download() { dptrp1 --addr $QUADERNO_STATIC_IP download "${1}" ./ ; }
+
+quaderno--delete() { dptrp1 --addr $QUADERNO_STATIC_IP delete "${1}" ; }
+
+# quaderno
+quaderno() {
+    dptrp1 --addr 192.168.1.210
+}
+
+quaderno--list-rootdir-documents() {
+    dptrp1 --addr $QUADERNO_STATIC_IP list-documents | grep '^[^/]*/[^/]*$'
+}
+alias quaderno--upload="dptrp1 --addr 192.168.2.199 upload"
 
 bachsplit() {
     flacsplt -o @b__@t__@A__@n -c "$1" "$2"
@@ -663,7 +675,7 @@ pdf--drop-pdfimages () {
 
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
-## m4b functions
+# m4b functions
 
 function m4b--rmlyrics() {
     # remove lyrics from source file before using LosslessCut
@@ -714,6 +726,19 @@ function m4b--title() {
         operon fill "<title>.mp3" "$rc"
     done
 
+}
+
+syncthing--iot-add-ignored() {
+    local f="${1}"
+    echo '// '`ls -1 ${f}` >> ignored.txt
+}
+
+mp4chaps--pipeline() {
+    local fname="${1}"
+    mp4chaps -x "${fname}"
+    emacsclient -c "${fname%m4b}chapters.txt"
+    mp4chaps -r "${fname}"
+    mp4chaps -i "${fname}"
 }
 
 export GOROOT=$HOME/go
