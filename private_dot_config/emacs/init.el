@@ -741,6 +741,10 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  (require 'org-ref)
+  (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))
+  ;; (add-to-list 'org-ref-default-bibliography calibredb-ref-default-bibliography)
+  ;; (setq org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename)
   ;; ;;; TODO
   ;; (setq backup-directory-alist
   ;;       `((".*" . temporary-file-directory))
@@ -814,14 +818,14 @@ before packages are loaded."
   ;; (global-emojify-mode)
   ;; (load (expand-file-name "~/quicklisp/slime-helper.el"))
   ;; required so that yasnippets are loaded
-  
+
   ;; (load "/usr/share/emacs/site-lisp/elpa-src/yasnippet-snippets-0.20/yasnippet-snippets.el")
 
   (require 'common-lisp-snippets)
 
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook #'elisp-def-mode))
-  
+
 
 
   (push 'elisp-def spacemacs-jump-handlers-emacs-lisp-mode)

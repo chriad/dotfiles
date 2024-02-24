@@ -350,13 +350,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
          :file-name "${slug}"
          ;; :head "#+title: ${title}\n"
          :unnarrowed t)
-
-        ;; ("i" "webpage with region" entry
-        ;;  (function org-roam-capture--get-point)
-        ;;  "* %?\n"
-        ;;  :file-name "${slug}"
-        ;;  :head "#+title: ${title}\n#+roam_key: ${ref}\n%i\n"
-        ;;  :unnarrowed t)
         )
       )
 

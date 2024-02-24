@@ -14,6 +14,8 @@
  '(bookmark-default-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
  '(dap-python-executable "/media/chriad/nebula/anaconda3/bin/python")
+ '(dash-docs-docsets-path "/home/chriad/.local/Zeal/Zeal/docsets")
+ '(dash-docs-min-length 3)
  '(default-frame-alist
    '((buffer-predicate . spacemacs/useful-buffer-p)
      (font . "-ADBO-Source Code Pro-regular-normal-normal-*-16-*-*-*-m-0-iso10646-1")
@@ -90,6 +92,8 @@
  '(ignored-local-variable-values
    '((magit-todos-exclude-globs "elpa/")
      (org-confirm-babel-evaluate)))
+ '(keycast-header-line-mode t)
+ '(keycast-mode-line-mode nil)
  '(keyfreq-autosave-mode t)
  '(keyfreq-mode t)
  '(large-file-warning-threshold 100000000)
@@ -159,6 +163,7 @@
  '(paradox-automatically-star nil)
  '(paradox-github-token t)
  '(paren-sexp-mode t)
+ '(pdf-annot-list-follow-minor-mode-hook nil)
  '(pdf-outline-display-labels t)
  '(pdf-view-display-size 'fit-height)
  '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
@@ -183,7 +188,7 @@
  '(warning-suppress-log-types '(((tar link)) (comp)))
  '(warning-suppress-types '((comp)))
  '(yas-snippet-dirs
-   '("/media/chriad/nebula/spacemacs-fork/private/snippets/" "/media/chriad/nebula/spacemacs-fork/layers/+completion/auto-completion/local/snippets" yasnippet-snippets-dir)))
+   '("/media/chriad/nebula/spacemacs-fork/private/snippets/" "/media/chriad/nebula/spacemacs-fork/layers/+completion/auto-completion/local/snippets" yasnippet-snippets-dir yasnippet-classic-snippets-dir)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
