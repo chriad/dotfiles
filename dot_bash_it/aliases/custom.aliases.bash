@@ -129,7 +129,7 @@ alias largefiles="ls -Slr| head -n10"
 alias findbig="/usr/bin/find ./ -type f -print0 | xargs -0 du | sort -n | tail -n 100 | cut -f2 | xargs -I{} du -sh {}"
 alias findbigdir="/usr/bin/find ./ -maxdepth 1 -type d -print0 | xargs -0 du --max-depth=1 | sort -n | tail -n 50 | tail -n +1 | cut -f2 | xargs -I{} du -sh {}"
 
-alias puddletag="puddletag ."
+# alias puddletag="puddletag ."
 
 # alias sckill='kill $(ps -C screenkey -o pid=)'
 # Path to the bash it configuration

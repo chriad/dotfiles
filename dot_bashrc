@@ -499,20 +499,18 @@ arte-merge-combined() {
 
 calibre--search-title() { calibredb list -s title:"${1}"; }
 
-QUADERNO_STATIC_IP="192.168.2.199"
+export QUADERNO_STATIC_IP="192.168.2.199"
 
-quaderno--download() { dptrp1 --addr $QUADERNO_STATIC_IP download "${1}" ./ ; }
+quaderno--download() { dptrp1 --addr "$QUADERNO_STATIC_IP" download "${1}" ./ ; }
 
-quaderno--delete() { dptrp1 --addr $QUADERNO_STATIC_IP delete "${1}" ; }
-
+quaderno--delete() { dptrp1 --addr "$QUADERNO_STATIC_IP" delete "${1}" ; }
 # quaderno
-quaderno() {
-    dptrp1 --addr 192.168.1.210
-}
+# quaderno() { dptrp1 --addr 192.168.1.210 "${@}" ; }
 
 quaderno--list-rootdir-documents() {
-    dptrp1 --addr $QUADERNO_STATIC_IP list-documents | grep '^[^/]*/[^/]*$'
+    dptrp1 --addr "$QUADERNO_STATIC_IP" list-documents | grep '^[^/]*/[^/]*$'
 }
+
 alias quaderno--upload="dptrp1 --addr 192.168.2.199 upload"
 
 bachsplit() {
@@ -699,13 +697,24 @@ calibre--favorites() {
     calibredb list -s "#rating:true" | fzf --header-lines 1
 }
 
-schimanski-missing() {
+list--schimanski-missing() {
     cat <<EOF
 Der Fall Schimanski
 Gebrochene Blueten
 Spielverderber
 Schwarzes Wochenende
 Doppelspiegel
+EOF
+}
+
+list--poirot-ustinov() {
+    cat <<EOF
+Death on the Nile (1978)
+Evil Under the Sun (1982)
+Thirteen at Dinner (1985)
+Dead Man’s Folly (1986)
+Murder in Three Acts (1986)
+Appointment with Death (1988)
 EOF
 }
 
