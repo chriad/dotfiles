@@ -511,6 +511,10 @@ quaderno--list-rootdir-documents() {
     dptrp1 --addr "$QUADERNO_STATIC_IP" list-documents | grep '^[^/]*/[^/]*$'
 }
 
+quaderno--list-all-documents() {
+    dptrp1 --addr "$QUADERNO_STATIC_IP" list-documents
+}
+
 alias quaderno--upload="dptrp1 --addr 192.168.2.199 upload"
 
 bachsplit() {
@@ -625,7 +629,8 @@ pdf--convert-grayscale() {
 
 quaderno--pdffd() {
     local path="$QUADERNO_ROOT/dpt"
-    fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(flatpak run org.kde.okular {}  &>/dev/null &)+abort'
+    fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(emacsclient -c {}  &>/dev/null &)+abort'
+    # fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(flatpak run org.kde.okular {}  &>/dev/null &)+abort'
     # fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(sioyek {} &)+abort'
 }
 alias pdffd=quaderno--pdffd

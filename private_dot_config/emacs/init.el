@@ -1,4 +1,4 @@
-;; -*- mode: emacs-lisp; lexical-binding: t -*-
+;; -*- mode: emacs-lisp; lexical-binding: t; eval: (hs-minor-mode); eval: (semantic-mode); -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -127,6 +127,8 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      el-patch
+                                      org-tidy
                                       ;; mic-paren ;; customize paren-face-match
                                       helm-apt
                                       helm-dired-history
@@ -764,6 +766,71 @@ before packages are loaded."
   ;; capture directly without goin through dispatcher
   (define-key global-map (kbd "C-c x")
     (lambda () (interactive) (org-capture nil "t")))
+
+  (use-package org-tidy
+    :ensure t
+    :hook
+    (org-mode . org-tidy-mode))
+
+
+;;;* el-path
+;;   (el-patch-feature pdf-annot)
+
+;;   (with-eval-after-load 'pdf-annot
+;;     (el-patch-defun pdf-annot-show-annotation (a &optional highlight-p window)
+;;                     (save-selected-window
+;;                       (when window (select-window window 'norecord))
+;;                       (pdf-util-assert-pdf-window)
+;;                       (let ((page (pdf-annot-get a 'page))
+;;                             (size (pdf-view-image-size)))
+;;                         (unless (= page (pdf-view-current-page))
+;;                           (pdf-view-goto-page page))
+;;                         (let ((edges (pdf-annot-get-display-edges a)))
+;;                           (when (el-patch-swap highlight-p t)
+;;                             (pdf-view-display-image
+;;                              (pdf-view-create-image
+;;                                  (pdf-cache-renderpage-highlight
+;;                                   page (car size)
+;;                                   `("white" (el-patch-swap "steel blue" "white") (el-patch-swap 0.35 0.36) ,@edges))
+;;                                :map (pdf-view-apply-hotspot-functions
+;;                                      window page size)
+;;                                :width (car size))))
+;;                           (pdf-util-scroll-to-edges
+;;                            (pdf-util-scale-relative-to-pixel (car edges))))))))
+
+
+;; (defun pdf-info-renderpage (page width &optional file-or-buffer &rest commands)
+;;   "Render PAGE with width WIDTH.
+
+;; Return the data of the corresponding PNG image."
+;;   (when (keywordp file-or-buffer)
+;;     (push file-or-buffer commands)
+;;     (setq file-or-buffer nil))
+;;   (apply #'pdf-info-query
+;;     'renderpage
+;;     (pdf-info--normalize-file-or-buffer file-or-buffer)
+;;     page
+;;     (* width (pdf-util-frame-scale-factor))
+;;     (let (transformed)
+;;       (while (cdr commands)
+;;         (let ((kw (pop commands))
+;;               (value (pop commands)))
+;;           (setq value
+;;                 (cl-case kw
+;;                   ((:crop-to :highlight-line :highlight-region :highlight-text)
+;;                    (mapconcat #'number-to-string value " "))
+;;                   ((:foreground :background)
+;;                    (pdf-util-hexcolor value))
+;;                   (:alpha
+;;                    (number-to-string value))
+;;                   (:selection-style
+;;                    (number-to-string (pdf-info--selection-style value)))
+;;                   (otherwise value)))
+;;           (push kw transformed)
+;;           (push value transformed)))
+;;       (when commands
+;;         (error "Keyword is missing a value: %s" (car commands)))
+;;       (nreverse transformed))))
 
   ;; (use-package org-gtd
   ;;   :after org

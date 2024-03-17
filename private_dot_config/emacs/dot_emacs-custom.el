@@ -155,6 +155,7 @@
                                         (lambda nil
                                           (call-interactively #'org-hide-properties))))
  '(org-roam-index-file "~/roam/index.org")
+ '(org-roam-node-display-template "${title:*} ${tags:15}")
  '(org-startup-with-inline-images nil)
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
  '(org-superstar-remove-leading-stars t)
@@ -176,6 +177,12 @@
  '(racket-browse-url-function 'browse-url-firefox)
  '(racket-documentation-search-location ''local)
  '(reb-re-syntax 'rx)
+ '(safe-local-variable-values
+   '((eval
+      (org-hide-properties))
+     (javascript-backend . tide)
+     (javascript-backend . tern)
+     (javascript-backend . lsp)))
  '(scroll-conservatively 10000)
  '(scroll-margin 1)
  '(scroll-step 1)

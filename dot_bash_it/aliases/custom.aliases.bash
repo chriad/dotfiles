@@ -1,4 +1,5 @@
 alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
+alias task--count="task count status:pending"
 # 1 letter
 alias n='nautilus . &'
 alias e="emacsclient --no-wait -c"
@@ -49,12 +50,6 @@ alias lolc='cd /media/chriad/ext4/losslesscut'
 # quodlibet
 alias quodlibet--playlists='cat /home/chriad/.var/app/io.github.quodlibet.QuodLibet/config/quodlibet/lists/queries.saved 2> /dev/null | paste -sd"\t\n" | fzf --delimiter="\t" --with-nth=1 --bind "enter:execute(echo {2})+abort"'
 alias quodlibet--sync='cat ~/.var/app/io.github.quodlibet.QuodLibet/config/quodlibet/config | grep  synchronize_to_device_query | fzf --bind "enter:execute(echo {})+abort"'
-
-# quaderno
-alias quaderno="dptrp1 --addr 192.168.1.210"
-alias quaderno--list-documents="dptrp1 --addr 192.168.1.210 list-documents | grep '^[^/]*/[^/]*$'"
-alias quaderno--upload="dptrp1 --addr 192.168.1.210 upload"
-
 
 alias ipynb-view="jupyter nbconvert --stdout --to markdown"
 alias cl-repl="sbcl --eval '(ql:quickload :cl-repl)' --eval '(cl-repl:main)' --quit"
