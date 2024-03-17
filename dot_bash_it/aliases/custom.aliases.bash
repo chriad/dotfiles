@@ -1,5 +1,6 @@
 alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
 alias task--count="task count status:pending"
+alias gedit=gnome-text-editor
 # 1 letter
 alias n='nautilus . &'
 alias e="emacsclient --no-wait -c"

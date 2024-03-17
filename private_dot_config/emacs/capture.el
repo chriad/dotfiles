@@ -284,6 +284,13 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            :table-line-pos "I+1"
            :immediate-finish t)
 
+          ("ca" "antipatterns"
+           table-line
+           (file "~/Documents/antipatterns.org")
+           "|%^{antipattern}|%^{solution}|"
+           :table-line-pos "I+1"
+           :immediate-finish t)
+
           ("cs" "_ r"
            table-line
            (file "~/Documents/vocabulary-map.org")
