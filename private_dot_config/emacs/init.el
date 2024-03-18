@@ -34,7 +34,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(rust
+   '((python :variables python-backend 'lsp python-lsp-server 'pyright)
+     rust
      ocaml
      asciidoc
      lua
@@ -96,7 +97,6 @@ This function should only modify configuration layer settings."
      helm
      command-log
      lsp
-     (python :variables python-backend 'lsp python-lsp-server 'pyright)
      dap
      (markdown :variables markdown-live-preview-engine 'vmd)
      multiple-cursors

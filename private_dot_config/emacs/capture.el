@@ -269,8 +269,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 ;; #+end_src\n")
 
 
-          ("p" "Code" entry (file "/home/chriad/agenda/code-review.org")
-           (file "~/.config/emacs/capture-templates/code-snippet.capture"))
 
           ("m" "maps")
           ("mf" "_ _"
@@ -296,6 +294,10 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 
 
           ("c" "~/Documents/_")
+
+          ("cp" "Code" entry (file "/home/chriad/Documents/code-review.org")
+           (file "~/.config/emacs/capture-templates/code-snippet.capture"))
+
           ("cw" "low-freq-words-list"
            plain
            (file "~/Documents/specialwords.txt")
