@@ -23,6 +23,7 @@
 (spacemacs/declare-prefix "ox" "∞")
 (spacemacs/set-leader-keys "oxb" 'select-frame-by-name)
 (spacemacs/set-leader-keys "oxe" 'epkg-list-packages)
+(spacemacs/set-leader-keys "oxt" 'edebug-eval-top-level-form)
 
 (spacemacs/declare-prefix "od" "describe")
 (spacemacs/set-leader-keys "odb" 'describe-bindings)

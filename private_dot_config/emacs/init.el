@@ -763,10 +763,6 @@ before packages are loaded."
   ;; (sway-undertaker-mode) ;; If you want to use :dedicate, read below.
   ;; (sway-x-focus-through-sway-mode) ;; Temporary workaround for Sway bug 6216
 
-  ;; capture directly without goin through dispatcher
-  (define-key global-map (kbd "C-c x")
-    (lambda () (interactive) (org-capture nil "t")))
-
   (use-package org-tidy
     :ensure t
     :hook

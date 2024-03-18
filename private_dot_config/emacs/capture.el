@@ -57,16 +57,16 @@ FILENAME is the org file to filter PRESELECT is the default entry"
         :preselect preselect
         :buffer "*helm org in buffers*"))
 
-;; (defun org-roam-find-file-name ()
-;;   "Find and return the path to an org-roam file
-;; with the `org-roam-find-file' interface"
-;;   (interactive)
-;;   (save-window-excursion (org-roam-node-find) buffer-file-name))
+(defun my/org-roam-find-file-name ()
+  "Find and return the path to an org-roam file
+with the `org-roam-find-file' interface"
+  (interactive)
+  (save-window-excursion (org-roam-node-find) buffer-file-name))
 
-;; (defun org-capture-at-point ()
-;;   "Insert an org capture template at point."
-;;   (interactive)
-;;   (org-capture 0))
+(defun org-capture-at-point ()
+  "Insert an org capture template at point."
+  (interactive)
+  (org-capture 0))
 
 (setq org-roam-dailies-capture-templates
         '(
@@ -215,25 +215,25 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ;;  "* %?\n%U\n\n  %i\n  %a"
           ;;  :kill-buffer t)
 
-          ;; complete node headings
+          ;; go directly to a note heading in roam
           ("h" "roam headline" entry
-           (function (lambda () (my/helm-in-org-buffer (org-roam-find-file-name))))
+           (function (lambda () (my/helm-in-org-buffer (my/org-roam-find-file-name))))
            "* %?\n%a"
            :kill-buffer t :unnarrowed t)
 
-          ("g" "Imaginary contentful microdialogue"
-           ;; ...?
-           ;; Me: ...
-           ;; ...?
-           ;; Me: ...
-           ;; end
-           entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
-           "* %?\n%U\n\n  %i"
-           :kill-buffer t)
+          ;; ("g" "Imaginary contentful microdialogue"
+          ;;  ;; ...?
+          ;;  ;; Me: ...
+          ;;  ;; ...?
+          ;;  ;; Me: ...
+          ;;  ;; end
+          ;;  entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
+          ;;  "* %?\n%U\n\n  %i"
+          ;;  :kill-buffer t)
 
-          ("a" "webpage region to node" plain          ; s = selection
-           (function (lambda () (org-roam-node-find)))
-           "%i" :unnarrowed t)
+          ;; ("a" "webpage region to node" plain          ; s = selection
+          ;;  (function (lambda () (org-roam-node-find)))
+          ;;  "%i" :unnarrowed t)
 
           ; ===
 
@@ -276,33 +276,39 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ("p" "Code" entry (file "/home/chriad/agenda/code-review.org")
            (file "~/.config/emacs/capture-templates/code-snippet.capture"))
 
-          ("c" "custom")
-          ("cf" "_ _"
+          ("m" "maps")
+          ("mf" "_ _"
            table-line
            (file "~/Documents/vocabulary-map.org")
            "|%^{stimulus}|%^{response}|"
            :table-line-pos "I+1"
            :immediate-finish t)
 
-          ("ca" "antipatterns"
-           table-line
-           (file "~/Documents/antipatterns.org")
-           "|%^{antipattern}|%^{solution}|"
-           :table-line-pos "I+1"
-           :immediate-finish t)
-
-          ("cs" "_ r"
+          ("ms" "_ r"
            table-line
            (file "~/Documents/vocabulary-map.org")
            "|%^{stimulus}|%i|"
            :table-line-pos "I+1"
            :immediate-finish t)
 
-
-          ("cr" "s _"
+          ("mr" "s _"
            table-line
            (file "~/Documents/vocabulary-map.org")
            "|%i|%^{response}|"
+           :table-line-pos "I+1"
+           :immediate-finish t)
+
+          ("mw" "_"
+           plain
+           (file "~/Documents/specialwords.txt")
+           "%^{word}"
+           :immediate-finish t)
+
+          ("c" "custom")
+          ("ca" "antipatterns"
+           table-line
+           (file "~/Documents/antipatterns.org")
+           "|%^{antipattern}|%^{solution}|"
            :table-line-pos "I+1"
            :immediate-finish t)
 
@@ -313,31 +319,31 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            :table-line-pos "I+1"
            :immediate-finish t)
 
-          ("cw" "_"
-           plain
-           (file "~/Documents/specialwords.txt")
-           "%^{word}"
-           :immediate-finish t)
-
-          ("cq" "q&a"
+          ("cq" "Questions"
            plain
            (file "~/Documents/q-and-a.txt")
            "%^{Question}?"
            :immediate-finish t)
           ))
 
+;; capture directly without goin through dispatcher
+(define-key global-map (kbd "C-c x")
+            (lambda () (interactive) (org-roam-capture nil "t")))
+
+
 (setq org-roam-capture-templates
       '(
         ("d" "default" plain "%?"
-          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                             "#+title: ${title}")
-          :unnarrowed t)
+         :target (file+head "${slug}.org"
+                            "#+title: ${title}")
+         :unnarrowed t)
 
         ("c" "context" plain "link: %A\nregion: %i\ncomment: %?"
-          :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                             "#+title: ${title}")
-          :unnarrowed t))
+         :target (file+head "${slug}.org"
+                            "#+title: ${title}")
+         :unnarrowed t))
       )
+
 
 (setq org-roam-capture-ref-templates ;; :fox:
       '(
