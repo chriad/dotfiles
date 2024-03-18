@@ -20,8 +20,9 @@
 (spacemacs/set-leader-keys "oa" 'projectile-add-known-project)
 
 ;;; stuff that fits nowhere else?
-(spacemacs/declare-prefix "ox" "∞")
+(spacemacs/declare-prefix "ox" "sometimes useful")
 (spacemacs/set-leader-keys "oxb" 'select-frame-by-name)
+(spacemacs/set-leader-keys "oxp" 'spacemacs/paradox-list-packages)
 (spacemacs/set-leader-keys "oxe" 'epkg-list-packages)
 (spacemacs/set-leader-keys "oxt" 'edebug-eval-top-level-form)
 

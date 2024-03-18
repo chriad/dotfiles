@@ -35,12 +35,11 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '((python :variables python-backend 'lsp python-lsp-server 'pyright)
-     rust
+     ;; rust
      ocaml
      asciidoc
      lua
      systemd
-     ;; rust
      ;; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
      ;; << private layers
      bookmark+
@@ -49,7 +48,9 @@ This function should only modify configuration layer settings."
      elisp-additional
      org-additional
      ;; >> private layers
-     javascript
+     (javascript :variables javascript-backend 'lsp
+                            javascript-repl `nodejs)
+     (json :variables json-backend 'lsp)
      pass
      bibtex
      (spacemacs-layouts :variables
@@ -110,7 +111,6 @@ This function should only modify configuration layer settings."
             shell-default-position 'bottom)
      ;; spell-checking
      ;; syntax-checking
-     ;; version-control
      neotree
      ;; treemacs
      ;; racket
