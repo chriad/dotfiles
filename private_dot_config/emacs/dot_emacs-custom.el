@@ -181,7 +181,8 @@
  '(racket-documentation-search-location ''local)
  '(reb-re-syntax 'rx)
  '(safe-local-variable-values
-   '((eval
+   '((eval org-hide-src-block-delimiters)
+     (eval
       (org-hide-properties))
      (javascript-backend . tide)
      (javascript-backend . tern)

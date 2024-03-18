@@ -258,10 +258,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
           ("o" "notes" plain (file "/home/chriad/Documents/notes.org")
            "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
 
-          ;; add marked word to specialwords
-          ("w" "specialwords browser" plain (file "/home/chriad/Documents/specialwords.txt")
-           "%i" :immediate-finish t)
-
 ;;           ("l" "org-fc")
 ;;           ("lx" "input" entry (file+headline "/home/chriad/Documents/org-fc.org" "org-fc")
 ;;            "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
@@ -298,13 +294,26 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            :table-line-pos "I+1"
            :immediate-finish t)
 
-          ("mw" "_"
+
+          ("c" "~/Documents/_")
+          ("cw" "low-freq-words-list"
            plain
            (file "~/Documents/specialwords.txt")
            "%^{word}"
            :immediate-finish t)
 
-          ("c" "custom")
+          ("cc" "curious-words-list"
+           plain
+           (file "~/Documents/curious-words.org")
+           "%^{word}"
+           :immediate-finish t)
+
+          ("cx" "analogies"
+           plain
+           (file "~/Documents/analogies.org")
+           "%^{analogy}"
+           :immediate-finish t)
+
           ("ca" "antipatterns"
            table-line
            (file "~/Documents/antipatterns.org")
