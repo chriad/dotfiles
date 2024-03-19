@@ -13,6 +13,7 @@
  '(bmkp-last-as-first-bookmark-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
  '(bookmark-default-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
+ '(create-lockfiles nil)
  '(dap-python-executable "/media/chriad/nebula/anaconda3/bin/python")
  '(dash-docs-docsets-path "/home/chriad/.local/Zeal/Zeal/docsets")
  '(dash-docs-min-length 3)
@@ -181,7 +182,8 @@
  '(racket-documentation-search-location ''local)
  '(reb-re-syntax 'rx)
  '(safe-local-variable-values
-   '((eval org-hide-src-block-delimiters)
+   '((eval spacemacs/toggle-line-numbers-on)
+     (eval org-hide-src-block-delimiters)
      (eval
       (org-hide-properties))
      (javascript-backend . tide)
