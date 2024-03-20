@@ -48,6 +48,7 @@ alias rmff='rm -rf'
 
 # navigation
 alias torhome='cd /home/chriad/.local/share/torbrowser/tbb/x86_64/tor-browser/Browser/Downloads'
+alias firefoxhome='cd /home/chriad/snap/firefox/common/.mozilla/firefox/n1icf8cs.default-1634140706732'
 alias lolc='cd /media/chriad/ext4/losslesscut'
 
 # quodlibet
