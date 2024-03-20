@@ -61,6 +61,7 @@
  '(helm-file-preview-only-when-line-numbers nil)
  '(helm-firefox-default-directory "/home/chriad/snap/firefox/common/.mozilla/firefox/")
  '(helm-lisp-fuzzy-completion t)
+ '(helm-move-to-line-cycle-in-source nil)
  '(helm-show-completion-display-function 'helm-display-buffer-popup-frame)
  '(helm-type-bookmark-actions
    '(("Jump to bookmark" . helm-bookmark-jump)
