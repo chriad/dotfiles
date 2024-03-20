@@ -1,3 +1,5 @@
 ytcc.db
 user-overrides.js
 scripts/fzf-params.sh
+crontab.backup
+gnome-settings
