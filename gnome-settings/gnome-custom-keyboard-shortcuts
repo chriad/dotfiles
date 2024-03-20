@@ -1,0 +1,27 @@
+[/]
+area-screenshot=['<Alt>Print']
+area-screenshot-clip=@as []
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/']
+home=['KP_Insert']
+on-screen-keyboard=['<Primary>F12']
+screenshot-clip=@as []
+terminal=['<Super>Return']
+volume-down=['KP_Next']
+volume-up=['KP_Page_Up']
+window-screenshot=['<Primary>Print']
+window-screenshot-clip=@as []
+
+[custom-keybindings/custom0]
+binding='<Super>space'
+command='ulauncher-toggle'
+name='ulauncher'
+
+[custom-keybindings/custom1]
+binding='KP_Delete'
+command='/home/chriad/.local/bin/obs-toggle'
+name='obs-toggle'
+
+[custom-keybindings/custom2]
+binding='KP_End'
+command='emacsclient --create-frame'
+name='emacs note'
