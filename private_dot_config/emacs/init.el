@@ -234,7 +234,7 @@ This function should only modify configuration layer settings."
    ;; installs only the used packages but won't delete unused ones. `all'
    ;; installs *all* packages supported by Spacemacs and never uninstalls them.
    ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+   dotspacemacs-install-packages 'used-but-keep-unused))
 
 (defun dotspacemacs/init ()
   "Initialization:
@@ -742,6 +742,22 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+(put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")
+
+;; eval this manually from time to time to get latest version
+  (quelpa '(bookmark+ :fetcher wiki
+                      :files
+                      ("bookmark+.el"
+                       "bookmark+-mac.el"
+                       "bookmark+-bmu.el"
+                       "bookmark+-1.el"
+                       "bookmark+-key.el"
+                       "bookmark+-lit.el"
+                       "bookmark+-doc.el"
+                       "bookmark+-chg.el"))
+          ;; :upgrade t
+          )
 
   (require 'org-ref)
   (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))
