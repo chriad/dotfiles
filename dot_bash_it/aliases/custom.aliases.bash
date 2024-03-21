@@ -1,3 +1,4 @@
+alias reload_custom_aliases=". ~/.bash_it/aliases/custom.aliases.bash"
 alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
 alias task--count="task count status:pending"
 alias gedit=gnome-text-editor
