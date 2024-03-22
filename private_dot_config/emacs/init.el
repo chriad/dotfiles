@@ -868,7 +868,31 @@ before packages are loaded."
     :custom
     ;; (org-roam-directory "/home/chriad/roam/")
     (org-roam-dailies-directory "journal/")
-    :config (org-roam-db-autosync-mode 1)
+    :config
+
+    (org-roam-db-autosync-mode 1)
+
+    (cl-defmethod org-roam-node-uuid ((node org-roam-node))
+      "Return the uuid of NODE."
+      (uuidgen-1))
+
+    (setq org-roam-capture-templates
+      '(
+        ("d" "default" plain "%?"
+         :target (file+head "${slug}.org"
+                            "#+title: ${title}")
+         :unnarrowed t)
+
+        ("r" "uuid" plain "%?"
+         :target (file+head "${uuid}.org.gpg"
+                            "#+title: ${title}")
+         :unnarrowed t)
+
+        ("c" "context" plain "link: %A\nregion: %i\ncomment: %?"
+         :target (file+head "${slug}.org"
+                            "#+title: ${title}")
+         :unnarrowed t))
+      )
     :bind
     ("C-c n i" . org-roam-node-insert)
     ("C-c n d" . org-roam-dailies-capture-today)
