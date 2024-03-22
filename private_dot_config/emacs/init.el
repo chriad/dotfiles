@@ -868,6 +868,7 @@ before packages are loaded."
     :custom
     ;; (org-roam-directory "/home/chriad/roam/")
     (org-roam-dailies-directory "journal/")
+    :config (org-roam-db-autosync-mode 1)
     :bind
     ("C-c n i" . org-roam-node-insert)
     ("C-c n d" . org-roam-dailies-capture-today)
