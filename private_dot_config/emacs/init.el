@@ -743,6 +743,9 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+;; not customizable
+(setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
+
 (put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")
 
 ;; eval this manually from time to time to get latest version

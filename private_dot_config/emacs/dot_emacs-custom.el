@@ -198,7 +198,7 @@
  '(pdf-annot-minor-mode-map-prefix [3 1])
  '(pdf-outline-display-labels t)
  '(pdf-view-display-size 'fit-height)
- '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
+ '(pdf-view-midnight-colors '("white" . "black"))
  '(pdfgrep-options " -H -n -r ")
  '(persp-save-dir "/media/chriad/nebula/spacemacs-fork/.cache/layouts/")
  '(persp-use-workgroups t)
