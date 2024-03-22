@@ -1,7 +1,9 @@
+alias fzf--screencasts="rg -g /home/chriad/Videos/Screencasts/*.{mkv,mp4,ogv,webm} --files 2> /dev/null | fzf --bind='enter:execute(mpv {})'"
 alias reload_custom_aliases=". ~/.bash_it/aliases/custom.aliases.bash"
 alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
 alias task--count="task count status:pending"
 alias gedit=gnome-text-editor
+
 # 1 letter
 alias n='nautilus . &'
 alias e="emacsclient --no-wait -c"
@@ -69,7 +71,7 @@ alias bdfr='conda run -n py39 python3 -m bdfr'
 # chezmoi
 alias cs='chezmoi status'
 # alias cm="chezmoi managed --include files,symlinks | fzf --bind='enter:execute(chezmoi merge ~/{})'"
-alias cm="chezmoi status| sed -e 's/^[ \t]*//' | fzf --bind='enter:execute(chezmoi merge ~/{2})'"
+alias cm="chezmoi status 2>/dev/null | sed -e 's/^[ \t]*//' | fzf --bind='enter:execute(chezmoi merge ~/{2})'"
 alias cc='chezmoi cd'
 
 # alias firefox="firefox -P -no-remote" # multiple concurrent profiles
@@ -82,7 +84,7 @@ alias git-summary='/home/chriad/git-summary/git-summary'
 # alias pyth="recoll -c /media/chriad/E/CALIBRE_LIBRARIES/PYTHON/.recoll/"
 # alias rescue-emacs="killall -s USR2 emacs"
 alias raspb-connect="screen /dev/ttyUSB0 115200"
-alias regexp-buddy="wine /home/chriad/.wine/dosdevices/c\:/Program\ Files\ \(x86\)/JGsoft/RegexBuddy3/RegexBuddy.exe"
+# alias regex-buddy="wine /home/chriad/.wine/dosdevices/c\:/Program\ Files\ \(x86\)/JGsoft/RegexBuddy3/RegexBuddy.exe"
 alias lisp-works="/usr/local/lib64/LispWorksPersonal/lispworks-personal-7-1-2-amd64-linux"
 alias et="emacsclient -t"
 alias c2='cd ../../'

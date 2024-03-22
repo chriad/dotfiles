@@ -42,7 +42,7 @@ This function should only modify configuration layer settings."
      systemd
      ;; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
      ;; << private layers
-     bookmark+
+     ;; bookmark+
      chezmoi
      helm-additional
      elisp-additional
@@ -877,7 +877,7 @@ before packages are loaded."
     ("C-c n a a" . org-roam-alias-add)
     ("C-c n a r" . org-roam-ref-add)
     ("C-c n f r" . org-roam-ref-find)
-    ("C-c n f n" . org-roam-node-find)
+    ("C-c n f f" . org-roam-node-find)
     ("C-c n r" . org-roam-node-random)
     )
 
@@ -966,12 +966,20 @@ before packages are loaded."
   ;;   (beacon-mode 1))
 
 
-  (evil-set-initial-state 'debugger-mode 'emacs)
-  (evil-set-initial-state 'paradox-menu-mode 'emacs)
-  (evil-set-initial-state 'backtrace-mode 'emacs)
-  (evil-set-initial-state 'org-capture-mode 'insert)
-  (evil-set-initial-state 'ediff-mode 'emacs)
-  (evil-set-initial-state 'sly-db-mode 'emacs)
+  ;; (evil-set-initial-state 'debugger-mode 'emacs)
+  ;; (evil-set-initial-state 'paradox-mode 'emacs)
+  ;; (evil-set-initial-state 'paradox-menu-mode 'emacs)
+  ;; (evil-set-initial-state 'package-mode 'emacs)
+  ;; (evil-set-initial-state 'package-menu-mode 'emacs)
+  ;; (remove-hook 'paradox-menu-mode-hook 'evil-mode)
+  ;; (remove-hook 'paradox-mode-hook 'evil-mode)
+  ;; (remove-hook 'package-mode-hook 'evil-mode)
+  ;; (remove-hook 'package-menu-mode-hook 'evil-mode)
+
+  ;; (evil-set-initial-state 'backtrace-mode 'emacs)
+  ;; (evil-set-initial-state 'org-capture-mode 'insert)
+  ;; (evil-set-initial-state 'ediff-mode 'emacs)
+  ;; (evil-set-initial-state 'sly-db-mode 'emacs)
 
   (add-hook 'org-mode-hook 'org-indent-mode)
 

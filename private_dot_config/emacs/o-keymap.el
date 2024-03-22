@@ -25,6 +25,8 @@
 (spacemacs/set-leader-keys "oxp" 'spacemacs/paradox-list-packages)
 (spacemacs/set-leader-keys "oxe" 'epkg-list-packages)
 (spacemacs/set-leader-keys "oxt" 'edebug-eval-top-level-form)
+(spacemacs/set-leader-keys "oxw" 'which-key-show-full-major-mode)
+(spacemacs/set-leader-keys "oxw" 'which-key-show-minor-mode-keymap)
 
 (spacemacs/declare-prefix "od" "describe")
 (spacemacs/set-leader-keys "odb" 'describe-bindings)
@@ -53,6 +55,7 @@
 (spacemacs/set-leader-keys "ohf" 'helm-firefox-bookmarks)
 (spacemacs/set-leader-keys "ohc" 'helm-lisp-completion-at-point)
 (spacemacs/set-leader-keys "oho" 'helm-org-in-buffer-headings)
+(spacemacs/set-leader-keys "oht" 'helm-org-capture-templates)
 (spacemacs/set-leader-keys "ohy" 'spacemacs/helm-yas)
 (spacemacs/declare-prefix "ohi" "helm info")
 (spacemacs/set-leader-keys "ohii" 'helm-info)

@@ -10,7 +10,7 @@
  '(bibtex-completion-bibliography '("/home/chriad/.config/bibliographies/fixed-layout.bib"))
  '(bibtex-completion-pdf-field "file")
  '(blink-matching-delay 2)
- '(bmkp-last-as-first-bookmark-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
+ '(bmkp-last-as-first-bookmark-file nil)
  '(bookmark-default-file "/home/chriad/.config/emacs/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
  '(create-lockfiles nil)
