@@ -869,7 +869,7 @@ before packages are loaded."
     ;; :after org
     ;; :hook (org-mode . org-roam-mode)
     :custom
-    ;; (org-roam-directory "/home/chriad/roam/")
+    (org-roam-directory "/home/chriad/roam/")
     (org-roam-dailies-directory "journal/")
     :config
 
@@ -909,7 +909,6 @@ before packages are loaded."
     ("C-c n r" . org-roam-refile)
     ("C-c n R" . org-roam-node-random)
     )
-
 
   (require 'org-roam-protocol)
 

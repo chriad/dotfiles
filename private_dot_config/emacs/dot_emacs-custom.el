@@ -176,7 +176,6 @@
  '(org-protocol-default-template-key nil)
  '(org-roam-completion-everywhere t)
  '(org-roam-completion-system 'helm)
- '(org-roam-directory "/home/chriad/roam/")
  '(org-roam-file-completion-tag-position 'append)
  '(org-roam-find-file-hook
    '(org-roam-buffer--setup-redisplay-h org-roam--register-completion-functions-h org-roam--replace-roam-links-on-save-h org-roam-db-autosync--setup-update-on-save-h
