@@ -1,0 +1,2 @@
+{{- /* chezmoi:modify-template */ -}}
+{{ fromJson .chezmoi.stdin | setValueAtPath "session_data.keyboard_shortcuts.toggle_inspector.key" "i" | toPrettyJson }}
