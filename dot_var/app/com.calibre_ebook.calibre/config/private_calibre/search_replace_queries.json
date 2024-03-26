@@ -1,0 +1,38 @@
+{
+  "backup tags": {
+    "case_sensitive": true,
+    "comma_separated": true,
+    "destination_field": "#tags",
+    "multiple_separator": " ::: ",
+    "name": "backup tags",
+    "replace_func": "",
+    "replace_mode": "Replace field",
+    "replace_with": "\\1",
+    "results_count": 999,
+    "s_r_dst_ident": "",
+    "s_r_src_ident": "9780061739972",
+    "s_r_template": "",
+    "search_field": "tags",
+    "search_for": "(.*)",
+    "search_mode": "Regular expression",
+    "starting_from": 1
+  },
+  "remove tags": {
+    "case_sensitive": true,
+    "comma_separated": true,
+    "destination_field": "tags",
+    "multiple_separator": " ::: ",
+    "name": "remove tags",
+    "replace_func": "",
+    "replace_mode": "Replace field",
+    "replace_with": "",
+    "results_count": 999,
+    "s_r_dst_ident": "",
+    "s_r_src_ident": "9780061739972",
+    "s_r_template": "",
+    "search_field": "tags",
+    "search_for": ".*",
+    "search_mode": "Regular expression",
+    "starting_from": 1
+  }
+}

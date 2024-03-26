@@ -1,0 +1,30 @@
+{
+  "map": {
+    "Interface Action: Add Books (Add Books) - qaction": [],
+    "Interface Action: Choose Library (Choose Library)-action_previous_library": [
+      "P"
+    ],
+    "Interface Action: Convert Books (Convert Books) - qaction": [],
+    "Interface Action: Extract ISBN (Extract ISBN) - qaction": [
+      "Ctrl+I"
+    ],
+    "Interface Action: Pick Random Book (Pick Random Book) - qaction": [
+      "R"
+    ],
+    "Interface Action: Polish Books (Polish Books) - qaction": [],
+    "Interface Action: Save To Disk (Save To Disk) - qaction": [],
+    "Interface Action: Store (Store) - qaction": [],
+    "Interface Action: Tweak ePub (Tweak ePub) - qaction": [],
+    "grid view toggleCover grid": [
+      "G"
+    ],
+    "search bar toggleSearch bar": [
+      "S"
+    ],
+    "splitter cover_browser_splitter Cover browser": [
+      "C"
+    ],
+    "splitter tag_browser_splitter Tag browser": []
+  },
+  "options_map": {}
+}
