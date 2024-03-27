@@ -23,5 +23,5 @@ name='obs-toggle'
 
 [custom-keybindings/custom2]
 binding='KP_End'
-command='emacsclient --create-frame'
-name='emacs note'
+command='gtk-launch /home/chriad/.guix-profile/share/applications/emacsclient.desktop'
+name='start emacs daemon or client process'
