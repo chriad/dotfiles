@@ -711,7 +711,6 @@ It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
 
-  ;; (setq org-roam-v2-ack t)
   ;; The default is 800 kilobytes.  Measured in bytes.
   (setq gc-cons-threshold (* 50 1000 1000))
 
@@ -866,19 +865,15 @@ before packages are loaded."
   (add-hook 'pdf-annot-list-mode-hook 'pdf-annot-list-follow-minor-mode)
 
   (use-package org-roam
-    ;; :after org
-    ;; :hook (org-mode . org-roam-mode)
-    :custom
-    (setq org-roam-directory "/home/chriad/roam/")
-    (org-roam-dailies-directory "journal/")
     :config
-
+    (setq org-roam-directory "/home/chriad/roam/")
+    (setq org-roam-node-display-template "${title:*} ${tags:15}")
+    (setq org-roam-completion-everywhere t)
+    ;; (setq org-roam-dailies-directory "journal/")
     (org-roam-db-autosync-mode 1)
-
     (cl-defmethod org-roam-node-uuid ((node org-roam-node))
       "Return the uuid of NODE."
       (uuidgen-1))
-
     (setq org-roam-capture-templates
       '(
         ("d" "default" plain "%?"
