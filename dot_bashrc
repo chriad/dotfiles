@@ -499,13 +499,18 @@ arte-merge-combined() {
 
 calibre--search-title() { calibredb list -s title:"${1}"; }
 
+# quaderno
+
 export QUADERNO_STATIC_IP="192.168.2.199"
+export QUADERNO_SYNC_PATH="/media/chriad/ext4/dpt-mirror/dpt"
+
+quaderno() { dptrp1 --addr "$QUADERNO_STATIC_IP" "${@}" ; }
+
+quaderno--sync() { dptrp1 --addr "$QUADERNO_STATIC_IP" sync "$QUADERNO_SYNC_PATH"; }
 
 quaderno--download() { dptrp1 --addr "$QUADERNO_STATIC_IP" download "${1}" ./ ; }
 
 quaderno--delete() { dptrp1 --addr "$QUADERNO_STATIC_IP" delete "${1}" ; }
-# quaderno
-# quaderno() { dptrp1 --addr 192.168.1.210 "${@}" ; }
 
 quaderno--list-rootdir-documents() {
     dptrp1 --addr "$QUADERNO_STATIC_IP" list-documents | grep '^[^/]*/[^/]*$'
