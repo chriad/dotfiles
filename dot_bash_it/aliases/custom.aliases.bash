@@ -6,7 +6,7 @@ alias gedit=gnome-text-editor
 
 # 1 letter
 alias n='nautilus . &'
-alias e="emacsclient --no-wait -c"
+alias e="emacsclient --no-wait --create-frame --alternate-editor="
 alias a="alias|fzf"
 alias T="task|fzf"
 alias zz="ls|fzf"
