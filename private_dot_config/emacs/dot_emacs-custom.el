@@ -174,7 +174,6 @@
  '(org-pdftools-markup-pointer-opacity 0.5)
  '(org-pdftools-use-freepointer-annot t)
  '(org-protocol-default-template-key nil)
- '(org-roam-completion-everywhere t)
  '(org-roam-completion-system 'helm)
  '(org-roam-file-completion-tag-position 'append)
  '(org-roam-find-file-hook
@@ -182,7 +181,6 @@
                                         (lambda nil
                                           (call-interactively #'org-hide-properties))))
  '(org-roam-index-file "~/roam/index.org")
- '(org-roam-node-display-template "${title:*} ${tags:15}")
  '(org-startup-with-inline-images nil)
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
  '(org-superstar-remove-leading-stars t)
