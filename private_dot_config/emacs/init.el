@@ -772,7 +772,7 @@ before packages are loaded."
   ;;       `((".*" ,temporary-file-directory t)))
 
   ;; (setq epa-pinentry-mode 'loopback)
-  ;; (load-library "~/.config/emacs/secrets.el.gpg")
+  (load-library "~/.config/emacs/secrets.el.gpg")
 
   ;; (setq shackle-default-rule '(:frame t)
   ;;       shackle-display-buffer-frame-function 'sway-shackle-display-buffer-frame)
@@ -903,6 +903,7 @@ before packages are loaded."
     ("C-c n f f" . org-roam-node-find)
     ("C-c n r" . org-roam-refile)
     ("C-c n R" . org-roam-node-random)
+    ("C-c n e" . org-roam-extract-subtree)
     )
 
   (require 'org-roam-protocol)
