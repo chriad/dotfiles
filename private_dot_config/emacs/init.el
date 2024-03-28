@@ -958,15 +958,7 @@ before packages are loaded."
 
 ;;;; org-roam-in-buffer-headings
 
-  ;; (add-to-list 'load-path "/media/chriad/nebula/spacemacs-fork/private/bookmark-plus/")
-  ;; (require 'bookmark+)
   ;; (setq deft-directory "~/roam/")
-
-
-  ;; ;; https://emacs.stackexchange.com/questions/2999/how-to-maximize-my-emacs-frame-on-start-up
-  ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  ;; (add-hook 'window-setup-hook 'toggle-frame-fullscreen t)
-
 
 
   ;; (org-add-link-type "mpv" #'mpv-play)
@@ -982,16 +974,6 @@ before packages are loaded."
   ;; (setq evil-motion-trainer-threshold 6)
   ;; (setq evil-motion-trainer-super-annoying-mode t)
   ;; (emt-add-suggestion 'evil-next-line 'evil-avy-goto-char-timer)
-
-
-
-  ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-  ;; (use-package beacon
-  ;;   :ensure t
-  ;;   :config
-  ;;   (beacon-mode 1))
-
 
   ;; (evil-set-initial-state 'debugger-mode 'emacs)
   ;; (evil-set-initial-state 'paradox-mode 'emacs)
@@ -1058,47 +1040,6 @@ before packages are loaded."
 
   (require 'window-purpose)
 
-  ;; (require 'nov)
-  ;; (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-
-  ;; (defun my-nov-font-setup ()
-  ;;   (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
-  ;;                            :height 1.6))
-  ;; (add-hook 'nov-mode-hook 'my-nov-font-setup)
-  ;; (setq nov-text-width 80)
-
-  ;; (setq nov-text-width t)
-  ;; (setq visual-fill-column-center-text t)
-  ;; (add-hook 'nov-mode-hook 'visual-line-mode)
-  ;; (add-hook 'nov-mode-hook 'visual-fill-column-mode)
-
-;;; has bog
-
-  ;; (require 'justify-kp)
-  ;; (setq nov-text-width t)
-
-  ;; (defun my-nov-window-configuration-change-hook ()
-  ;;   (my-nov-post-html-render-hook)
-  ;;   (remove-hook 'window-configuration-change-hook
-  ;;                'my-nov-window-configuration-change-hook
-  ;;                t))
-
-  ;; (defun my-nov-post-html-render-hook ()
-  ;;   (if (get-buffer-window)
-  ;;       (let ((max-width (pj-line-width))
-  ;;             buffer-read-only)
-  ;;         (save-excursion
-  ;;           (goto-char (point-min))
-  ;;           (while (not (eobp))
-  ;;             (when (not (looking-at "^[[:space:]]*$"))
-  ;;               (goto-char (line-end-position))
-  ;;               (when (> (shr-pixel-column) max-width)
-  ;;                 (goto-char (line-beginning-position))
-  ;;                 (pj-justify)))
-  ;;             (forward-line 1))))
-  ;;     (add-hook 'window-configuration-change-hook
-  ;;               'my-nov-window-configuration-change-hook
-  ;;               nil t)))
 
   ;; (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
 
