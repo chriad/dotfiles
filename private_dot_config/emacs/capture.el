@@ -8,42 +8,6 @@
 ;;   :hook
 ;;   (org-capture-mode . evil-insert-state))
 
-;; (defun org-capture-pdf-active-region ()
-;;   "Capture the active region of the pdf-view buffer."
-;;   (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-;;          (pdf-buf (get-buffer pdf-buf-name)))
-;;     (if (buffer-live-p pdf-buf)
-;;         (with-current-buffer pdf-buf
-;;           (car (pdf-view-active-region-text)))
-;;       (user-error "Buffer %S not alive." pdf-buf-name))))
-
-;;   (defun org-capture-pdf-name ()
-;;     "Capture the active region of the pdf-view buffer."
-;;     (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-;;            (pdf-buf (get-buffer pdf-buf-name)))
-;;       (if (buffer-live-p pdf-buf)
-;;           (with-current-buffer pdf-buf
-;;             (f-no-ext (buffer-name)))
-;;         (user-error "Buffer %S not alive." pdf-buf-name))))
-
-;;   (defun org-capture-pdf-path ()
-;;     "Capture the active region of the pdf-view buffer."
-;;     (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-;;            (pdf-buf (get-buffer pdf-buf-name)))
-;;       (if (buffer-live-p pdf-buf)
-;;           (with-current-buffer pdf-buf
-;;             (eaf-get-path-or-url))
-;;         (user-error "Buffer %S not alive." pdf-buf-name))))
-
-;;   (defun org-capture-nov-path ()
-;;     "Capture the active region of the pdf-view buffer."
-;;     (let* ((pdf-buf-name (plist-get org-capture-plist :original-buffer))
-;;            (pdf-buf (get-buffer pdf-buf-name)))
-;;       (if (buffer-live-p pdf-buf)
-;;           (with-current-buffer pdf-buf
-;;             (eval nov-file-name))
-;;         (user-error "Buffer %S not alive." pdf-buf-name))))
-
 (require 'helm-org)
 
 (defun my/helm-in-org-buffer (filename &optional preselect)
@@ -67,38 +31,6 @@ with the `org-roam-find-file' interface"
   "Insert an org capture template at point."
   (interactive)
   (org-capture 0))
-
-(setq org-roam-dailies-capture-templates
-        '(
-          ("d" "default" plain
-           "%?"
-           :target (file+head "%<%Y-%m-%d>.org"
-                              "#+title: %<%Y-%m-%d>\n")
-           :unnarrowed t
-           :empty-lines-before 1)
-          ))
-
-;; DOCT
-;; https://github.com/progfolio/doct
-
-
-      ;; (setq org-capture-templates
-      ;;       (doct '(("projects"
-      ;;                :keys "p"
-      ;;                :children (("cpwq"
-      ;;                             :keys "j"
-      ;;                             :type plain
-      ;;                             :function (function (lambda () (find-file (concat "/home/chriad/roam/" (org-capture-project) ".org"))))
-      ;;                             :template ("#+title: %(org-capture-project)"
-      ;;                                        "#+roam_key: [[file:%(org-capture-project-root)][%(org-capture-project)]]"
-      ;;                                        "#+roam_tags: project %(org-roam-tag-add)"
-      ;;                                        "\n"
-      ;;                                        ""
-      ;;                                        "#+begin_quote\n%?\n#+end_quote"
-      ;;                                        "\n"
-      ;;                                        "* %(org-capture-project)"
-      ;;                                        :unnarrowed t)))
-      ;;                ))))
 
 ;; =========
 
@@ -202,19 +134,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 
 (setq org-capture-templates
         '(
-          ;; ("t" "Todo" entry (file+headline "~/tmp/gtd.org" "Tasks")
-          ;;  "* TODO %?\n  %i\n  %a")
-
-          ;; ("i" "Inbox"
-          ;;  entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
-          ;;  "* %?\n%U\n\n  %i"
-          ;;  :kill-buffer t)
-
-          ;; ("u" "Todo with link"
-          ;;  entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
-          ;;  "* %?\n%U\n\n  %i\n  %a"
-          ;;  :kill-buffer t)
-
           ;; go directly to a note heading in roam
           ("h" "roam headline" entry
            (function (lambda () (my/helm-in-org-buffer (my/org-roam-find-file-name))))
@@ -340,20 +259,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
 ;; capture directly without goin through dispatcher
 (define-key global-map (kbd "C-c x")
             (lambda () (interactive) (org-roam-capture nil "t")))
-
-
-(setq org-roam-capture-templates
-      '(
-        ("d" "default" plain "%?"
-         :target (file+head "${slug}.org"
-                            "#+title: ${title}")
-         :unnarrowed t)
-
-        ("c" "context" plain "link: %A\nregion: %i\ncomment: %?"
-         :target (file+head "${slug}.org"
-                            "#+title: ${title}")
-         :unnarrowed t))
-      )
 
 
 (setq org-roam-capture-ref-templates ;; :fox:
