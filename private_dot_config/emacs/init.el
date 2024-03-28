@@ -139,6 +139,9 @@ This function should only modify configuration layer settings."
                                                           :fetcher github
                                                           :repo "bard/emacs-director"
                                                           :files (:defaults "util/*.el" "examples/demo/*.el")))
+                                      (doctest :location (recipe
+                                                          :fetcher github
+                                                          :repo "ag91/doctest"))
                                       ;; m-buffer
                                       ;; shackle
                                       ;; sway
