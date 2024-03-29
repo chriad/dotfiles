@@ -1,92 +1,9 @@
 ;;; capture.el --- My personal capture templates.
-;;; Code:
-
-(setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
 
 ;; (use-package org-capture
 ;;   :after org
 ;;   :hook
 ;;   (org-capture-mode . evil-insert-state))
-
-(require 'helm-org)
-
-(defun my/helm-in-org-buffer (filename &optional preselect)
-  "Display and filter headlines in an org file with `helm'.
-FILENAME is the org file to filter PRESELECT is the default entry"
-  (interactive)
-  (helm :sources (helm-org-build-sources
-                  (list filename))
-        :candidate-number-limit 99999
-        :truncate-lines helm-org-truncate-lines
-        :preselect preselect
-        :buffer "*helm org in buffers*"))
-
-(defun my/org-roam-find-file-name ()
-  "Find and return the path to an org-roam file
-with the `org-roam-find-file' interface"
-  (interactive)
-  (save-window-excursion (org-roam-node-find) buffer-file-name))
-
-(defun org-capture-at-point ()
-  "Insert an org capture template at point."
-  (interactive)
-  (org-capture 0))
-
-;; =========
-
-;; if DOCT doesnt work use this
-(cl-defun my/org-roam-node-find (&optional other-window initial-input filter-fn &key templates)
-  "Find and open an Org-roam node by its title or alias.
-INITIAL-INPUT is the initial input for the prompt.
-FILTER-FN is a function to filter out nodes: it takes an `org-roam-node',
-and when nil is returned the node will be filtered out.
-If OTHER-WINDOW, visit the NODE in another window.
-The TEMPLATES, if provided, override the list of capture templates (see
-`org-roam-capture-'.)"
-  (interactive current-prefix-arg)
-  (let ((node (org-roam-node-read initial-input filter-fn)))
-    (if (org-roam-node-file node)
-        (progn
-          ;; (org-roam-node-visit node other-window)
-          (my/helm-in-org-buffer (org-roam-find-file-name))
-          )
-      (org-roam-capture-
-       :node node
-       :templates templates
-       :props '(:finalize find-file)))))
-
-(defun my/org-roam-find-file (&optional initial-prompt completions filter-fn no-confirm)
-  "Find and open an Org-roam file. Move point to the heading 'Notes'.
-INITIAL-PROMPT is the initial title prompt.
-COMPLETIONS is a list of completions to be used instead of
-`org-roam--get-title-path-completions`.
-FILTER-FN is the name of a function to apply on the candidates
-which takes as its argument an alist of path-completions.  See
-`org-roam--get-title-path-completions' for details.
-If NO-CONFIRM, assume that the user does not want to modify the initial prompt."
-  (interactive)
-  ;; (unless org-roam-mode (org-roam-mode))
-  (let* ((completions (funcall (or filter-fn #'identity)
-                               (or completions (org-roam--get-title-path-completions))))
-         (title-with-tags (if no-confirm
-                              initial-prompt
-                            (org-roam-completion--completing-read "File: " completions
-                                                                  :initial-input initial-prompt)))
-         (res (cdr (assoc title-with-tags completions)))
-         (file-path (plist-get res :path)))
-    (if file-path
-        (progn
-          (org-roam--find-file file-path)
-          (goto-char (point-min))
-          (outline-next-heading)
-          (org-ask-location)
-          )
-
-      (let ((org-roam-capture--info `((title . ,title-with-tags)
-                                      (slug  . ,(funcall org-roam-title-to-slug-function title-with-tags))))
-            (org-roam-capture--context 'title))
-        (setq org-roam-capture-additional-template-props (list :finalize 'find-file))
-        (org-roam-capture--capture)))))
 
 (defun chriad/fortune-append (&optional interactive file)
   "Append STRING to the fortune FILE.
@@ -114,23 +31,35 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
     ;;       (fortune-compile file)))
     ))
 
-;; This can be done by using oldp Notes
-;; (defun org-ask-location ()
-;;   (let ((hd "Notes"))
-;;     (goto-char (point-min))
-;;     (outline-next-heading)
-;;     (if (re-search-forward
-;;          (format org-complex-heading-regexp-format (regexp-quote hd))
-;;          nil t)
-;;         (goto-char (point-at-bol))
-;;       (goto-char (point-max))
-;;       (or (bolp) (insert "\n"))
-;;       (insert "* " hd "\n")))
-;;   (end-of-line))
+;;; org-capture
 
-;; (defun find-pdfs-roam-file-other-widow ()
-;;   (interactive)
-;;   (find-file-other-window (concat "/home/chriad/roam/"  (org-capture-pdf-name) ".org")))
+;; capture directly without goin through dispatcher
+(define-key global-map (kbd "C-c x")
+            (lambda () (interactive) (org-roam-capture nil "t")))
+
+(defun org-capture-at-point ()
+  "Insert an org capture template at point."
+  (interactive)
+  (org-capture 0))
+
+;; helper for "h" capture template
+(defun my/helm-in-org-buffer (filename &optional preselect)
+  "Display and filter headlines in an org file with `helm'.
+FILENAME is the org file to filter PRESELECT is the default entry"
+  (interactive)
+  (helm :sources (helm-org-build-sources
+                  (list filename))
+        :candidate-number-limit 99999
+        :truncate-lines helm-org-truncate-lines
+        :preselect preselect
+        :buffer "*helm org in buffers*"))
+
+;; helper for "h" capture template
+(defun my/org-roam-find-file-name ()
+  "Find and return the path to an org-roam file
+with the `org-roam-find-file' interface"
+  (interactive)
+  (save-window-excursion (org-roam-node-find) buffer-file-name))
 
 (setq org-capture-templates
         '(
@@ -160,8 +89,8 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            #'chriad/fortune-append
            "%i\n\n          -- %:link%(eval fortune-end-sep)" :immediate-finish t)
 
-          ;; ("x" "firefox Org Capture Selected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
-          ;;  "* %?%i\n%u\n%a\n")
+          ("x" "firefox Org Capture Selected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
+           "* %?%i\n%u\n%a\n")
 
           ;; ("y" "firefox Org Capture Unselected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
           ;;  "* %?\n%u\n%a\n")
@@ -256,32 +185,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
            :immediate-finish t)
           ))
 
-;; capture directly without goin through dispatcher
-(define-key global-map (kbd "C-c x")
-            (lambda () (interactive) (org-roam-capture nil "t")))
-
-
-(setq org-roam-capture-ref-templates ;; :fox:
-      '(
-
-        ("n" "webpage no region" entry "* %?"
-         :if-new (file+head "${slug}.org" "#+title: ${title}")
-         :unnarrowed t)
-
-        ("r" "webpage no region" entry "* %?"
-         :if-new (file+head "${slug}.org" "#+title: ${title}")
-         :file-name "${slug}"
-         :head "#+title: ${title}\n"
-         :unnarrowed t)
-
-        ("i" "webpage no region" item "%i"
-         :if-new (file+head "${slug}.org" "#+title: ${title}")
-         :file-name "${slug}"
-         ;; :head "#+title: ${title}\n"
-         :unnarrowed t)
-        )
-      )
-
+;; emacsclient --eval "(abs--quick-capture)" --alternate-editor= --create-frame
 (defun abs--quick-capture ()
   ;; redefine the function that splits the frame upon org-capture
   (defun abs--org-capture-place-template-dont-delete-windows (oldfun args)
@@ -300,9 +204,3 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
   (abs--org-capture-place-template-dont-delete-windows 'org-capture nil)
   )
 
-;; (add-hook 'org-capture-mode-hook 'evil-insert-state)
-;; (add-hook 'org-capture-mode-hook 'evil-hybrid-state)
-
-(provide 'capture)
-
-;;; capture.el ends here
