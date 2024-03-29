@@ -745,8 +745,11 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+
 ;; not customizable
 (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
+(setq define-word-offline-dict-directory "/media/chriad/ext4/SOFTWARE/dictionaries_enwiktionary/ding/")
+(setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
 
 (put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")
 
@@ -774,7 +777,7 @@ before packages are loaded."
   ;;       auto-save-file-name-transforms
   ;;       `((".*" ,temporary-file-directory t)))
 
-  ;; (setq epa-pinentry-mode 'loopback)
+  (setq epa-pinentry-mode 'loopback)
   (load-library "~/.config/emacs/secrets.el.gpg")
 
   ;; (setq shackle-default-rule '(:frame t)
@@ -877,6 +880,25 @@ before packages are loaded."
     (cl-defmethod org-roam-node-uuid ((node org-roam-node))
       "Return the uuid of NODE."
       (uuidgen-1))
+    (setq org-roam-capture-ref-templates ;; :fox:
+          '(
+            ("n" "webpage no region" entry "* %?"
+             :if-new (file+head "${slug}.org" "#+title: ${title}")
+             :unnarrowed t)
+
+            ("r" "webpage no region" entry "* %?"
+             :if-new (file+head "${slug}.org" "#+title: ${title}")
+             :file-name "${slug}"
+             :head "#+title: ${title}\n"
+             :unnarrowed t)
+
+            ("i" "webpage no region" item "%i"
+             :if-new (file+head "${slug}.org" "#+title: ${title}")
+             :file-name "${slug}"
+             ;; :head "#+title: ${title}\n"
+             :unnarrowed t)
+            )
+          )
     (setq org-roam-capture-templates
       '(
         ("d" "default" plain "%?"
@@ -892,8 +914,7 @@ before packages are loaded."
         ("c" "context" plain "link: %A\nregion: %i\ncomment: %?"
          :target (file+head "${slug}.org"
                             "#+title: ${title}")
-         :unnarrowed t))
-      )
+         :unnarrowed t)))
     :bind
     ("C-c n i" . org-roam-node-insert)
     ("C-c n d" . org-roam-dailies-capture-today)
@@ -951,7 +972,7 @@ before packages are loaded."
 
   (require 'org-protocol)
 
-  ;; (load "~/.config/emacs/roam-helpers.el")
+  (load "~/.config/emacs/roam-helpers.el")
 
   ;; (require 'mplayer-mode)
 
