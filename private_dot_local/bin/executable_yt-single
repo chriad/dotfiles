@@ -1,0 +1,5 @@
+#!/bin/bash
+# download single youtube video to my location with my default settings
+prefix=$CHRIAD_JELLYFIN_MEDIA_HOME
+youtube-dl --config-location ~/.config/youtube-dl/config.embed \
+           -o "$prefix/%(extractor)s/%(channel)s/%(title)s.%(ext)s" "$@"

@@ -1,0 +1,21 @@
+# ignore videos that are not available
+-i
+# resume partially downloaded files
+-c
+
+# format
+# -f bestvideo,bestaudio
+
+# write metadata
+--write-info-json
+--write-thumbnail
+--write-description
+
+# embed metadata
+--add-metadata
+--xattrs
+
+# subtitles
+--write-sub
+--write-auto-sub
+--sub-lang en,fr

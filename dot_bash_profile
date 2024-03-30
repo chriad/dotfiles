@@ -1,0 +1,40 @@
+setxkbmap -layout us -option ctrl:nocaps
+
+
+GUIX_PROFILE="/home/chriad/.guix-profile"
+. "$GUIX_PROFILE/etc/profile"
+
+PREFIX="CHRIAD_"
+CONFIG_SUFFIX="_CONFIG"
+HOME_SUFFIX="_HOME"
+SYNC_SUFFIX="_SYNC"
+# koreader
+export $PREFIX"KOREADER_SIDECAR"$HOME_SUFFIX=$HOME/koreader-books
+export $PREFIX"KOREADER"$CONFIG_SUFFIX=$HOME/koreader
+# quaderno
+export $PREFIX"QUADERNO"$HOME_SUFFIX=/media/chriad/ext4/dpt-mirror
+
+#. ~/.config/wayland-theming
+
+if [ -f ~/.bashrc  ]; then
+    . ~/.bashrc
+fi
+
+
+# if [ -e /home/chriad/.nix-profile/etc/profile.d/nix.sh ]; then . /home/chriad/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+# opam configuration
+test -r /home/chriad/.opam/opam-init/init.sh && . /home/chriad/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+# sway for ubuntu
+export LD_LIBRARY_PATH=/usr/local/lib/x86_64-linux-gnu/
+
+# If running from tty1 start sway
+[ "$(tty)" = "/dev/tty1" ] && exec sway
+
+# Go
+export PATH=$PATH:/usr/local/go/bin
+
+if [ -z "${WAYLAND_DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
+    exec sway
+fi
