@@ -202,10 +202,6 @@ source ~/.local/bin/{sync-history.sh,fzf-params.sh}
 
 eval "$(starship init bash)"
 
-CALIBRE_ROOT=/media/chriad/ssd-45
-GPODDER_ROOT=/media/chriad/ssd-45
-QUADERNO_ROOT=/media/chriad/ext4/dpt-mirror # use $QUADERNO_ROOT/dpt
-
 # select a parent directory of the current, means cd parent
 cd--p() {
     local declare dirs=()
@@ -236,17 +232,28 @@ cd--mkcdir ()
         cd -P -- "$1"
 }
 
-tv-single() {
+yt--tv() {
+    local prefix=$CHRIAD_JELLYFIN_MEDIA_HOME
     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
-               -o '/media/chriad/lenovo/TV/%(extractor)s/%(title)s/%(title)s.%(ext)s' \
+               -o $prefix'/TV/%(extractor)s/%(title)s/%(title)s.%(ext)s' \
                "$@"
 }
 
-tv-srf() {
-    youtube-dl --config-location ~/.config/youtube-dl/config.embed --hls-prefer-ffmpeg \
-               -o '/media/chriad/lenovo/TV/%(extractor)s/%(title)s/%(title)s.%(ext)s' \
-               "$@"
+# https://gist.github.com/abesto/4286574
+# on the fly composition
+
+function curry() {
+    exportfun=$1; shift
+    fun=$1; shift
+    params=$*
+    cmd=$"function $exportfun() {
+        more_params=\$*;
+        $fun $params \$more_params;
+    }"
+    eval $cmd
 }
+
+curry yt--tv-srf yt--tv --hls-prefer-ffmpeg
 
 # yt-single() {
 #     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
@@ -284,7 +291,7 @@ pdf--pdfx-browse-refs-json() {
 }
 
 # pipe this to file for reference for static playlists
-dump-playlist-here() {
+yt--dump-playlist-here() {
     youtube-dl --get-title "$1" -o "%(playlist_index)d    %(title)s.%(ext)s" &> "$1".dump
 }
 
@@ -292,7 +299,7 @@ ffmpeg--dump-metadata() {
 	  ffmpeg -i "$1" -f ffmetadata - 2> /dev/null
 }
 
-git_diff_pdf() {
+git--diff-pdf() {
     yes | git difftool --tool=diffpdf $1
 }
 
@@ -301,7 +308,7 @@ emby-poster-here() {
 	  xclip -selection clipboard -t image/png -o > folder.png
 }
 
-youtube-dl-audio() {
+yt--audio() {
     /usr/local/bin/youtube-dl --extract-audio --restrict-filenames --write-info-json --write-description --write-auto-sub --sub-lang en --audio-format mp3 "$1"
 }
 # youtube-dl-playlist() {
@@ -325,24 +332,24 @@ m4b--remove-chaps() {
     for f in *.m4b ; do mp4chaps -r "${f}"; done
 }
 
-iplayer-series() { get_iplayer --type=radio --radio-quality=std --pid="$1" --pid-recursive; }
+iplayer--series() { get_iplayer --type=radio --radio-quality=std --pid="$1" --pid-recursive; }
 # iplayer-single b044j7pd --versions=original,podcast
 # iplayer-single() { get_iplayer --type=radio --radio-quality=high,std --pid="$1" "$@"; }
-iplayer-single() {
+iplayer--single() {
     : <<'COMMENT'
 --versions=original,podcast
 COMMENT
     get_iplayer --type=radio --radio-quality=high,std --pid="$1" "$@"
                  }
-iplayer-list() { get_iplayer --type=radio --pid="$1" --pid-recursive-list --sort=firstbcast; }
-iplayer-info() { get_iplayer --pid="$1" --info | tee info."$1".txt |egrep "version|qualities"; }
+iplayer--list() { get_iplayer --type=radio --pid="$1" --pid-recursive-list --sort=firstbcast; }
+iplayer--info() { get_iplayer --pid="$1" --info | tee info."$1".txt |egrep "version|qualities"; }
 
 
-yt-parallel() {
+yt--parallel() {
     youtube-dl --get-id "$1" | xargs -I '{}' -P "$2" yt-single 'https://youtube.com/watch?v={}'
 }
 
-yt-parallel-playlist() {
+yt--parallel-playlist() {
     prefix="/media/chriad/lenovo"
     youtube-dl --get-id "$1" | xargs -I '{}' -P "$2" youtube-dl --get-filename --no-playlist --config-location ~/.config/youtube-dl/config.embed -o "$prefix/%(extractor)s/%(channel)s/%(playlist)s/%(playlist_index)s -- %(title)s.%(ext)s" "https://youtube.com/watch?v={}&list=$1"
 }
@@ -351,7 +358,7 @@ ffmpeg--fprobe-json() {
     ffprobe -v quiet -print_format json -show_format -show_streams "$1"
 }
 
-youtube-dl-probe-audio() {
+yt--probe-audio() {
     # 1 for code, 2 for url
     youtube-dl -f "$1"  -o - "$2" | mpv -
 }
@@ -409,7 +416,7 @@ links2--textify-html-toc() {
     links2 -dump "${1}" | egrep -v '^$' | sed -e 's/^[ \t]*//' | grep --only-matching --extended-regexp "^[0-9]{1,2}.*"
 }
 
-is-1001() {
+list--is-1001() {
     #wget 'https://www.imdb.com/list/ls024863935/export?ref_=ttls_otexp' -N -O ~/scratch/1001.txt
     csvcut -c6 ~/scratch/1001.txt | fzf --header-lines 1
 }
@@ -482,7 +489,7 @@ rename-from-2c-tsv() {
     done < out.txt
 }
 
-arte-merge-streams() {
+ffmpeg--arte-merge-streams() {
     vid="$1"
     aud="$2"
     sub="$3"
@@ -490,7 +497,7 @@ arte-merge-streams() {
     ffmpeg -i "${vid}" -i "${aud}" -i "${sub}" -map 0:v -map 1:a -map 2 -c:v copy -c:a copy -c:s mov_text -metadata:s:s:0 language=eng "${name}".mp4
 }
 
-arte-merge-combined() {
+ffmpeg--arte-merge-combined() {
     vid_aud="$1"
     sub="$2"
     name="$3"
@@ -531,15 +538,6 @@ cpdf--graft-annots() {
     target="$2"
     cpdf -copy-annotations "$source" "$target" -o "${target%pdf}"grafted.pdf
 }
-
-
-# cpdf-embed-annots-texts() {
-#     # expect a pdf file with annotations without embedded text
-#     source="$1"
-#     cp "${source}" "${source%pdf}"bak.pdf
-#     cpdf -remove-annotations "${source%pdf}"bak.pdf -o "${source%pdf}"blank.pdf
-#     cpdf -copy-annotations "$source" "${source%pdf}"blank.pdf -o "${target%pdf}"annots-text-embedded.pdf
-# }
 
 quodlibet--sort-queries() {
     fp='/home/chriad/.var/app/io.github.quodlibet.QuodLibet/config/quodlibet/lists/'
@@ -760,12 +758,6 @@ mp4chaps--pipeline() {
     mp4chaps -i "${fname}"
 }
 
-export GOROOT=$HOME/go
-export PATH=$PATH:$GOROOT/bin
-export PATH=$PATH:/var/lib/flatpak/exports/bin
-
-
-export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
 
 # flatpak aliases
 if [ -d ~/.bashrc.d ]; then
@@ -776,8 +768,6 @@ if [ -d ~/.bashrc.d ]; then
     done
 fi
 unset rc
-
-TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
 
 # opam configuration
 test -r /home/chriad/.opam/opam-init/init.sh && . /home/chriad/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true

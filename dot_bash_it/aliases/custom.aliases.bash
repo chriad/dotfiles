@@ -1,3 +1,4 @@
+alias catp="cat -p"
 alias fzf--screencasts="rg -g /home/chriad/Videos/Screencasts/*.{mkv,mp4,ogv,webm} --files 2> /dev/null | fzf --bind='enter:execute(mpv {})'"
 alias reload_custom_aliases=". ~/.bash_it/aliases/custom.aliases.bash"
 alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
@@ -69,7 +70,7 @@ alias uncaps='xdotool key Caps_Lock'
 alias bdfr='conda run -n py39 python3 -m bdfr'
 
 # chezmoi
-alias cs='chezmoi status'
+alias cs='chezmoi status 2>/dev/null'
 # alias cm="chezmoi managed --include files,symlinks | fzf --bind='enter:execute(chezmoi merge ~/{})'"
 alias cm="chezmoi status 2>/dev/null | sed -e 's/^[ \t]*//' | fzf --bind='enter:execute(chezmoi merge ~/{2})'"
 alias cc='chezmoi cd'
