@@ -1,3 +1,4 @@
+alias s="kitten ssh"
 alias catp="cat -p"
 alias fzf--screencasts="rg -g /home/chriad/Videos/Screencasts/*.{mkv,mp4,ogv,webm} --files 2> /dev/null | fzf --bind='enter:execute(mpv {})'"
 alias reload_custom_aliases=". ~/.bash_it/aliases/custom.aliases.bash"
