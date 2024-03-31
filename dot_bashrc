@@ -656,11 +656,12 @@ alias pdffd=quaderno--pdffd
 #     "$real_command" "${command_args[@]}" "$@"
 # }
 
-# mvdoc() {
-    
-# }
+fzf--images() {
+    IMPATH=/home/chriad/essential-images/cheat
+    fdfind . $IMPATH 2> /dev/null | fzf --bind='enter:execute(eog {}  &>/dev/null &)+abort'
+}
 
-flatapps() {
+flatpak--flatapps() {
     flatpak list | cut -f 2 | fzf
 }
 
