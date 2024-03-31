@@ -1,3 +1,8 @@
+# taskset -c <x> : reserve processor, make faster
+alias gpodder="taskset -c 0 /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=/app/bin/gpodder org.gpodder.gpodder 2> /dev/null &"
+alias quodlibet="taskset -c 1 /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=quodlibet io.github.quodlibet.QuodLibet 2> /dev/null &"
+alias gpo='flatpak run --branch=stable --arch=x86_64 --command=/app/bin/gpo org.gpodder.gpodder'
+alias operon='flatpak run --command=operon io.github.quodlibet.QuodLibet'
 alias s="kitten ssh"
 alias catp="cat -p"
 alias fzf--screencasts="rg -g /home/chriad/Videos/Screencasts/*.{mkv,mp4,ogv,webm} --files 2> /dev/null | fzf --bind='enter:execute(mpv {})'"
