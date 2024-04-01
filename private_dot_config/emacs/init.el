@@ -130,6 +130,7 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      tldr
                                       el-patch
                                       org-tidy
                                       ;; mic-paren ;; customize paren-face-match
@@ -781,7 +782,8 @@ before packages are loaded."
   ;;       `((".*" ,temporary-file-directory t)))
 
   (setq epa-pinentry-mode 'loopback)
-  (load-library "~/.config/emacs/secrets.el.gpg")
+  ;; not needed currently
+  ;; (load-library "~/.config/emacs/secrets.el.gpg")
 
   ;; (setq shackle-default-rule '(:frame t)
   ;;       shackle-display-buffer-frame-function 'sway-shackle-display-buffer-frame)
