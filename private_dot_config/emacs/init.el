@@ -757,8 +757,10 @@ before packages are loaded."
 
 (put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")
 
+
 ;; eval this manually from time to time to get latest version
-  (quelpa '(bookmark+ :fetcher wiki
+  (defun check-bookmarkplus-update ()
+    (quelpa '(bookmark+ :fetcher wiki
                       :files
                       ("bookmark+.el"
                        "bookmark+-mac.el"
@@ -768,8 +770,10 @@ before packages are loaded."
                        "bookmark+-lit.el"
                        "bookmark+-doc.el"
                        "bookmark+-chg.el"))
-          ;; :upgrade t
-          )
+            ;; :upgrade t
+            ))
+
+  (setq paradox-menu-mode-hook '(paradox-refresh-upgradeable-packages check-bookmarkplus-update))
 
   (require 'org-ref)
   (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))
