@@ -96,6 +96,9 @@ This function should only modify configuration layer settings."
      ;; pdf
      ;; eaf
      helm
+     (spacemacs-evil :variables
+                     spacemacs-evil-collection-allowed-list
+                     '(eglot))
      command-log
      lsp
      dap
