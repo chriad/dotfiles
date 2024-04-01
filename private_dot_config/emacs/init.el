@@ -991,13 +991,6 @@ before packages are loaded."
   ;; (setq deft-directory "~/roam/")
 
 
-  ;; (org-add-link-type "mpv" #'mpv-play)
-  ;; (defun org-mpv-complete-link (&optional arg)
-  ;;   (replace-regexp-in-string
-  ;;    "file:" "mpv:"
-  ;;    (org-file-complete-link arg)
-  ;;    t t))
-  ;; (add-hook 'org-open-at-point-functions #'mpv-seek-to-position-at-point)
 
 
   ;; (global-evil-motion-trainer-mode 1)
@@ -1285,7 +1278,6 @@ This function is called at the very end of Spacemacs initialization."
  '(paren-sexp-mode t)
  '(pdfgrep-options " -H -n -r ")
  '(persp-use-workgroups t)
- '(projectile-project-search-path '("/home/chriad" "/home/chriad/emacs-projects"))
  '(racket-browse-url-function 'browse-url-firefox)
  '(racket-documentation-search-location ''local)
  '(scroll-conservatively 10000)
