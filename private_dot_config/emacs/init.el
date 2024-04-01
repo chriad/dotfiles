@@ -98,7 +98,7 @@ This function should only modify configuration layer settings."
      helm
      (spacemacs-evil :variables
                      spacemacs-evil-collection-allowed-list
-                     '(eglot))
+                     '(ediff))
      command-log
      lsp
      dap
