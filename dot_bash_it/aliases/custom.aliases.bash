@@ -1,4 +1,15 @@
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+# alias l='ls -CF'
+alias l=exa
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
 # taskset -c <x> : reserve processor, make faster
+alias dmesg="dmesg -wL" # color and --tail
 alias gpodder="taskset -c 0 /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=/app/bin/gpodder org.gpodder.gpodder 2> /dev/null &"
 alias quodlibet="taskset -c 1 /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=quodlibet io.github.quodlibet.QuodLibet 2> /dev/null &"
 alias gpo='flatpak run --branch=stable --arch=x86_64 --command=/app/bin/gpo org.gpodder.gpodder'
@@ -40,7 +51,6 @@ alias ripgrep=rg
 alias z=zathura
 alias say=spd-say
 alias lilipond=lilypond
-alias ls=exa
 alias pdf2text=pdftotext
 alias powershell=pwsh
 alias info=pinfo

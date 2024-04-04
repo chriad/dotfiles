@@ -14,6 +14,35 @@ PATH=$PATH:/home/chriad/.local/bin:/home/chriad/.fzf/bin
 PATH=$PATH:/home/chriad/.local/bin/platform-tools
 PATH=$PATH:/usr/lib/stardict-tools
 
+# why is it not on path?
+XDG_DATA_DIRS=$XDG_DATA_DIRS:/home/chriad/.local/share
+
+GUIX_PROFILE="/home/chriad/.guix-profile"
+. "$GUIX_PROFILE/etc/profile"
+
+PREFIX="CHRIAD_"
+CONFIG_SUFFIX="_CONFIG"
+HOME_SUFFIX="_HOME"
+SYNC_SUFFIX="_SYNC"
+# koreader
+export $PREFIX"KOREADER_SIDECAR"$HOME_SUFFIX=$HOME/koreader-books
+export $PREFIX"KOREADER"$CONFIG_SUFFIX=$HOME/koreader
+# quaderno
+export $PREFIX"QUADERNO"$HOME_SUFFIX=/media/chriad/ext4/dpt-mirror
+export $PREFIX"JELLYFIN_MEDIA"$HOME_SUFFIX=/media/chriad/lenovo
+
+export CALIBRE_ROOT=/media/chriad/ssd-45
+export GPODDER_ROOT=/media/chriad/ssd-45
+export QUADERNO_ROOT=/media/chriad/ext4/dpt-mirror # use $QUADERNO_ROOT/dpt
+
+export TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+
+export GOROOT=$HOME/go
+export PATH=$PATH:$GOROOT/bin
+export PATH=$PATH:/var/lib/flatpak/exports/bin
+
+export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+
 export TEXINPUT=.:/home/chriad/.local/share/mystyles/:$TEXINPUTS # for tex2page
 export LISP=sbcl
 export EDITOR="emacsclient"                  # $EDITOR opens in terminal
@@ -88,24 +117,15 @@ fi
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
+# ~/.bash_it/aliases/custom.aliases.bash
+# if [ -f ~/.bash_aliases ]; then
+#     . ~/.bash_aliases
+# fi
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -196,14 +216,12 @@ source "$BASH_IT"/bash_it.sh
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-eval "$(jump shell)"
-
 source ~/.local/bin/{sync-history.sh,fzf-params.sh}
 
 eval "$(starship init bash)"
 
 # select a parent directory of the current, means cd parent
-cd--p() {
+p() {
     local declare dirs=()
     get_parent_dirs() {
         if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
@@ -226,7 +244,7 @@ d() {
             && cd "$DIR"
 }
 
-cd--mkcdir ()
+mkcdir ()
 {
     mkdir -p -- "$1" &&
         cd -P -- "$1"
