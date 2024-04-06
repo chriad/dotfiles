@@ -1,0 +1,29 @@
+{
+  "info": {
+    "name": "hr2 Hoerspiel: <title> | <albumartist> nach <artist>"
+  },
+  "Func0": {
+    "fields": [
+      "albumartist"
+    ],
+    "func_name": "texttotag",
+    "module": "puddlestuff.functions",
+    "arguments": [
+      "%title%",
+      "%1 | %2 nach %3",
+      "> %2"
+    ]
+  },
+  "Func1": {
+    "fields": [
+      "title"
+    ],
+    "func_name": "texttotag",
+    "module": "puddlestuff.functions",
+    "arguments": [
+      "%title%",
+      "%1 | %2",
+      "%1"
+    ]
+  }
+}
