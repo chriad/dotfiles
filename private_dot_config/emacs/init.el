@@ -85,7 +85,7 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-help-tooltip 'manual)
      ;; emoji
-     better-defaults
+     ;; better-defaults ;; emacs style
      common-lisp
      ;; (ipython-notebook :variables ein-backend 'jupyter)
      emacs-lisp
@@ -93,7 +93,7 @@ This function should only modify configuration layer settings."
      ;;           wakatime-cli-path "wakatime"
      ;;           wakatime-python-bin nil)
      git
-     ;; pdf
+     pdf
      ;; eaf
      helm
      (spacemacs-evil :variables
@@ -759,7 +759,7 @@ before packages are loaded."
 
 
 ;; eval this manually from time to time to get latest version
-  (defun check-bookmarkplus-update ()
+  (defun check-emacswiki-updates ()
     (quelpa '(bookmark+ :fetcher wiki
                       :files
                       ("bookmark+.el"
@@ -769,9 +769,9 @@ before packages are loaded."
                        "bookmark+-key.el"
                        "bookmark+-lit.el"
                        "bookmark+-doc.el"
-                       "bookmark+-chg.el"))
-            ;; :upgrade t
-            ))
+                       "bookmark+-chg.el")))
+    (quelpa '(narrow-indirect :fetcher wiki))
+    )
 
   (setq paradox-menu-mode-hook '(paradox-refresh-upgradeable-packages check-bookmarkplus-update))
 
@@ -884,6 +884,11 @@ before packages are loaded."
     (setq org-roam-directory "/home/chriad/roam/")
     (setq org-roam-node-display-template "${title:*} ${tags:15}")
     (setq org-roam-completion-everywhere t)
+    (setq org-id-link-to-org-use-id t)
+
+    ;; (setq org-roam-completion-system 'helm)
+    ;; (setq org-roam-file-completion-tag-position 'append)
+    ;; (setq org-roam-index-file "~/roam/index.org")
     ;; (setq org-roam-dailies-directory "journal/")
     (org-roam-db-autosync-mode 1)
     (cl-defmethod org-roam-node-uuid ((node org-roam-node))
@@ -937,6 +942,7 @@ before packages are loaded."
     ("C-c n r" . org-roam-refile)
     ("C-c n R" . org-roam-node-random)
     ("C-c n e" . org-roam-extract-subtree)
+    ("C-c n o" . org-id-get-create)
     )
 
   (require 'org-roam-protocol)
@@ -958,12 +964,14 @@ before packages are loaded."
   ;;         org-roam-server-network-label-wrap-length 20))
 
 
-
   (use-package hydra)
   (require 'org-fc-hydra)
   (require 'org-fc-keymap-hint)
   (global-set-key (kbd "C-c f") 'org-fc-hydra/body)
   (setq org-fc-directories '("~/roam/"))
+  (setq org-fc-after-flip-hook '(org-hide-src-block-delimiters))
+  (setq org-fc-after-setup-hook nil)
+  (setq org-fc-review-history-file (no-littering-expand-var-file-name "org-fc-reviews.tsv"))
   (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-flip-mode
     (kbd "RET") 'org-fc-review-flip
     (kbd "n") 'org-fc-review-flip
@@ -1040,8 +1048,8 @@ before packages are loaded."
 
 
 
-  (require 'pdfgrep)
-  (pdfgrep-mode)
+  ;; (require 'pdfgrep)
+  ;; (pdfgrep-mode)
 
   (setq helm-dash-browser-func 'eww)
   (setq dash-docs-browser-func 'eww)
@@ -1178,16 +1186,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
- '(bmkp-last-as-first-bookmark-file "/media/chriad/nebula/spacemacs-fork/.cache/bookmarks")
  '(company-backends '(company-capf company-semantic company-files))
- '(dap-python-executable "/media/chriad/nebula/anaconda3/bin/python")
- '(dired-auto-revert-buffer 'dired-directory-changed-p)
  '(dired-listing-switches "-alh")
  '(emacs-lisp-mode-hook
    '(eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode eldoc-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode))
  '(enable-local-variables t)
- '(evil-insert-state-modes
-   '(org-capture-mode eaf-edit-mode comint-mode erc-mode eshell-mode geiser-repl-mode gud-mode inferior-apl-mode inferior-caml-mode inferior-emacs-lisp-mode inferior-j-mode inferior-python-mode inferior-scheme-mode inferior-sml-mode internal-ange-ftp-mode prolog-inferior-mode reb-mode shell-mode slime-repl-mode term-mode wdired-mode))
  '(evil-move-cursor-back nil)
  '(evil-org-use-additional-insert t t)
  '(evil-want-Y-yank-to-eol nil)
@@ -1241,11 +1244,6 @@ This function is called at the very end of Spacemacs initialization."
  '(org-download-screenshot-method "gnome-screenshot -a -f %s")
  '(org-ellipsis " ↴")
  '(org-export-headline-levels 6)
- '(org-fc-after-flip-hook '(org-hide-src-block-delimiters))
- '(org-fc-after-setup-hook nil)
- '(org-fc-directories '("~/agenda"))
- '(org-fc-review-history-file
-   "/media/chriad/nebula/spacemacs-config-files/fork/org-fc-reviews.tsv")
  '(org-file-apps
    '(("\\.pdf\\'" . eaf-org-open-file)
      (auto-mode . emacs)
@@ -1265,11 +1263,6 @@ This function is called at the very end of Spacemacs initialization."
  '(org-modules
    '(ol-bbdb ol-bibtex ol-docview ol-eww ol-gnus org-habit ol-info ol-irc ol-mhe ol-rmail org-tempo ol-w3m ol-git-link ol-man))
  '(org-protocol-default-template-key nil)
- '(org-roam-completion-everywhere t)
- '(org-roam-completion-system 'helm)
- '(org-roam-directory "/home/chriad/roam/")
- '(org-roam-file-completion-tag-position 'append)
- '(org-roam-index-file "~/roam/index.org")
  '(org-startup-with-inline-images nil t)
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
  '(package-selected-packages
@@ -1279,7 +1272,7 @@ This function is called at the very end of Spacemacs initialization."
  '(pdfgrep-options " -H -n -r ")
  '(persp-use-workgroups t)
  '(racket-browse-url-function 'browse-url-firefox)
- '(racket-documentation-search-location ''local)
+ '(racket-documentation-search-location 'local)
  '(scroll-conservatively 10000)
  '(scroll-margin 1)
  '(scroll-step 1)
