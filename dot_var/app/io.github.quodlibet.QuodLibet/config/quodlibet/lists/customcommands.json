@@ -1,0 +1,74 @@
+{
+    "Compress files": {
+        "name": "Compress files",
+        "command": "file-roller -d",
+        "parameter": "",
+        "pattern": "<~filename>",
+        "unique": false,
+        "max_args": 9999,
+        "reverse": false
+    },
+    "Browse folders (Nautilus)": {
+        "name": "Browse folders (Nautilus)",
+        "command": "flatpak-spawn --host nautilus",
+        "parameter": "",
+        "pattern": "<~dirname>",
+        "unique": true,
+        "max_args": 50,
+        "reverse": false
+    },
+    "Flash notification": {
+        "name": "Flash notification",
+        "command": "notify-send -t 2000 -i /usr/share/icons/hicolor/scalable/apps/io.github.quodlibet.QuodLibet.svg",
+        "parameter": "",
+        "pattern": "<~rating> \"<title><version| (<version>)>\"<~people| by <~people>><album|, from <album><discnumber| : disk <discnumber>><~length| (<~length>)>",
+        "unique": false,
+        "max_args": 1,
+        "reverse": false
+    },
+    "Output playlist to stdout": {
+        "name": "Output playlist to stdout",
+        "command": "echo -e",
+        "parameter": "",
+        "pattern": "<~playlistname>: <~playlistindex>.  <~artist~title>\\\\n",
+        "unique": false,
+        "max_args": 9999,
+        "reverse": false
+    },
+    "Fix MP3 VBR with mp3val": {
+        "name": "Fix MP3 VBR with mp3val",
+        "command": "mp3val -f",
+        "parameter": "",
+        "pattern": "<~filename>",
+        "unique": true,
+        "max_args": 1,
+        "reverse": false
+    },
+    "Record Stream": {
+        "name": "Record Stream",
+        "command": "x-terminal-emulator -e wget -P $HOME",
+        "parameter": "",
+        "pattern": "<~filename>",
+        "unique": false,
+        "max_args": 1,
+        "reverse": false
+    },
+    "Open with puddletag": {
+        "name": "Open with puddletag",
+        "command": "flatpak-spawn --host /usr/bin/puddletag",
+        "parameter": "",
+        "pattern": "<~filename>",
+        "unique": false,
+        "max_args": 9999,
+        "reverse": false
+    },
+    "Open with losslesscut": {
+        "name": "Open with losslesscut",
+        "command": "flatpak-spawn --host losslesscut",
+        "parameter": "",
+        "pattern": "<~filename>",
+        "unique": false,
+        "max_args": 10000,
+        "reverse": false
+    }
+}
