@@ -70,5 +70,32 @@
         "unique": false,
         "max_args": 10000,
         "reverse": false
+    },
+    "adb push file": {
+        "name": "adb push file",
+        "command": "flatpak-spawn --host /home/chriad/.local/bin/adb-push-file-quodlibet.sh",
+        "parameter": "",
+        "pattern": "<~filename>",
+        "unique": false,
+        "max_args": 1,
+        "reverse": false
+    },
+    "adb push album": {
+        "name": "adb push album",
+        "command": "flatpak-spawn --host adb-push-album-quodlibet.sh",
+        "parameter": "",
+        "pattern": "<~dirname>",
+        "unique": false,
+        "max_args": 9999,
+        "reverse": false
+    },
+    "kitty": {
+        "name": "kitty",
+        "command": "flatpak-spawn --host /home/chriad/.local/kitty.app/bin/kitty --detach -d",
+        "parameter": "",
+        "pattern": "<~dirname>",
+        "unique": false,
+        "max_args": 10000,
+        "reverse": false
     }
 }
