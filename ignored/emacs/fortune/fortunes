@@ -1,0 +1,80 @@
+What I cannot create I do not understand. - R. Feynman
+%
+I'd rather write programs to write programs than write programs. -D. Sites
+%
+403 - Curiosity killed the cat
+%
+Perfection is achieved, not when there is nothing more to add, but when there is
+nothing left to take away. - Antoine de Saint-ExupÃ©ry
+%
+"
+# lame jokes
+alias brexit='exit'
+"
+                  -- An unknown author in unknown
+%
+give me markdown or give me death
+
+                  -- https://maya.land/notetaking/federated-notes/
+%
+Go slow and fix things. - https://doubleloop.net/kind/like/
+%
+A citation from Rich Cook.
+
+"Programming today is a race between software engineers striving to build bigger and better idiot-proof programs, and the Universe trying to produce bigger and better idiots. So far, the Universe is winning." 
+
+          -- https://ref.web.cern.ch/CERN/CNL/2002/001/programming/
+%
+When large numbers of
+nontechnical workers are using a
+programmable editor, they will be
+tempted constantly to begin
+programming in the course of their
+day-to-day lives. This should
+contribute greatly to computer
+literacy [...]
+
+           –- Stallman, 1981
+%
+Syntactic sugar causes cancer of the semicolon.
+                  -- Alan Perlis
+%
+It is said that to explain is to explain away.
+                  –- Joseph Weizenbaum MIT computer scientist
+%
+While any text editor can save your files, only Emacs can save your soul.
+                  --  Per Abrahamsen
+%
+(defun chriad/fortune-append (&optional interactive file)
+  "Append STRING to the fortune FILE.
+
+If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
+  (require 'fortune)
+  (setq file (expand-file-name
+              (substitute-in-file-name (or file fortune-file))))
+  (if (file-directory-p file)
+      (error "Cannot append fortune to directory %s" file))
+  (if interactive ; switch to file and return buffer
+      (find-file-other-frame file)
+    (find-file-noselect file))
+  (let ((fortune-buffer (get-file-buffer file)))
+
+    (set-buffer fortune-buffer)
+    (goto-char (point-max))
+    (setq fill-column fortune-fill-column)
+    (setq auto-fill-inhibit-regexp "^%")
+    (turn-on-auto-fill)
+    ;; (insert string fortune-end-sep)
+    ;; (unless interactive
+    ;;   (save-buffer)
+    ;;   (if fortune-always-compile
+    ;;       (fortune-compile file)))
+    ))
+
+          -- 
+%
+Such a dot just separates the car of a cons from its cdr.  (What's
+ a cons?  Just a car with a cdr!)
+
+          -- 
+%
