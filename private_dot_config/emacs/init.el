@@ -131,7 +131,10 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
-                                      (qpdf.el :fetcher github :repo "orgtre/qpdf.el")
+                                      ;; (qpdf :fetcher github :repo "orgtre/qpdf.el" :commands qpdf)
+                                      (qpdf :location (recipe
+                                                          :fetcher github
+                                                          :repo "orgtre/qpdf.el" :commands qpdf))
                                       load-dir
                                       org-roam-ui
                                       zones ;; TODO: try multiple narrowings
