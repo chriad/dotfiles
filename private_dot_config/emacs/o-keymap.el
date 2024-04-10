@@ -19,14 +19,18 @@
 (spacemacs/declare-prefix "o" "private keymap")
 (spacemacs/set-leader-keys "oa" 'projectile-add-known-project)
 
+
+(spacemacs/declare-prefix "ow" "which key")
+(spacemacs/set-leader-keys "owf" 'which-key-show-full-major-mode)
+(spacemacs/set-leader-keys "owj" 'which-key-show-major-mode)
+(spacemacs/set-leader-keys "owi" 'which-key-show-minor-mode-keymap)
+
 ;;; stuff that fits nowhere else?
 (spacemacs/declare-prefix "ox" "sometimes useful")
 (spacemacs/set-leader-keys "oxb" 'select-frame-by-name)
 (spacemacs/set-leader-keys "oxp" 'spacemacs/paradox-list-packages)
 (spacemacs/set-leader-keys "oxe" 'epkg-list-packages)
 (spacemacs/set-leader-keys "oxt" 'edebug-eval-top-level-form)
-(spacemacs/set-leader-keys "oxw" 'which-key-show-full-major-mode)
-(spacemacs/set-leader-keys "oxw" 'which-key-show-minor-mode-keymap)
 
 (spacemacs/declare-prefix "od" "describe")
 (spacemacs/set-leader-keys "odb" 'describe-bindings)
@@ -52,6 +56,7 @@
 
 (spacemacs/declare-prefix "oh" "helm")
 (spacemacs/set-leader-keys "ohd" 'helm-disable-minor-mode)
+(spacemacs/set-leader-keys "ohe" 'helm-enable-minor-mode)
 (spacemacs/set-leader-keys "ohf" 'helm-firefox-bookmarks)
 (spacemacs/set-leader-keys "ohc" 'helm-lisp-completion-at-point)
 (spacemacs/set-leader-keys "oho" 'helm-org-in-buffer-headings)
@@ -62,7 +67,8 @@
 (spacemacs/set-leader-keys "ohiu" 'helm-info-use-package)
 
 (spacemacs/declare-prefix "op" "play")
-(spacemacs/set-leader-keys "opd" 'doctor)
+;; (spacemacs/set-leader-keys "opd" 'doctor)
+(spacemacs/set-leader-keys "opf" 'fortune-from-region)
 ;; (spacemacs/set-leader-keys "opc" 'chronometer)
 (spacemacs/set-leader-keys "opc" 'world-clock)
 (spacemacs/set-leader-keys "opw" 'spacemacs/count-words-analysis)
@@ -78,7 +84,7 @@
 ;; ----------------
 
 ;; same as RET; mouse-save-then-kill is dangerous
-(define-key dired-mode-map [mouse-3] 'dired-mouse-find-file) ; right click opens inplace
+;; (define-key dired-mode-map [mouse-3] 'dired-mouse-find-file) ; right click opens inplace
 
 ;; (define-key spacemacs-pdf-view-mode-map (kbd "s a") 'pdf-view-auto-slice-minor-mode)
 ;; (define-key pdf-view-mode-map (kbd "<tab>") 'other-window)
@@ -87,15 +93,22 @@
 
 (defun spacemacs/find-custom-alias-file ()
   (interactive)
-  (find-file (concat (getenv "BASH_IT") "/aliases/custom.aliases.bash")))
+  ;; (find-file (concat (getenv "BASH_IT") "/aliases/custom.aliases.bash")
+     (find-file (concat "/home/chriad/.bash_it" "/aliases/custom.aliases.bash")))
 
 (defun spacemacs/find-custom-keymap-file ()
   (interactive)
-  (switch-to-buffer (find-file-noselect "/home/chriad/.config/emacs/o-keymap.el")))
+  (switch-to-buffer (find-file-noselect "/home/chriad/.config/emacs/o-keymap.el"))
+  ;; (find-file "/home/chriad/.config/emacs/o-keymap.el")
+  )
+(defun spacemacs/find-custom-bookmark-file ()
+  (interactive)
+  (switch-to-buffer (find-file-noselect "/home/chriad/.config/emacs/bookmarks")))
 
 (spacemacs/declare-prefix "of" "files")
 (spacemacs/set-leader-keys "ofa" 'spacemacs/find-custom-alias-file)
 (spacemacs/set-leader-keys "ofo" 'spacemacs/find-custom-keymap-file)
+(spacemacs/set-leader-keys "ofb" 'spacemacs/find-custom-bookmark-file)
 
 ;; (spacemacs/set-leader-keys "srh" 'helm-rg)
 
@@ -106,3 +119,6 @@
 
 (spacemacs/declare-prefix-for-mode 'emacs-lisp-mode "mo" "custom")
 (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "ot" 'tiny-expand)
+
+;; define-key
+(define-key lisp-interaction-mode-map (kbd "C-e") 'pp-eval-last-sexp)

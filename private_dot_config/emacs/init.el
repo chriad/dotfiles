@@ -42,7 +42,6 @@ This function should only modify configuration layer settings."
      systemd
      ;; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
      ;; << private layers
-     ;; bookmark+
      chezmoi
      helm-additional
      elisp-additional
@@ -382,7 +381,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-new-empty-buffer-major-mode 'text-mode
 
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'emacs-lisp-mode
+   dotspacemacs-scratch-mode 'lisp-interaction-mode
 
    ;; If non-nil, *scratch* buffer will be persistent. Things you write down in
    ;; *scratch* buffer will be saved and restored automatically.
@@ -748,7 +747,7 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-
+(require 'no-littering)
 
 ;; not customizable
 (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
@@ -757,6 +756,15 @@ before packages are loaded."
 
 (put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")
 
+(setq bibtex-completion-bibliography '("~/.config/bibliographies/fixed-layout.bib")
+        ;; bibtex-completion-library-path "~/Papers/"
+        ;; bibtex-completion-notes-path "~/Papers/notes.org"
+        )
+
+(setq psession-elisp-objects-default-directory (no-littering-expand-var-file-name "elisp-objects/"))
+(psession-mode 1)
+(psession-autosave-mode 1)
+(psession-savehist-mode 1)
 
 ;; eval this manually from time to time to get latest version
   (defun check-emacswiki-updates ()
@@ -771,9 +779,24 @@ before packages are loaded."
                        "bookmark+-doc.el"
                        "bookmark+-chg.el")))
     (quelpa '(narrow-indirect :fetcher wiki))
+    (quelpa '(linkd :fetcher wiki))
     )
 
-  (setq paradox-menu-mode-hook '(paradox-refresh-upgradeable-packages check-bookmarkplus-update))
+  (setq paradox-menu-mode-hook '(paradox-refresh-upgradeable-packages check-emacswiki-updates))
+
+(use-package bookmark+
+    ;; :defer t
+    :config
+    (require 'linkd)
+    (require 'narrow-indirect)
+    (setq bmkp-dired-history nil)
+    (defun bmkp-list-types ()
+      (interactive)
+      ;; TODO print in temporary, fileless buffer
+      (pp (bmkp-types-alist)))
+    (defun helm-documentation-f ()
+      (call-interactively 'helm-documentation))
+    )
 
   (require 'org-ref)
   (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))
@@ -804,42 +827,6 @@ before packages are loaded."
 
   (load "~/.config/emacs/el-patches.el")
 
-  ;; (use-package org-gtd
-  ;;   :after org
-  ;;   ;; :pin melpa-stable ;; or :pin melpa as you prefer
-  ;;   :demand t ;; without this, the package won't be loaded, so org-agenda won't be configured
-  ;;   :custom
-  ;;   ;; where org-gtd will put its files. This value is also the default one.
-  ;;   (org-gtd-directory "/home/chriad/gtd/")
-  ;;   ;; package: https://github.com/Malabarba/org-agenda-property
-  ;;   ;; this is so you can see who an item was delegated to in the agenda
-  ;;   (org-agenda-property-list '("DELEGATED_TO"))
-  ;;   ;; I think this makes the agenda easier to read
-  ;;   (org-agenda-property-position 'next-line)
-  ;;   ;; package: https://www.nongnu.org/org-edna-el/
-  ;;   ;; org-edna is used to make sure that when a project task gets DONE,
-  ;;   ;; the next TODO is automatically changed to NEXT.
-  ;;   (org-edna-use-inheritance t)
-  ;;   :config
-  ;;   (org-edna-load)
-  ;;   :bind
-  ;;   (("C-c d c" . org-gtd-capture)     ;; add item to inbox
-  ;;    ("C-c d a" . org-agenda-list)     ;; see what's on your plate today
-  ;;    ("C-c d p" . org-gtd-process-inbox) ;; process entire inbox
-  ;;    ("C-c d n" . org-gtd-show-all-next) ;; see all NEXT items
-  ;;    ("C-c d s" . org-gtd-show-stuck-projects)) ;; see projects that don't have a NEXT item
-  ;;   :init
-  ;;   (bind-key "C-c c" 'org-gtd-clarify-finalize)) ;; the keybinding to hit when you're done editing an item in the processing phase
-
-  ;; (use-package org-agenda
-  ;;   :ensure nil ;; this is how you tell use-package to manage a sub-package
-  ;;   :after org-gtd ;; because we need to add the org-gtd directory to the agenda files
-  ;;   :custom
-  ;;   ;; use as-is if you don't have an existing org-agenda setup
-  ;;   ;; otherwise push the directory to the existing list
-  ;;   (org-agenda-files `(,org-gtd-directory))
-  ;;   ;; a useful view to see what can be accomplished today
-  ;;   (org-agenda-custom-commands '(("g" "Scheduled today and all NEXT items" ((agenda "" ((org-agenda-span 1))) (todo "NEXT"))))))
 
   ;; for pylookup
   ;; (setq browse-url-handlers '(("\\`file:" . eaf-open-browser)))
@@ -964,30 +951,63 @@ before packages are loaded."
   ;;         org-roam-server-network-label-wrap-length 20))
 
 
-  (use-package hydra)
-  (require 'org-fc-hydra)
-  (require 'org-fc-keymap-hint)
-  (global-set-key (kbd "C-c f") 'org-fc-hydra/body)
-  (setq org-fc-directories '("~/roam/"))
-  (setq org-fc-after-flip-hook '(org-hide-src-block-delimiters))
-  (setq org-fc-after-setup-hook nil)
-  (setq org-fc-review-history-file (no-littering-expand-var-file-name "org-fc-reviews.tsv"))
-  (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-flip-mode
-    (kbd "RET") 'org-fc-review-flip
-    (kbd "n") 'org-fc-review-flip
-    (kbd "s") 'org-fc-review-suspend-card
-    (kbd "q") 'org-fc-review-quit)
 
-  (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-rate-mode
-    (kbd "a") 'org-fc-review-rate-again
-    (kbd "h") 'org-fc-review-rate-hard
-    (kbd "g") 'org-fc-review-rate-good
-    (kbd "e") 'org-fc-review-rate-easy
-    (kbd "s") 'org-fc-review-suspend-card
-    (kbd "q") 'org-fc-review-quit)
+  ;; (use-package hydra)
+  ;; (require 'org-fc-hydra)
+  ;; (require 'org-fc-keymap-hint)
+  ;; (global-set-key (kbd "C-c f f") 'org-fc-hydra/body)
+  ;; (setq org-fc-directories '("~/roam/"))
+  ;; (setq org-fc-after-flip-hook '(org-hide-src-block-delimiters))
+  ;; (setq org-fc-after-setup-hook nil)
+  ;; (setq org-fc-review-history-file (no-littering-expand-var-file-name "org-fc-reviews.tsv"))
+  ;; (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-flip-mode
+  ;;   (kbd "RET") 'org-fc-review-flip
+  ;;   (kbd "n") 'org-fc-review-flip
+  ;;   (kbd "s") 'org-fc-review-suspend-card
+  ;;   (kbd "q") 'org-fc-review-quit)
+
+  ;; (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-rate-mode
+  ;;   (kbd "a") 'org-fc-review-rate-again
+  ;;   (kbd "h") 'org-fc-review-rate-hard
+  ;;   (kbd "g") 'org-fc-review-rate-good
+  ;;   (kbd "e") 'org-fc-review-rate-easy
+  ;;   (kbd "s") 'org-fc-review-suspend-card
+  ;;   (kbd "q") 'org-fc-review-quit)
 
 
-  (require 'org-protocol)
+    (use-package org-fc
+      :defer t
+      :config
+      (use-package hydra)
+      (require 'org-fc-hydra)
+      (require 'org-fc-keymap-hint)
+      (setq org-fc-directories '("~/roam/"))
+      (setq org-fc-after-flip-hook '(org-hide-src-block-delimiters))
+      (setq org-fc-after-setup-hook nil)
+      (setq org-fc-review-history-file
+            (no-littering-expand-var-file-name "org-fc-reviews.tsv"))
+
+      ;; :init (add-hook 'org-mode-hook #'org-starless-mode)
+
+      (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-flip-mode
+        (kbd "RET") 'org-fc-review-flip
+        (kbd "n") 'org-fc-review-flip
+        (kbd "s") 'org-fc-review-suspend-card
+        (kbd "q") 'org-fc-review-quit)
+
+      (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-rate-mode
+        (kbd "a") 'org-fc-review-rate-again
+        (kbd "h") 'org-fc-review-rate-hard
+        (kbd "g") 'org-fc-review-rate-good
+        (kbd "e") 'org-fc-review-rate-easy
+        (kbd "s") 'org-fc-review-suspend-card
+        (kbd "q") 'org-fc-review-quit)
+      ;; (global-set-key (kbd "C-c f") 'org-fc-hydra/body)
+      ;; (global-set-key (kbd "C-c f") 'org-fc-narrow)
+      :bind
+      ("C-c f" . org-fc-hydra/body)
+      ;; ("C-c f" . org-fc-narrow)
+      )
 
   (load "~/.config/emacs/roam-helpers.el")
 

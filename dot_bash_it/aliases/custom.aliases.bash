@@ -9,11 +9,15 @@ alias l=exa
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # taskset -c <x> : reserve processor, make faster
+alias adb--wifi="adb connect 192.168.2.167:5555"
 alias dmesg="dmesg -wL" # color and --tail
-alias gpodder="taskset -c 0 /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=/app/bin/gpodder org.gpodder.gpodder 2> /dev/null &"
-alias quodlibet="taskset -c 1 /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=quodlibet io.github.quodlibet.QuodLibet 2> /dev/null &"
-alias gpo='flatpak run --branch=stable --arch=x86_64 --command=/app/bin/gpo org.gpodder.gpodder'
+
+# flatpak --command
+alias gpodder="taskset -c 0 /usr/bin/flatpak run --command=/app/bin/gpodder org.gpodder.gpodder 2> /dev/null &"
+alias gpo='flatpak run --command=/app/bin/gpo org.gpodder.gpodder'
 alias operon='flatpak run --command=operon io.github.quodlibet.QuodLibet'
+alias ebook-meta='flatpak run --command=ebook-meta com.calibre_ebook.calibre'
+
 alias s="kitten ssh"
 alias catp="cat -p"
 alias fzf--screencasts="rg -g /home/chriad/Videos/Screencasts/*.{mkv,mp4,ogv,webm} --files 2> /dev/null | fzf --bind='enter:execute(mpv {})'"
@@ -71,7 +75,12 @@ alias torhome='cd /home/chriad/.local/share/torbrowser/tbb/x86_64/tor-browser/Br
 alias firefoxhome='cd /home/chriad/snap/firefox/common/.mozilla/firefox/n1icf8cs.default-1634140706732'
 alias lolc='cd /media/chriad/ext4/losslesscut'
 
+# flatpak
+alias calibre=com.calibre_ebook.calibre
+alias quodlibet=io.github.quodlibet.QuodLibet
+
 # quodlibet
+alias quodlibet--taskset="taskset -c 1 io.github.quodlibet.QuodLibet 2> /dev/null &"
 alias quodlibet--playlists='cat /home/chriad/.var/app/io.github.quodlibet.QuodLibet/config/quodlibet/lists/queries.saved 2> /dev/null | paste -sd"\t\n" | fzf --delimiter="\t" --with-nth=1 --bind "enter:execute(echo {2})+abort"'
 alias quodlibet--sync='cat ~/.var/app/io.github.quodlibet.QuodLibet/config/quodlibet/config | grep  synchronize_to_device_query | fzf --bind "enter:execute(echo {})+abort"'
 
@@ -115,7 +124,7 @@ alias git-aliases='bash-it help aliases git|fzf'
 # alias remotek='telnet 192.168.0.6 2323'
 # exact match by default
 # alias=fzf='fzf -e'
-alias ls="exa"
+# alias ls="exa"
 alias enw="emacs -nw"
 alias pretty-json="python2 -mjson.tool"
 #Unfortunately doesn't work
@@ -156,7 +165,7 @@ alias findbigdir="/usr/bin/find ./ -maxdepth 1 -type d -print0 | xargs -0 du --m
 # Path to the bash it configuration
 # alias clip='xclip -selection clipboard'
 alias bashit--active-aliases="bashit show aliases | grep '\[x\]'"
-alias lst='ls -snew|tail'
+alias lst='exa -snew|tail'
 alias fuzb='source ~/fzf-chrome-bookmarks/fzf-chrome-bookmarks.sh'
 alias catf='cat <<eof>README.org'
 # alias youtube-dl-geo='/usr/local/bin/youtube-dl --geo-bypass-country de'
