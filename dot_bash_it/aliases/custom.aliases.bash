@@ -80,6 +80,7 @@ alias chriad-browse--kernel-handbook="$www_browser $docdir/debian-kernel-handboo
 alias chriad-browse--ocrmypdf="www-browser /usr/share/doc/ocrmypdf/html/index.html"
 alias chriad-browse--racket="www-browser /usr/share/doc/racket/r5rs/index.html"
 alias chriad-browse--debian-handbook="$www_browser $docdir/debian-handbook/html/en-US/index.html"
+alias chriad-browse--cltl="$www_browser $docdir/cltl/cltl2.html"
 
 # first order alias
 alias detox="detox --remove-trailing"
