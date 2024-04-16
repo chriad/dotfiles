@@ -1,0 +1,13 @@
+{
+    "scrollToClozeOnToggle": true,
+    "animateScroll": true,
+    "showHintsForPseudoClozes": true,
+    "underlineRevealedPseudoClozes": false,
+    "underlineRevealedGenuineClozes": true,
+    "revealPseudoClozesByDefault": false,
+    "revealNextGenuineClozeShortcut": "J",
+    "revealAllGenuineClozesShortcut": "Shift+J",
+    "revealNextPseudoClozeShortcut": "N",
+    "revealAllPseudoClozesShortcut": "Shift+N",
+    "swapLeftAndRightBorderActions": false
+}
