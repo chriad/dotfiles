@@ -97,7 +97,7 @@ This function should only modify configuration layer settings."
      helm
      (spacemacs-evil :variables
                      spacemacs-evil-collection-allowed-list
-                     '(ediff))
+                     '(ediff dired))
      command-log
      lsp
      dap
@@ -129,12 +129,13 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      psession ;; for helm-locate-library
                                       tldr
                                       el-patch
                                       org-tidy
                                       ;; mic-paren ;; customize paren-face-match
                                       helm-apt
-                                      helm-dired-history
+                                      ;; helm-dired-history
                                       geiser ;; installed with guix
                                       geiser-guile ;; installed with guix
                                       magit-popup ;; guix
@@ -150,7 +151,7 @@ This function should only modify configuration layer settings."
                                       ;; sway
                                       minions ;; minions-minor-mode-menu
                                       ink-mode
-                                      dired-git-info
+                                      ;; dired-git-info ;; disable for debug
                                       fountain-mode
                                       ;; camcorder
                                       org-gtd
@@ -164,7 +165,6 @@ This function should only modify configuration layer settings."
                                       ;; ascii-table
                                       clhs
                                       org-roam
-                                      ;; djvu
                                       evil-lispy
                                       org-mru-clock
                                       org-page
@@ -766,7 +766,7 @@ before packages are loaded."
 (psession-autosave-mode 1)
 (psession-savehist-mode 1)
 
-;; eval this manually from time to time to get latest version
+;; creates a buffer *quelpa-build-checkout*
   (defun check-emacswiki-updates ()
     (quelpa '(bookmark+ :fetcher wiki
                       :files
@@ -1026,19 +1026,21 @@ before packages are loaded."
   ;; (setq evil-motion-trainer-super-annoying-mode t)
   ;; (emt-add-suggestion 'evil-next-line 'evil-avy-goto-char-timer)
 
+  ;;; initial states
+
+  ;; working
+  (evil-set-initial-state 'paradox-menu-mode 'emacs)
+  ;; not working
+  ;; (evil-set-initial-state 'Info-mode 'emacs)
+  ;; (evil-set-initial-state 'Info-edit-mode 'emacs)
   ;; (evil-set-initial-state 'debugger-mode 'emacs)
-  ;; (evil-set-initial-state 'paradox-mode 'emacs)
-  ;; (evil-set-initial-state 'paradox-menu-mode 'emacs)
-  ;; (evil-set-initial-state 'package-mode 'emacs)
-  ;; (evil-set-initial-state 'package-menu-mode 'emacs)
   ;; (remove-hook 'paradox-menu-mode-hook 'evil-mode)
   ;; (remove-hook 'paradox-mode-hook 'evil-mode)
   ;; (remove-hook 'package-mode-hook 'evil-mode)
   ;; (remove-hook 'package-menu-mode-hook 'evil-mode)
 
   ;; (evil-set-initial-state 'backtrace-mode 'emacs)
-  ;; (evil-set-initial-state 'org-capture-mode 'insert)
-  ;; (evil-set-initial-state 'ediff-mode 'emacs)
+  (evil-set-initial-state 'org-capture-mode 'insert)
   ;; (evil-set-initial-state 'sly-db-mode 'emacs)
 
   (add-hook 'org-mode-hook 'org-indent-mode)
@@ -1188,6 +1190,7 @@ before packages are loaded."
   (setq op/site-sub-title "Spacemacs")
 
   (setq custom-file "~/.config/emacs/.emacs-custom.el")
+  ;; (setq custom-file (no-littering-expand-etc-file-name ".emacs-custom.el")
   (load custom-file)
 
   (require 'evil-surround)
@@ -1204,18 +1207,15 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
  '(company-backends '(company-capf company-semantic company-files))
- '(dired-listing-switches "-alh")
  '(emacs-lisp-mode-hook
    '(eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode eldoc-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode))
  '(enable-local-variables t)
  '(evil-move-cursor-back nil)
  '(evil-org-use-additional-insert t t)
  '(evil-want-Y-yank-to-eol nil)
- '(gist-ask-for-description t)
- '(gist-ask-for-filename t)
+ ;; '(gist-ask-for-description t)
+ ;; '(gist-ask-for-filename t)
  '(global-semantic-decoration-mode nil)
  '(global-semantic-highlight-func-mode t)
  '(global-semantic-mru-bookmark-mode t)
@@ -1229,7 +1229,7 @@ This function is called at the very end of Spacemacs initialization."
  '(helm-file-preview-only-when-line-numbers nil)
  '(helm-lisp-fuzzy-completion t)
  '(helm-show-completion-display-function 'helm-display-buffer-popup-frame)
- '(hl-sexp-background-colors '("white smoke" "white"))
+ '(hl-sexp-background-colors '("white smoke" "white")) ;; for package highlight-sexp
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
      ("NEXT" . "#dc752f")
@@ -1264,14 +1264,6 @@ This function is called at the very end of Spacemacs initialization."
  '(org-download-screenshot-method "gnome-screenshot -a -f %s")
  '(org-ellipsis " ↴")
  '(org-export-headline-levels 6)
- '(org-file-apps
-   '(("\\.pdf\\'" . eaf-org-open-file)
-     (auto-mode . emacs)
-     (directory . emacs)
-     ("\\.mm\\'" . default)
-     ("\\.x?html?\\'" . default)
-     ("\\.mkv\\'" . "eaf-org-open-file")
-     ("\\.mp4\\'" . eaf-open)))
  '(org-hide-emphasis-markers t)
  '(org-hide-leading-stars t)
  '(org-insert-heading-respect-content t)
@@ -1280,13 +1272,9 @@ This function is called at the very end of Spacemacs initialization."
  '(org-journal-enable-agenda-integration t)
  '(org-journal-file-format "%Y-%m-%d.org")
  '(org-journal-time-prefix "- ")
- '(org-modules
-   '(ol-bbdb ol-bibtex ol-docview ol-eww ol-gnus org-habit ol-info ol-irc ol-mhe ol-rmail org-tempo ol-w3m ol-git-link ol-man))
  '(org-protocol-default-template-key nil)
  '(org-startup-with-inline-images nil t)
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
- '(package-selected-packages
-   '(org-starless gist helm-firefox camcorder names toml-mode ron-mode racer rust-mode flycheck-rust cargo password-store-otp helm-pass password-store helm-bibtexkey helm-bibtex bibtex-completion biblio parsebib biblio-core symex helm-atoms run-command niceify-info elx helm-recoll comment-or-uncomment-sexp clhs ascii-table helm-emmet dyncloze dired-git-info nix-mode helm-nixos-options company-nixos-options nixos-options lsp-focus tiny tern npm-mode nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl helm-gtags ggtags counsel-gtags no-littering howdoyou poker org-variable-pitch org-roam evil-lispy org-mru-clock esup monkeytype speed-type typit org-page git mustache lisp-extra-font-lock highlight-indent-guides elisp-def sr-speedbar ein polymode anaphora websocket lispy achievements org-fc doct justify-kp dash-functional buttons keymap-utils dired-open dired-hacks-utils olivetti nov on-screen ob-sml sml-mode mic-paren helm-posframe stickyfunc-enhance srefactor highlight-defined sicp pdfgrep edebug-x helm-file-preview csv-mode org-roam-server ox-gfm scrollkeeper beacon lsp-ui lsp-treemacs lsp-origami origami helm-lsp lsp-mode flycheck-pos-tip pos-tip web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode prettier-js impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css counsel swiper ivy company-web web-completion-data add-node-modules-path evil-motion-trainer edit-indirect helpful elisp-refs mmm-mode markdown-toc gh-md yaml-mode xterm-color vterm terminal-here shell-pop multi-term eshell-z eshell-prompt-extras esh-help pdf-tools tablist keycast command-log-mode orgit org-rich-yank org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download org-cliplink org-brain htmlize helm-org-rifle gnuplot evil-org wakatime-mode yasnippet-snippets unfill treemacs-magit smeargle mwim magit-svn magit-section magit-gitflow magit-popup helm-gitignore helm-git-grep helm-company helm-c-yasnippet gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy forge markdown-mode magit ghub closql emacsql-sqlite emacsql treepy git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil treemacs cfrs ht pfuture posframe toc-org symon symbol-overlay string-inflection spaceline-all-the-icons memoize all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-superstar open-junk-file nameless shut-up move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck flycheck-elsa flx-ido flx fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection annalist evil-cleverparens smartparens evil-args evil-anzu anzu eval-sexp-fu emr iedit clang-format projectile paredit list-utils pkg-info epl elisp-slime-nav editorconfig dumb-jump s dired-quick-sort devdocs define-word dash column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el hydra lv hybrid-mode font-lock+ evil goto-chg dotenv-mode diminish bind-map bind-key async))
  '(paradox-automatically-star nil)
  '(paren-sexp-mode t)
  '(pdfgrep-options " -H -n -r ")
