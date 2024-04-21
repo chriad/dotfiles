@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-flatpak-spawn --host adb push --sync "${1}" /sdcard/Audiobooks
+/usr/lib/android-sdk/platform-tools/adb push --sync "${1}" /storage/emulated/0/Audiobooks

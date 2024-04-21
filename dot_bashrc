@@ -18,6 +18,7 @@ PATH=$PATH:/usr/lib/android-sdk/platform-tools
 
 # why is it not on path?
 XDG_DATA_DIRS=$XDG_DATA_DIRS:/home/chriad/.local/share
+ANDROID_HOME=/usr/lib/android-sdk
 
 GUIX_PROFILE="/home/chriad/.guix-profile"
 . "$GUIX_PROFILE/etc/profile"
@@ -352,14 +353,16 @@ m4b--remove-chaps() {
     for f in *.m4b ; do mp4chaps -r "${f}"; done
 }
 
-iplayer--series() { get_iplayer --type=radio --radio-quality=std --pid="$1" --pid-recursive; }
+alias get_iplayer="get_iplayer --nocopyright"
+
+iplayer--series() { get_iplayer --type=radio --radio-quality=std,med --pid="$1" --pid-recursive; }
 # iplayer-single b044j7pd --versions=original,podcast
 # iplayer-single() { get_iplayer --type=radio --radio-quality=high,std --pid="$1" "$@"; }
 iplayer--single() {
     : <<'COMMENT'
 --versions=original,podcast
 COMMENT
-    get_iplayer --type=radio --radio-quality=high,std --pid="$1" "$@"
+    get_iplayer --type=radio --radio-quality=high,med,std --pid="$1" "$@"
                  }
 iplayer--list() { get_iplayer --type=radio --pid="$1" --pid-recursive-list --sort=firstbcast; }
 iplayer--info() { get_iplayer --pid="$1" --info | tee info."$1".txt |egrep "version|qualities"; }
@@ -374,7 +377,7 @@ yt--parallel-playlist() {
     youtube-dl --get-id "$1" | xargs -I '{}' -P "$2" youtube-dl --get-filename --no-playlist --config-location ~/.config/youtube-dl/config.embed -o "$prefix/%(extractor)s/%(channel)s/%(playlist)s/%(playlist_index)s -- %(title)s.%(ext)s" "https://youtube.com/watch?v={}&list=$1"
 }
 
-ffmpeg--fprobe-json() {
+ffprobe--json() {
     ffprobe -v quiet -print_format json -show_format -show_streams "$1"
 }
 
@@ -383,12 +386,12 @@ yt--probe-audio() {
     youtube-dl -f "$1"  -o - "$2" | mpv -
 }
 
-pdf--pdftk-d() {
+pdftk--d() {
     pdf="$1"
     pdftk "$pdf" dump_data_utf8 >"${pdf%pdf}"outline.txt
 }
 
-pdf--pdftk-u() {
+pdftk--u() {
     pdf="$1"
     pdftk "$pdf" update_info_utf8 "${pdf%pdf}"outline.txt output "${pdf%pdf}"out.pdf
 }
