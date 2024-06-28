@@ -52,10 +52,10 @@ SIZE is a string Columns x Rows like for example \"3x2\"."
   )
 
 
+;; get rid of comment window since my annotations are only highlight and don't contain text
 (el-patch-feature pdf-annot)
-(with-eval-after-load 'pdf-annot
 
-  ;; get rid of comment window since my annotations are only highlight and don't contain text
+(with-eval-after-load 'pdf-annot
   (el-patch-defun pdf-annot-list-annotations ()
   "List annotations in a Dired like buffer.
 
@@ -92,91 +92,71 @@ SIZE is a string Columns x Rows like for example \"3x2\"."
     (add-hook 'pdf-annot-modified-functions
               #'pdf-annot-list-update nil t))))
 
-  ;; (with-eval-after-load 'pdf-annot
-  ;;   (el-patch-defun pdf-annot-show-annotation (a &optional highlight-p window)
-  ;;                   (save-selected-window
-  ;;                     (when window (select-window window 'norecord))
-  ;;                     (pdf-util-assert-pdf-window)
-  ;;                     (let ((page (pdf-annot-get a 'page))
-  ;;                           (size (pdf-view-image-size)))
-  ;;                       (unless (= page (pdf-view-current-page))
-  ;;                         (pdf-view-goto-page page))
-  ;;                       (let ((edges (pdf-annot-get-display-edges a)))
-  ;;                         (when (el-patch-swap highlight-p t)
-  ;;                           (pdf-view-display-image
-  ;;                            (pdf-view-create-image
-  ;;                                (pdf-cache-renderpage-highlight
-  ;;                                 page (car size)
-  ;;                                 `("white" (el-patch-swap "steel blue" "white") (el-patch-swap 0.35 0.36) ,@edges))
-  ;;                              :map (pdf-view-apply-hotspot-functions
-  ;;                                    window page size)
-  ;;                              :width (car size))))
-  ;;                         (pdf-util-scroll-to-edges
-  ;;                          (pdf-util-scale-relative-to-pixel (car edges))))))))
-
 
 ;; when browsing annotations, copy the corresponding text to clipboard
+;; also change highlight attributes
+
 (with-eval-after-load 'pdf-annot
   (el-patch-defun pdf-annot-show-annotation (a &optional highlight-p window)
 
-  (save-selected-window
-    (when window (select-window window 'norecord))
-    (pdf-util-assert-pdf-window)
-    (let ((page (pdf-annot-get a 'page))
-          (size (pdf-view-image-size)))
-      (unless (= page (pdf-view-current-page))
-        (pdf-view-goto-page page))
-      (let ((edges (pdf-annot-get-display-edges a)))
-        (el-patch-add (let* ((txt  (mapcar
-                                    (lambda (edg)
-                                      (pdf-info-gettext
-                                       (pdf-view-current-page)
-                                       edg
-                                       pdf-view-selection-style))
-                                    edges)))
-                        ;; (pdf-view-deactivate-region)
-                        (kill-new (mapconcat 'identity txt " "))) )
-        (when highlight-p
-          (pdf-view-display-image
-           (pdf-view-create-image
-               (pdf-cache-renderpage-highlight
-                page (car size)
-                `("white" "steel blue" 0.35 ,@edges))
-             :map (pdf-view-apply-hotspot-functions
-                   window page size)
-             :width (car size))))
-        (pdf-util-scroll-to-edges
-         (pdf-util-scale-relative-to-pixel (car edges))))))))
+    (save-selected-window
+      (when window (select-window window 'norecord))
+      (pdf-util-assert-pdf-window)
+      (let ((page (pdf-annot-get a 'page))
+            (size (pdf-view-image-size)))
+        (unless (= page (pdf-view-current-page))
+          (pdf-view-goto-page page))
+        (let ((edges (pdf-annot-get-display-edges a)))
+          (el-patch-add (let* ((txt  (mapcar
+                                      (lambda (edg)
+                                        (pdf-info-gettext
+                                         (pdf-view-current-page)
+                                         edg
+                                         pdf-view-selection-style))
+                                      edges)))
+                          ;; (pdf-view-deactivate-region)
+                          (kill-new (mapconcat 'identity txt " "))) )
+          (when highlight-p
+            (pdf-view-display-image
+             (pdf-view-create-image
+                 (pdf-cache-renderpage-highlight
+                  page (car size)
+                  `((el-patch-swap "white" "white") (el-patch-swap "steel blue" "black") (el-patch-swap 0.35 0.1) ,@edges))
+               :map (pdf-view-apply-hotspot-functions
+                     window page size)
+               :width (car size))))
+          (pdf-util-scroll-to-edges
+           (pdf-util-scale-relative-to-pixel (car edges))))))))
 
-;; (defun pdf-info-renderpage (page width &optional file-or-buffer &rest commands)
-;;   "Render PAGE with width WIDTH.
+;; get rid of highlight margin
+(el-patch-feature pdf-info)
+(with-eval-after-load 'pdf-info
+(el-patch-defun pdf-info-renderpage-highlight (page width
+                                           &optional file-or-buffer
+                                           &rest regions)
+  "Highlight regions on PAGE with width WIDTH using REGIONS.
 
-;; Return the data of the corresponding PNG image."
-;;   (when (keywordp file-or-buffer)
-;;     (push file-or-buffer commands)
-;;     (setq file-or-buffer nil))
-;;   (apply #'pdf-info-query
-;;     'renderpage
-;;     (pdf-info--normalize-file-or-buffer file-or-buffer)
-;;     page
-;;     (* width (pdf-util-frame-scale-factor))
-;;     (let (transformed)
-;;       (while (cdr commands)
-;;         (let ((kw (pop commands))
-;;               (value (pop commands)))
-;;           (setq value
-;;                 (cl-case kw
-;;                   ((:crop-to :highlight-line :highlight-region :highlight-text)
-;;                    (mapconcat #'number-to-string value " "))
-;;                   ((:foreground :background)
-;;                    (pdf-util-hexcolor value))
-;;                   (:alpha
-;;                    (number-to-string value))
-;;                   (:selection-style
-;;                    (number-to-string (pdf-info--selection-style value)))
-;;                   (otherwise value)))
-;;           (push kw transformed)
-;;           (push value transformed)))
-;;       (when commands
-;;         (error "Keyword is missing a value: %s" (car commands)))
-;;       (nreverse transformed))))
+REGIONS is a list determining the background color, a alpha value
+and the regions to render. So each element should look like \(FILL-COLOR
+STROKE-COLOR ALPHA \(LEFT TOP RIGHT BOT\) \(LEFT TOP RIGHT BOT\) ... \)
+.
+
+For the other args see `pdf-info-renderpage'.
+
+Return the data of the corresponding PNG image."
+
+  (when (consp file-or-buffer)
+    (push file-or-buffer regions)
+    (setq file-or-buffer nil))
+
+  (apply #'pdf-info-renderpage
+    page width file-or-buffer
+    (apply #'append
+      (mapcar (lambda (elt)
+                `(:background ,(pop elt)
+                  :foreground ,(pop elt)
+                  :alpha ,(pop elt)
+                  ,@(cl-mapcan (lambda (edges)
+                                 `((el-patch-swap :highlight-region :highlight-text) ,edges))
+                               elt)))
+              regions)))))
