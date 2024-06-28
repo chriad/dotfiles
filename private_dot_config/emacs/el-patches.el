@@ -51,31 +51,102 @@ SIZE is a string Columns x Rows like for example \"3x2\"."
 
   )
 
-;;;* el-path
-;;   (el-patch-feature pdf-annot)
 
-;;   (with-eval-after-load 'pdf-annot
-;;     (el-patch-defun pdf-annot-show-annotation (a &optional highlight-p window)
-;;                     (save-selected-window
-;;                       (when window (select-window window 'norecord))
-;;                       (pdf-util-assert-pdf-window)
-;;                       (let ((page (pdf-annot-get a 'page))
-;;                             (size (pdf-view-image-size)))
-;;                         (unless (= page (pdf-view-current-page))
-;;                           (pdf-view-goto-page page))
-;;                         (let ((edges (pdf-annot-get-display-edges a)))
-;;                           (when (el-patch-swap highlight-p t)
-;;                             (pdf-view-display-image
-;;                              (pdf-view-create-image
-;;                                  (pdf-cache-renderpage-highlight
-;;                                   page (car size)
-;;                                   `("white" (el-patch-swap "steel blue" "white") (el-patch-swap 0.35 0.36) ,@edges))
-;;                                :map (pdf-view-apply-hotspot-functions
-;;                                      window page size)
-;;                                :width (car size))))
-;;                           (pdf-util-scroll-to-edges
-;;                            (pdf-util-scale-relative-to-pixel (car edges))))))))
+(el-patch-feature pdf-annot)
+(with-eval-after-load 'pdf-annot
 
+  ;; get rid of comment window since my annotations are only highlight and don't contain text
+  (el-patch-defun pdf-annot-list-annotations ()
+  "List annotations in a Dired like buffer.
+
+\\{pdf-annot-list-mode-map}"
+  (interactive)
+  (pdf-util-assert-pdf-buffer)
+  (let* ((buffer (current-buffer))
+         (name (format "*%s's annots*"
+                       (file-name-sans-extension
+                        (buffer-name))))
+         (annots-existed (and (get-buffer name)
+                              pdf-annot-list-buffer)))
+    (with-current-buffer (get-buffer-create name)
+      (delay-mode-hooks
+        (unless (derived-mode-p 'pdf-annot-list-mode)
+          (pdf-annot-list-mode))
+        (setq pdf-annot-list-document-buffer buffer)
+        (unless annots-existed
+          (tabulated-list-print))
+        (setq tablist-context-window-function
+              (el-patch-swap (lambda (id) (pdf-annot-list-context-function id buffer)) nil)
+              tablist-operations-function #'pdf-annot-list-operation-function)
+        (let ((list-buffer (current-buffer)))
+          (with-current-buffer buffer
+            (setq pdf-annot-list-buffer list-buffer))))
+      (run-mode-hooks)
+      (pop-to-buffer
+       (current-buffer)
+       pdf-annot-list-display-buffer-action)
+      (tablist-move-to-major-column)
+      (tablist-display-context-window))
+    (add-hook 'pdf-info-close-document-hook
+              #'pdf-annot-list-update nil t)
+    (add-hook 'pdf-annot-modified-functions
+              #'pdf-annot-list-update nil t))))
+
+  ;; (with-eval-after-load 'pdf-annot
+  ;;   (el-patch-defun pdf-annot-show-annotation (a &optional highlight-p window)
+  ;;                   (save-selected-window
+  ;;                     (when window (select-window window 'norecord))
+  ;;                     (pdf-util-assert-pdf-window)
+  ;;                     (let ((page (pdf-annot-get a 'page))
+  ;;                           (size (pdf-view-image-size)))
+  ;;                       (unless (= page (pdf-view-current-page))
+  ;;                         (pdf-view-goto-page page))
+  ;;                       (let ((edges (pdf-annot-get-display-edges a)))
+  ;;                         (when (el-patch-swap highlight-p t)
+  ;;                           (pdf-view-display-image
+  ;;                            (pdf-view-create-image
+  ;;                                (pdf-cache-renderpage-highlight
+  ;;                                 page (car size)
+  ;;                                 `("white" (el-patch-swap "steel blue" "white") (el-patch-swap 0.35 0.36) ,@edges))
+  ;;                              :map (pdf-view-apply-hotspot-functions
+  ;;                                    window page size)
+  ;;                              :width (car size))))
+  ;;                         (pdf-util-scroll-to-edges
+  ;;                          (pdf-util-scale-relative-to-pixel (car edges))))))))
+
+
+;; when browsing annotations, copy the corresponding text to clipboard
+(with-eval-after-load 'pdf-annot
+  (el-patch-defun pdf-annot-show-annotation (a &optional highlight-p window)
+
+  (save-selected-window
+    (when window (select-window window 'norecord))
+    (pdf-util-assert-pdf-window)
+    (let ((page (pdf-annot-get a 'page))
+          (size (pdf-view-image-size)))
+      (unless (= page (pdf-view-current-page))
+        (pdf-view-goto-page page))
+      (let ((edges (pdf-annot-get-display-edges a)))
+        (el-patch-add (let* ((txt  (mapcar
+                                    (lambda (edg)
+                                      (pdf-info-gettext
+                                       (pdf-view-current-page)
+                                       edg
+                                       pdf-view-selection-style))
+                                    edges)))
+                        ;; (pdf-view-deactivate-region)
+                        (kill-new (mapconcat 'identity txt " "))) )
+        (when highlight-p
+          (pdf-view-display-image
+           (pdf-view-create-image
+               (pdf-cache-renderpage-highlight
+                page (car size)
+                `("white" "steel blue" 0.35 ,@edges))
+             :map (pdf-view-apply-hotspot-functions
+                   window page size)
+             :width (car size))))
+        (pdf-util-scroll-to-edges
+         (pdf-util-scale-relative-to-pixel (car edges))))))))
 
 ;; (defun pdf-info-renderpage (page width &optional file-or-buffer &rest commands)
 ;;   "Render PAGE with width WIDTH.

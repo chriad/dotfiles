@@ -1,5 +1,6 @@
 ffmpeg--discard-zero-frames() {
-    for f in *.mp3 ; do ffprobe -v error "${f}" 2>&1 > /dev/null | egrep -v "size" | cut -d: -f1 | xargs -I _ mv _ _.bak ; done
+    # cmd | xargs -I _ mv _ _.bak 
+    for f in *.mp3 ; do ffprobe -v error "${f}" 2>&1 > /dev/null | egrep -v "size" | cut -d: -f1 ; done
 }
 
 
