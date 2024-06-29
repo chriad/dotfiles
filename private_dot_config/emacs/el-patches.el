@@ -121,12 +121,38 @@ SIZE is a string Columns x Rows like for example \"3x2\"."
              (pdf-view-create-image
                  (pdf-cache-renderpage-highlight
                   page (car size)
-                  `((el-patch-swap "white" "white") (el-patch-swap "steel blue" "black") (el-patch-swap 0.35 0.1) ,@edges))
+                  `((el-patch-swap "white" "black") (el-patch-swap "steel blue" "white") (el-patch-swap 0.35 1) ,@edges))
                :map (pdf-view-apply-hotspot-functions
                      window page size)
                :width (car size))))
           (pdf-util-scroll-to-edges
-           (pdf-util-scale-relative-to-pixel (car edges))))))))
+           (pdf-util-scale-relative-to-pixel (car edges)))))))
+
+;; do not highlight annotation
+(el-patch-defun pdf-annot-list-display-annotation-from-id (id)
+  "Display the Annotation ID in the PDF file.
+
+This allows us to follow the tabulated-list of annotations and
+have the PDF buffer automatically move along with us."
+  (interactive (list (tabulated-list-get-id)))
+  (when id
+    (unless (buffer-live-p pdf-annot-list-document-buffer)
+      (error "PDF buffer was killed"))
+    (when (timerp pdf-annot-list-display-annotation--timer)
+      (cancel-timer pdf-annot-list-display-annotation--timer))
+    (setq pdf-annot-list-display-annotation--timer
+          (run-with-idle-timer 0.1 nil
+            (lambda (buffer a)
+              (when (buffer-live-p buffer)
+                (with-selected-window
+                    (or (get-buffer-window buffer)
+                        (display-buffer
+                         buffer
+                         '(nil (inhibit-same-window . t))))
+                  (pdf-annot-show-annotation a (el-patch-swap t t)))))
+            pdf-annot-list-document-buffer
+            (pdf-annot-getannot id pdf-annot-list-document-buffer)))))
+  )
 
 ;; get rid of highlight margin
 (el-patch-feature pdf-info)
@@ -150,13 +176,45 @@ Return the data of the corresponding PNG image."
     (setq file-or-buffer nil))
 
   (apply #'pdf-info-renderpage
-    page width file-or-buffer
-    (apply #'append
-      (mapcar (lambda (elt)
-                `(:background ,(pop elt)
-                  :foreground ,(pop elt)
-                  :alpha ,(pop elt)
-                  ,@(cl-mapcan (lambda (edges)
-                                 `((el-patch-swap :highlight-region :highlight-text) ,edges))
-                               elt)))
-              regions)))))
+         page width file-or-buffer
+         (apply #'append
+                (mapcar (lambda (elt)
+                          `(:background ,(pop elt)
+                                        :foreground ,(pop elt)
+                                        :alpha ,(pop elt)
+                                        ,@(cl-mapcan (lambda (edges)
+                                                       `((el-patch-swap :highlight-region :highlight-text) ,edges))
+                                                     elt)))
+                        regions)))))
+
+
+(el-patch-feature org-pdftools)
+(with-eval-after-load 'org-pdftools
+
+(el-patch-defun org-pdftools-store-link ()
+  "Store a link to a pdfview/pdfoccur buffer."
+  (cond ((eq major-mode 'pdf-view-mode)
+         ;; This buffer is in pdf-view-mode
+         (let* ((file (file-name-base (pdf-view-buffer-file-name)))
+                (quot (if (pdf-view-active-region-p)
+                          (replace-regexp-in-string "\n" " "
+                                                    (mapconcat 'identity (pdf-view-active-region-text) ? ))))
+                (page (number-to-string (pdf-view-current-page)))
+                (link (org-pdftools-get-link))
+                (isearchstr (if (string-match (concat ".*" (regexp-quote org-pdftools-search-string-separator) "\\(.*\\)") link)
+                                (match-string 1 link)))
+                (desc (funcall org-pdftools-get-desc-function file page (or quot isearchstr))))
+           (org-link-store-props
+            :type org-pdftools-link-prefix
+            :link link
+            :description desc)))
+        ((eq major-mode 'pdf-occur-buffer-mode)
+         (let* ((paths (mapconcat #'identity (mapcar #'car
+                                                     pdf-occur-search-documents) "%&%"))
+                (occur-search-string pdf-occur-search-string)
+                (link (concat org-pdftools-link-prefix ":"
+                              paths "@@" occur-search-string)))
+           (org-link-store-props
+            :type org-pdftools-link-prefix
+            :link link
+            :description (concat "Search: " occur-search-string)))))))
