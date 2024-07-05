@@ -1,5 +1,6 @@
 epub--subchaps() {
-    zipgrep "${1}" "${2}"  > subchaps.txt
+# epub--subchaps "<h3" 30dbcc04-39fd-11ef-99bd-1f6b256040d8.epub
+    zipgrep "${1}" "${2}"
 }
 
 epub--remove-blank-beginners() {
@@ -35,15 +36,15 @@ chdump() {
 }
 
 sed--remove-leading-whitespaces() {
-    sed -i -e 's/^[ \t]*//' "${1}"
+    sed -e 's/^[ \t]*//' "${1}"
 }
 
 sed--remove-empty-lines() {
-    sed -i '/^[[:space:]]*$/d' "${1}"
+    sed '/^[[:space:]]*$/d'
 }
 
 epub--sed-remove-epubzip-file-prefix() {
-    sed -i 's/.*\(\.xhtml:\|\.html:\)[ \t]*//g' "${1}"
+    sed 's/.*\(\.xhtml:\|\.html:\)[ \t]*//g'
 }
 
 epub--list-file-sizes() {
@@ -53,4 +54,10 @@ epub--list-file-sizes() {
 # use in top book dir in calibre
 epub--extract-images-here() {
     unzip -j "${1}" OEBPS/images/* -d data/IMAGES
+}
+
+epub--subchaps-pipeline() {
+    # epub--subchaps-pipeline "<h3" <file.epub>
+    epub--subchaps "${1}" "${2}" | epub--sed-remove-epubzip-file-prefix | html2text -style pretty | sed--remove-empty-lines
+    
 }
