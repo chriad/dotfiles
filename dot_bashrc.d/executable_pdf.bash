@@ -1,5 +1,5 @@
 # cpdf -list-bookmarks <file>.pdf | cpdf--dumped-toc-to-txt > chaps.out
-cpdf--dumped-toc-to-txt() {
+pdf--cpdf-dumped-toc-to-txt() {
     csvcut -c 2 -d" " -q'"' -p, "${1}"
 }
 
@@ -40,20 +40,31 @@ pdf--pdfx-browse-refs-json() {
     pdfx -v --json "${1}" |jid '.references'
 }
 
-cpdf--graft-annots() {
+pdf--cpdf-graft-annots() {
     source="$1"
     target="$2"
     cpdf -copy-annotations "$source" "$target" -o "${target%pdf}"grafted.pdf
 }
 
-cpdf--dump-annot-to-file() {
+pdf--cpdf-dump-annot-to-file() {
     pdf="$1"
     cpdf -list-annotations-json "$pdf" > "${pdf%pdf}"annots.json
 }
 
-pdf--gartenfreund() {
+pdf--cpdf-repair() {
+    pdf="${1}"
+    cpdf "${pdf}" -gs gs -gs-malformed-force -o "${pdf%pdf}"repaired.pdf
+}
+
+pdf--ocrmypdf-rasterize() {
+    pdf="${1}"
+    ocrmypdf --tesseract-timeout 0 --force-ocr "${pdf}" "${pdf%pdf}"rasterized.pdf
+    
+}
+
+pdf--ocrmypdf-gartenfreund() {
     pdf="$1"
-    ocrmypdf -l deu --force-ocr "$pdf" "${pdf%pdf}".ocr.pdf
+    ocrmypdf -l deu --force-ocr "$pdf" "${pdf%pdf}"ocr.pdf
 }
 
 pdf--convert-grayscale() {
