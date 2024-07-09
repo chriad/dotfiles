@@ -146,6 +146,9 @@ This function should only modify configuration layer settings."
                                       (doctest :location (recipe
                                                           :fetcher github
                                                           :repo "ag91/doctest"))
+                                      (highlight-sexp :location (recipe
+                                                          :fetcher github
+                                                          :repo "daimrod/highlight-sexp"))
                                       ;; m-buffer
                                       ;; shackle
                                       ;; sway
@@ -220,7 +223,7 @@ This function should only modify configuration layer settings."
                                       scrollkeeper
                                       org-web-tools
                                       ;; org-noter
-                                      ;; org-pdftools
+                                      org-pdftools
                                       ;; org-noter-pdftools
                                       edit-indirect
                                       mpv
@@ -228,7 +231,9 @@ This function should only modify configuration layer settings."
                                       )
 
    ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '()
+   dotspacemacs-frozen-packages '(
+                                  ;; linkd
+                                  )
 
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '()
@@ -417,7 +422,9 @@ It should only modify the values of Spacemacs settings."
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
 
-   ;; Default font or prioritized list of fonts. The `:size' can be specified as
+   ;; Default font or prioritized list of fonts. This setting has no effect when
+   ;; running Emacs in terminal. The font set here will be used for default and
+   ;; fixed-pitch faces. The `:size' can be specified as
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '("Source Code Pro"
@@ -498,6 +505,10 @@ It should only modify the values of Spacemacs settings."
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
    ;; right; if there is insufficient space it displays it at the bottom.
+   ;; It is also possible to use a posframe with the following cons cell
+   ;; `(posframe . position)' where position can be one of `center',
+   ;; `top-center', `bottom-center', `top-left-corner', `top-right-corner',
+   ;; `top-right-corner', `bottom-left-corner' or `bottom-right-corner'
    ;; (default 'bottom)
    dotspacemacs-which-key-position 'bottom
 
@@ -754,7 +765,35 @@ before packages are loaded."
 (setq define-word-offline-dict-directory "/media/chriad/ext4/SOFTWARE/dictionaries_enwiktionary/ding/")
 (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
 
+;; automatically enable follow mode for search results
+(add-hook 'pdf-occur-buffer-mode-hook (lambda () (next-error-follow-minor-mode)))
+
+(defun copy-highlight-annotation-text ()
+  (interactive)
+        (let* ((a (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
+               (page (pdf-annot-get a 'page))
+               (edges (pdf-annot-get-display-edges a)))
+          (with-current-buffer pdf-annot-list-document-buffer
+            (pdf-view-goto-page page)
+          (setq txt (mapcar
+                (lambda (edg)
+                  (pdf-info-gettext
+                   (pdf-view-current-page)
+                   edg
+                   pdf-view-selection-style))
+                edges))
+          (kill-new (mapconcat 'identity txt " ")))
+        ))
+
+;; TODO copy annotation text on y
+(define-key pdf-annot-list-mode-map (kbd "y") 'copy-highlight-annotation-text)
+
+
 (put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")
+
+(use-package org-pdftools
+  :hook (org-mode . org-pdftools-setup-link))
+
 
 (setq bibtex-completion-bibliography '("~/.config/bibliographies/fixed-layout.bib")
         ;; bibtex-completion-library-path "~/Papers/"
@@ -787,7 +826,7 @@ before packages are loaded."
 (use-package bookmark+
     ;; :defer t
     :config
-    (require 'linkd)
+    ;; (require 'linkd) ;; how to do this?
     (require 'narrow-indirect)
     (setq bmkp-dired-history nil)
     (defun bmkp-list-types ()
@@ -1083,9 +1122,6 @@ before packages are loaded."
   ;; (defun my/path-generator (bfn)
   ;;   (s-concat "./" (f-filename bfn)))
   ;; ;; (helm-posframe-enable)
-
-  ;; (defun my/org-pdftools-get-desc-default (file page &optional text)
-  ;;   (concat "𝕡-" (file-name-sans-extension file)))
 
   ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/nov/nov.el")
   ;; (add-hook 'nov-mode-hook 'on-screen-mode)
