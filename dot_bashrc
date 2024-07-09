@@ -276,50 +276,6 @@ function curry() {
 
 curry yt--tv-srf yt--tv --hls-prefer-ffmpeg
 
-# yt-single() {
-#     youtube-dl --config-location ~/.config/youtube-dl/config.embed \
-#                -o '/media/chriad/lenovo/%(extractor)s/%(channel)s/%(title)s.%(ext)s' \
-#                "$@"
-# }
-
-# --objstm          parse stream of /ObjStm objects
-pdf--pdfid-objstm() { pdf-parser.py --type /ObjStm --filter --raw "$1" | pdfid.py --force; }
-
-pdf--extract-cover() {
-    convert -thumbnail x300 -background white -alpha remove "${1}"[0] cover.png
-}
-
-pdf--thumbnail() {
-    pdftoppm -f 1 -l 1 -scale-to 1024 -png  $1 thumb
-}
-
-pdf--pdfx-extract-urls ()
-{
-    pdfx -v "$1" -o urls.txt
-}
-
-# pdf--pdfx-metadata() {
-#     pdfx -v $1 -o ${1%.pdf}.pdf-metadata
-# }
-
-# pdf--pdfgrep-fzf() {
-#     # cd media/chriad/E/CALIBRE_LIBRARIES/NEXUS_QUARANTINE;
-#     fzf -m --print0 | xargs -0 -I {} sh -c "pdfgrep -m 10 -n -C 3 \"${1}\" '{}' | fzf"
-# }
-
-pdf--pdfx-browse-refs-json() {
-    pdfx -v --json "${1}" |jid '.references'
-}
-
-# pipe this to file for reference for static playlists
-yt--dump-playlist-here() {
-    youtube-dl --get-title "$1" -o "%(playlist_index)d    %(title)s.%(ext)s" &> "$1".dump
-}
-
-ffmpeg--dump-metadata() {
-	  ffmpeg -i "$1" -f ffmetadata - 2> /dev/null
-}
-
 git--diff-pdf() {
     yes | git difftool --tool=diffpdf $1
 }
@@ -328,13 +284,6 @@ emby-poster-here() {
 	  # first copy pic from firefox contex menu into clipboard: "Copy Image"
 	  xclip -selection clipboard -t image/png -o > folder.png
 }
-
-yt--audio() {
-    /usr/local/bin/youtube-dl --extract-audio --restrict-filenames --write-info-json --write-description --write-auto-sub --sub-lang en --audio-format mp3 "$1"
-}
-# youtube-dl-playlist() {
-#     /usr/local/bin/youtube-dl -i -c -o '/media/chriad/E/YOUTUBE-PLAYLISTS/%(channel)s/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s' --write-info-json --write-thumbnail --write-description --add-metadata --write-auto-sub --sub-lang en "$1"
-# }
 
 mdw() { pandoc "$@" | w3m -T text/html; }
 
@@ -345,129 +294,12 @@ dlocate() { locate -0 "$1" | xargs -0 rm -rf; }
 # dirlocate() { locate -r "/$1$"; }
 dirlocate() { locate -r "/*$1*"; }
 
-m4b--cover() {
-    ffmpeg -i "$1" -map 0:v -map -0:V -c copy cover.jpg
-}
-
-m4b--remove-chaps() {
-    for f in *.m4b ; do mp4chaps -r "${f}"; done
-}
-
-alias get_iplayer="get_iplayer --nocopyright"
-
-iplayer--series() { get_iplayer --type=radio --radio-quality=std,med --pid="$1" --pid-recursive; }
-# iplayer-single b044j7pd --versions=original,podcast
-# iplayer-single() { get_iplayer --type=radio --radio-quality=high,std --pid="$1" "$@"; }
-iplayer--single() {
-    : <<'COMMENT'
---versions=original,podcast
-COMMENT
-    get_iplayer --type=radio --radio-quality=high,med,std --pid="$1" "$@"
-                 }
-iplayer--list() { get_iplayer --type=radio --pid="$1" --pid-recursive-list --sort=firstbcast; }
-iplayer--info() { get_iplayer --pid="$1" --info | tee info."$1".txt |egrep "version|qualities"; }
-
-
-yt--parallel() {
-    youtube-dl --get-id "$1" | xargs -I '{}' -P "$2" yt-single 'https://youtube.com/watch?v={}'
-}
-
-yt--parallel-playlist() {
-    prefix="/media/chriad/lenovo"
-    youtube-dl --get-id "$1" | xargs -I '{}' -P "$2" youtube-dl --get-filename --no-playlist --config-location ~/.config/youtube-dl/config.embed -o "$prefix/%(extractor)s/%(channel)s/%(playlist)s/%(playlist_index)s -- %(title)s.%(ext)s" "https://youtube.com/watch?v={}&list=$1"
-}
-
-ffprobe--json() {
-    ffprobe -v quiet -print_format json -show_format -show_streams "$1"
-}
-
-yt--probe-audio() {
-    # 1 for code, 2 for url
-    youtube-dl -f "$1"  -o - "$2" | mpv -
-}
-
-pdftk--d() {
-    pdf="$1"
-    pdftk "$pdf" dump_data_utf8 >"${pdf%pdf}"outline.txt
-}
-
-pdftk--u() {
-    pdf="$1"
-    pdftk "$pdf" update_info_utf8 "${pdf%pdf}"outline.txt output "${pdf%pdf}"out.pdf
-}
-
-
-pdf--pdftoc2txt() {
-    env _JAVA_AWT_WM_NONREPARENTING=1 java -jar /home/chriad/.local/bin/pdfbox-app-3.0.0-alpha2.jar export:text --input="${1}"
-}
 
 folderjail() {
     # wrap single file to folder with same name
     fname=`echo "$1" | inline-detox`
     mkdir "${fname%%.*}"
     mv "$1" "${fname%%.*}"
-}
-
-epub--subchaps() {
-    zipgrep "${1}" "${2}"  > subchaps.txt
-}
-
-epub--remove-blank-beginners() {
-    grep -v "^ .*" "${1}"
-}
-
-epub--sort() {
-    dos2unix "${1}"
-    csplit \
-        --quiet \
-        --prefix=split- \
-        --suffix-format=%02d.txt \
-        --suppress-matched \
-        "${1}" /^$/ {*}
-    rm "${1}"
-    for f in *.txt ; do head -n 1 "${f}" >> 1.txt; echo "${f}" >> 2.txt; done
-    x=`paste 1.txt 2.txt | sort -k1 | cut -f2 | tr '\n' ' '`
-    for i in $x;do cat $i >> output.txt;done
-    rm 1.txt 2.txt split-*
-    sed -i '/^[[:space:]]*$/d' output.txt
-    sed -i 's/.*\(\.xhtml:\|\.html:\)[ \t]*//g' output.txt
-    links2 -dump output.txt | egrep -v '^$' > res.txt
-}
-
-links2--textify-html-toc() {
-    # toc downloaded as html node
-    links2 -dump "${1}" | egrep -v '^$' | sed -e 's/^[ \t]*//' | grep --only-matching --extended-regexp "^[0-9]{1,2}.*"
-}
-
-list--is-1001() {
-    #wget 'https://www.imdb.com/list/ls024863935/export?ref_=ttls_otexp' -N -O ~/scratch/1001.txt
-    csvcut -c6 ~/scratch/1001.txt | fzf --header-lines 1
-}
-
-chdump() {
-    links2 -dump "${1}" > chapters.txt
-    cp chapters.txt chaps.txt
-}
-
-sed--remove-leading-whitespaces() {
-    sed -i -e 's/^[ \t]*//' "${1}"
-}
-
-sed--remove-empty-lines() {
-    sed -i '/^[[:space:]]*$/d' "${1}"
-}
-
-epub--sed-remove-epubzip-file-prefix() {
-    sed -i 's/.*\(\.xhtml:\|\.html:\)[ \t]*//g' "${1}"
-}
-
-epub--list-file-sizes() {
-    zipinfo -l --h --t "${1}" |tr -s ' ' | cut -f4 -d' ' |sort -n|numfmt --to=iec-i
-}
-
-# use in top book dir in calibre
-epub--extract-images-here() {
-    unzip -j "${1}" OEBPS/images/* -d data/IMAGES
 }
 
 m4a--prefixcut-inplace ()
@@ -478,8 +310,6 @@ m4a--prefixcut-inplace ()
         /usr/bin/mv -f ./out/"${f}" "${f}"; done
     rm -rf ./out
 }
-
-
 
 # example: mp3--bulk-title-here chaps.txt
 # chaps.txt: file with titles each on one line
@@ -512,54 +342,9 @@ rename-from-2c-tsv() {
     done < out.txt
 }
 
-ffmpeg--arte-merge-streams() {
-    vid="$1"
-    aud="$2"
-    sub="$3"
-    name="$4"
-    ffmpeg -i "${vid}" -i "${aud}" -i "${sub}" -map 0:v -map 1:a -map 2 -c:v copy -c:a copy -c:s mov_text -metadata:s:s:0 language=eng "${name}".mp4
-}
-
-ffmpeg--arte-merge-combined() {
-    vid_aud="$1"
-    sub="$2"
-    name="$3"
-    ffmpeg -hide_banner -loglevel warning -nostats -i "${vid_aud}" -i "${sub}" -map 0:v -map 0:a -map 1 -c:v copy -c:a copy -c:s mov_text -metadata:s:s:0 language=eng "${name}".mp4
-}
-
-calibre--search-title() { calibredb list -s title:"${1}"; }
-
-# quaderno
-
-export QUADERNO_STATIC_IP="192.168.2.199"
-export QUADERNO_SYNC_PATH="/media/chriad/ext4/dpt-mirror/dpt"
-
-quaderno() { dptrp1 --addr "$QUADERNO_STATIC_IP" "${@}" ; }
-
-quaderno--sync() { dptrp1 --addr "$QUADERNO_STATIC_IP" sync "$QUADERNO_SYNC_PATH"; }
-
-quaderno--download() { dptrp1 --addr "$QUADERNO_STATIC_IP" download "${1}" ./ ; }
-
-quaderno--delete() { dptrp1 --addr "$QUADERNO_STATIC_IP" delete "${1}" ; }
-
-quaderno--list-rootdir-documents() {
-    dptrp1 --addr "$QUADERNO_STATIC_IP" list-documents | grep '^[^/]*/[^/]*$'
-}
-
-quaderno--list-all-documents() {
-    dptrp1 --addr "$QUADERNO_STATIC_IP" list-documents
-}
-
-alias quaderno--upload="dptrp1 --addr 192.168.2.199 upload"
 
 bachsplit() {
     flacsplt -o @b__@t__@A__@n -c "$1" "$2"
-}
-
-cpdf--graft-annots() {
-    source="$1"
-    target="$2"
-    cpdf -copy-annotations "$source" "$target" -o "${target%pdf}"grafted.pdf
 }
 
 quodlibet--sort-queries() {
@@ -568,19 +353,6 @@ quodlibet--sort-queries() {
     exec $out
     mv ${fp}queries.saved /home/chriad/queries.saved.backup
     mv ${fp}queries.saved.sorted ${fp}queries.saved
-}
-
-mp3--prefixcut() {
-   for f in *.mp3 ; do mp3splt "${f}" 0."${1}" EOF -o out/@f ; done
-}
-
-
-mp3--postfixcut() {
-   for f in *.mp3 ; do mp3splt "${f}" 0.0 EOF-0."${1}" -o out/@f ; done
-}
-
-m4b--prefixcut() {
-    for f in *.m4b ; do ffmpeg -ss 00:00:"${1}" -i "${f}" -c:v copy -c:a copy ./out/"${f}" ; done
 }
 
 sed--quote-lines() {
@@ -597,87 +369,6 @@ mp3--merge-chapters() {
     paste "${a}" "${b%txt}"quoted.txt |tr -d '\t' > "${b%txt}"out.csv
 }
 
-cpdf--dump-annot-to-file() {
-    pdf="$1"
-    cpdf -list-annotations-json "$pdf" > "${pdf%pdf}"annots.json
-}
-
-# mutool-clean() {
-#     pdf="$1"
-#     mutool clean -gggg "$pdf" "${pdf%pdf}"clean.pdf
-# }
-
-pdf--gartenfreund() {
-    pdf="$1"
-    ocrmypdf -l deu --force-ocr "$pdf" "${pdf%pdf}".ocr.pdf
-}
-
-calibre--ebook-edit() {
-    local d
-    d=$CALIBRE_ROOT/reflowable
-    ebook-edit "$d/$(fd --prune -e epub --base-directory $d |fzf)"
-}
-
-# TODO check for empty result and abort
-calibre--ebook-view() {
-    local d
-    d=$CALIBRE_ROOT/reflowable
-    ebook-viewer "$d/$(fd --prune -e epub --base-directory $d |fzf)"
-}
-
-calibre--cd-data-folders() {
-    local d
-    d=$CALIBRE_ROOT/reflowable
-    cd "$d/$(fd --prune -t d --base-directory $d --glob "data" |fzf --preview 'ls {}')"
-    # fd --prune -t d --base-directory $d --glob "data" |fzf --bind  "enter:execute(cd \"/media/chriad/ssd-45/reflowable/{+}\")+accept"
-}
-
-calibre--switch-data-folders() {
-    local d
-    d=$CALIBRE_ROOT/reflowable
-    DIR=`fd --prune -t d --base-directory $d --glob "data" | fzf-tmux` && cd $d/"$DIR"
-}
-
-pdf--convert-grayscale() {
-    # https://superuser.com/questions/104656/convert-a-pdf-to-greyscale-on-the-command-line-in-floss
-    source="$1"
-    ghostscript \
-        -dAutoRotatePages=/None \
-        -sOutputFile="${source%pdf}greyscaled".pdf \
-        -sDEVICE=pdfwrite \
-        -sColorConversionStrategy=Gray \
-        -dProcessColorModel=/DeviceGray \
-        -dCompatibilityLevel=1.4 \
-        -dNOPAUSE \
-        -dBATCH \
-        "$source"
-}
-
-quaderno--pdffd() {
-    local path="$QUADERNO_ROOT/dpt"
-    fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(emacsclient -c {}  &>/dev/null &)+abort'
-    # fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(flatpak run org.kde.okular {}  &>/dev/null &)+abort'
-    # fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(sioyek {} &)+abort'
-}
-alias pdffd=quaderno--pdffd
-
-# # use gdebi instead of dpkg
-# dpkg () {
-#     local OPTIND OPTARG
-#     local real_command="gdebi"
-#     local command_args=()
-#     while getopts :i opt; do
-#         case $opt in
-#             i) command_args+=( "--apt-line" ) ;;
-#             ?) echo "unknown option: -$OPTARG" >&2
-#             return 1
-#             ;;
-#         esac
-#     done
-#     shift $((OPTIND - 1))
-
-#     "$real_command" "${command_args[@]}" "$@"
-# }
 
 fzf--images() {
     IMPATH=/home/chriad/essential-images/cheat
@@ -695,12 +386,6 @@ listfunc () {
         declare -f $func;
         echo -e "\r";
     done
-}
-
-pdf--drop-pdfimages () {
-    # pdfimages -all -p -f 11 -l 30 <file>.pdf ./images/image-
-    mkdir images
-    pdfimages -p "$1" ./images/image-
 }
 
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
@@ -725,32 +410,8 @@ function m4b--rmlyrics() {
     esac
 }
 
-calibre--favorites() {
-    calibredb list -s "#rating:true" | fzf --header-lines 1
-}
 
-list--schimanski-missing() {
-    cat <<EOF
-Der Fall Schimanski
-Gebrochene Blueten
-Spielverderber
-Schwarzes Wochenende
-Doppelspiegel
-EOF
-}
-
-list--poirot-ustinov() {
-    cat <<EOF
-Death on the Nile (1978)
-Evil Under the Sun (1982)
-Thirteen at Dinner (1985)
-Dead Man’s Folly (1986)
-Murder in Three Acts (1986)
-Appointment with Death (1988)
-EOF
-}
-
-audacity--labels-to-csv() {
+function audacity--labels-to-csv() {
     # some file exported by audacity called Labels.txt
     fil="$1"
     csvformat -t -D, "${fil}" > "${fil%txt}"csv
@@ -769,11 +430,6 @@ function m4b--title() {
 
 }
 
-syncthing--iot-add-ignored() {
-    local f="${1}"
-    echo '// '`ls -1 ${f}` >> ignored.txt
-}
-
 mp4chaps--pipeline() {
     local fname="${1}"
     mp4chaps -x "${fname}"
@@ -782,6 +438,10 @@ mp4chaps--pipeline() {
     mp4chaps -i "${fname}"
 }
 
+# chriad-mount sdi1 usb
+chriad-mount() {
+   sudo mount -o uid=chriad,gid=chriad,rw,defaults /dev/"${1}" /home/chriad/"${2}"
+}
 
 # flatpak aliases
 if [ -d ~/.bashrc.d ]; then

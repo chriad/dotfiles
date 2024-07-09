@@ -30,11 +30,6 @@ export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
 
 #. ~/.config/wayland-theming
 
-if [ -f ~/.bashrc  ]; then
-    . ~/.bashrc
-fi
-
-
 # if [ -e /home/chriad/.nix-profile/etc/profile.d/nix.sh ]; then . /home/chriad/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
 # opam configuration
@@ -52,3 +47,9 @@ export PATH=$PATH:/usr/local/go/bin
 if [ -z "${WAYLAND_DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
     exec sway
 fi
+
+if [ -f ~/.bashrc  ]; then
+    . ~/.bashrc
+fi
+
+

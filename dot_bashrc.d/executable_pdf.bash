@@ -3,8 +3,6 @@ pdf--cpdf-dumped-toc-to-txt() {
     csvcut -c 2 -d" " -q'"' -p, "${1}"
 }
 
-
-
 pdftk--d() {
     pdf="$1"
     pdftk "$pdf" dump_data_utf8 >"${pdf%pdf}"outline.txt

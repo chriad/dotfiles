@@ -1,4 +1,5 @@
 # some more ls aliases
+alias exa=eza
 alias ll='ls -alF'
 alias la='ls -A'
 # alias l='ls -CF'
@@ -9,10 +10,12 @@ alias l=exa
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # taskset -c <x> : reserve processor, make faster
-alias adb--wifi="adb connect 192.168.2.167:5555"
+alias adb--connect="adb connect 192.168.2.167:5555"
+alias adb--disconnect="adb disconnect 192.168.2.167:5555"
 alias dmesg="dmesg -wL" # color and --tail
 
 # flatpak --command
+alias mpvshim='flatpak run com.github.iwalton3.jellyfin-mpv-shim'
 alias gpodder="taskset -c 0 /usr/bin/flatpak run --command=/app/bin/gpodder org.gpodder.gpodder 2> /dev/null &"
 alias gpo='flatpak run --command=/app/bin/gpo org.gpodder.gpodder'
 alias operon='flatpak run --command=operon io.github.quodlibet.QuodLibet'
@@ -39,8 +42,8 @@ alias recollcmd=recollq
 alias ffplay='ffplay -hide_banner -autoexit '
 alias ffprobe='ffprobe -hide_banner  '
 
-alias cpdf="cpdf 2>/dev/null"
-alias cpdf--help-browse='cpdf -help | fzf'
+# alias cpdf="cpdf 2>/dev/null"
+alias cpdf--help-browse='cpdf -help 2>&1 | fzf'
 alias cpdf--list-bookmarks="cpdf -list-bookmarks"
 alias cpdf--list-annotations="cpdf -list-annotations-json"
 alias space='gdu /media/chriad -sd'
@@ -187,144 +190,3 @@ alias epub--epubcheck='java -jar ~/.local/bin/epubcheck.jar'
 alias textricator='~/textricator-9.2.56/textricator'
 alias jpdf="java -jar /media/chriad/ext4/SOFTWARE/jpdftweak-linux-x64-1.1/jpdftweak.jar" # use flatpak version
 alias retro-term="/home/chriad/github_scripts/cool-retro-term/Cool-Retro-Term-1.1.1-x86_64.AppImage"
-
-# chriad-mount sdi1 usb
-chriad-mount() {
-   sudo mount -o uid=chriad,gid=chriad,rw,defaults /dev/"${1}" /home/chriad/"${2}"
-}
-
-#call with asciimux "session_name_here" "file_name_here", must
-#have ""
-ghist() {
-    git log --oneline --name-only $1
-}
-
-# pipe this to file for reference for static playlists
-dump-playlist-here() {
-    youtube-dl --get-title "$1" -o "%(playlist_index)d    %(title)s.%(ext)s" &> "$1".dump
-}
-
-dump-metadata() {
-	ffmpeg -i "$1" -f ffmetadata - 2> /dev/null
-}
-
-git_diff_pdf() {
-    yes | git difftool --tool=diffpdf $1
-}
-
-emby-poster-here() {
-	# first copy pic from firefox contex menu into clipboard: "Copy Image"
-	xclip -selection clipboard -t image/png -o > folder.png
-}
-
-youtube-dl-audio() {
-    /usr/local/bin/youtube-dl --extract-audio --restrict-filenames --write-info-json --write-description --write-auto-sub --sub-lang en --audio-format mp3 "$1"
-}
-# youtube-dl-playlist() {
-#     /usr/local/bin/youtube-dl -i -c -o '/media/chriad/E/YOUTUBE-PLAYLISTS/%(channel)s/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s' --write-info-json --write-thumbnail --write-description --add-metadata --write-auto-sub --sub-lang en "$1"
-# }
-
-thumbnail() {
-    pdftoppm -f 1 -l 1 -scale-to 1024 -png  $1 thumb
-}
-
-asciimux() {
-    cd $ASCIINEMA_HOME
-    filename=$2.json
-    test -f $filename || touch $filename
-    asciinema rec "$filename" -c "tmux attach -t $1"
-}
-arec() {
-    filename=$ASCIINEMA_HOME/"$1".json
-    test -f $filename || touch $filename
-    asciinema rec $filename
-
-}
-
-extract-url-pdf ()
-{
-    pdfx -v "$1" -o urls.txt
-}
-
-mkcdir ()
-{
-    mkdir -p -- "$1" &&
-      cd -P -- "$1"
-}
-
-mpv_p() {
-    mpv --really-quiet --input-ipc-server=/tmp/mpvsocket --idle --playlist="$@"
-}
-# do_install "$(sudo make install)"
-do_install() {
-    #do things with parameters like $1 such as
-    "$1" > >(tee -a stdout.log) 2> >(tee -a stderr.log >&2) | less
-}
-
-# obsolete
-# open_pdf_in_vim() {
-#     pdftotext -layout  $1 - | nvim -
-# }
-
-# fzf_pdf() {
-#     fzf -m --print0 | xargs -0 -I {} sh -c "pdfgrep -m 10 -n -C 3 $1 '{}' | fzf --ansi -d: -n 1"
-# }
-
-pdf-metadata() {
-    pdfx -v $1 -o ${1%.pdf}.pdf-metadata
-}
-
-
-# fdd- cd to selected directory
-# mnemonic cd down -> show all subdirectories
-
-# cdd() {
-#   local dir
-#   dir=$(/usr/bin/find ${1:-.} -path '*/\.*' -prune \
-#                   -o -type d -print 2> /dev/null | fzf +m) &&
-#   cd "$dir"
-# }
-
-
-
-# alias acro='"/mnt/c/Program Files (x86)\Adobe\Acrobat 11.0\Acrobat\Acrobat.exe"'
-# cf - fuzzy cd from anywhere
-# ex: cf word1 word2 ... (even part of a file name)
-# zsh autoload function
-f() {
-  local file
-
-  file="$(locate -Ai -0 $@ | grep -z -vE '~$' | fzf --read0 -0 -1)"
-
-  if [[ -n $file ]]
-  then
-     if [[ -d $file ]]
-     then
-        cd -- $file
-     else
-        cd -- ${file:h}
-     fi
-  fi
-}
-
-bdfr-c() {
-	CMD="conda run -n py39 python3 -m bdfr\
-			   clone\
-			   --file-scheme {TITLE}\
-			   -l '$1'\
-			   /home/chriad/reddit-archive"
-	eval "$CMD"
-}
-
-# A quick way to pull this image, video, without metadata. For metadata, use clone
-bdfr-d() {
-	CMD="conda run -n py39 python3 -m bdfr\
-			   download\
-			   --file-scheme {TITLE}\
-			   -l '$1'\
-			   /home/chriad/reddit-archive"
-	eval "$CMD"
-}
-ldir() {
-	locate -0 "*/$1" | xargs -0 -n1 dirname
-}
