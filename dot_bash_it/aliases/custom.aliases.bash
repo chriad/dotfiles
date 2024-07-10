@@ -100,7 +100,7 @@ alias bdfr='conda run -n py39 python3 -m bdfr'
 # chezmoi
 alias cs='chezmoi status 2>/dev/null'
 # alias cm="chezmoi managed --include files,symlinks | fzf --bind='enter:execute(chezmoi merge ~/{})'"
-alias cm="chezmoi status 2>/dev/null | sed -e 's/^[ \t]*//' | fzf --bind='enter:execute(chezmoi merge ~/{2})'"
+alias cm="chezmoi status --include=files 2>/dev/null | sed -e 's/^[ \t]*//' | fzf --bind='enter:execute(chezmoi merge ~/{2})'"
 alias cc='chezmoi cd'
 
 # alias firefox="firefox -P -no-remote" # multiple concurrent profiles
