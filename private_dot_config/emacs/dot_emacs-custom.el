@@ -187,23 +187,50 @@
  '(package-selected-packages
    '(org-starless gist helm-firefox camcorder names toml-mode ron-mode racer rust-mode flycheck-rust cargo password-store-otp helm-pass password-store helm-bibtexkey helm-bibtex bibtex-completion biblio parsebib biblio-core symex helm-atoms run-command niceify-info elx helm-recoll comment-or-uncomment-sexp clhs ascii-table helm-emmet dyncloze dired-git-info nix-mode helm-nixos-options company-nixos-options nixos-options lsp-focus tiny tern npm-mode nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl helm-gtags ggtags counsel-gtags no-littering howdoyou poker org-variable-pitch org-roam evil-lispy org-mru-clock esup monkeytype speed-type typit org-page git mustache lisp-extra-font-lock highlight-indent-guides elisp-def sr-speedbar ein polymode anaphora websocket lispy achievements org-fc doct justify-kp dash-functional buttons keymap-utils dired-open dired-hacks-utils olivetti nov on-screen ob-sml sml-mode mic-paren helm-posframe stickyfunc-enhance srefactor highlight-defined sicp pdfgrep edebug-x helm-file-preview csv-mode org-roam-server ox-gfm scrollkeeper beacon lsp-ui lsp-treemacs lsp-origami origami helm-lsp lsp-mode flycheck-pos-tip pos-tip web-mode web-beautify tagedit slim-mode scss-mode sass-mode pug-mode prettier-js impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css counsel swiper ivy company-web web-completion-data add-node-modules-path evil-motion-trainer edit-indirect helpful elisp-refs mmm-mode markdown-toc gh-md yaml-mode xterm-color vterm terminal-here shell-pop multi-term eshell-z eshell-prompt-extras esh-help pdf-tools tablist keycast command-log-mode orgit org-rich-yank org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download org-cliplink org-brain htmlize helm-org-rifle gnuplot evil-org wakatime-mode yasnippet-snippets unfill treemacs-magit smeargle mwim magit-svn magit-section magit-gitflow magit-popup helm-gitignore helm-git-grep helm-company helm-c-yasnippet gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy forge markdown-mode magit ghub closql emacsql-sqlite emacsql treepy git-commit with-editor transient company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil treemacs cfrs ht pfuture posframe toc-org symon symbol-overlay string-inflection spaceline-all-the-icons memoize all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-superstar open-junk-file nameless shut-up move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck flycheck-elsa flx-ido flx fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection annalist evil-cleverparens smartparens evil-args evil-anzu anzu eval-sexp-fu emr iedit clang-format projectile paredit list-utils pkg-info epl elisp-slime-nav editorconfig dumb-jump s dired-quick-sort devdocs define-word dash column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el hydra lv hybrid-mode font-lock+ evil goto-chg dotenv-mode diminish bind-map bind-key async))
  '(paradox-automatically-star nil)
+ '(paradox-execute-asynchronously 'ask t)
  '(paradox-github-token t)
  '(paren-sexp-mode t)
  '(pdf-annot-activate-created-annotations nil)
  '(pdf-annot-list-follow-minor-mode-hook nil)
  '(pdf-annot-list-format '((page . 3) (type . 10) (label . 24) (date . 24)))
+ '(pdf-annot-list-listed-types
+   '(free-text highlight ink squiggly strike-out text underline unknown))
  '(pdf-annot-minor-mode-map-prefix [3 1])
  '(pdf-outline-display-labels t)
- '(pdf-view-display-size 'fit-height)
+ '(pdf-tools-enabled-hook
+   '((lambda nil
+       (define-key pdf-annot-list-mode-map
+                   (kbd "o")
+                   #'(lambda nil
+                       (interactive)
+                       (pdf-outline pdf-annot-list-document-buffer nil))))))
+ '(pdf-view-display-size 'fit-page)
  '(pdf-view-midnight-colors '("white" . "black"))
  '(pdfgrep-options " -H -n -r ")
  '(persp-save-dir "/media/chriad/nebula/spacemacs-fork/.cache/layouts/")
  '(persp-use-workgroups t)
  '(projectile-known-projects-file
    "/media/chriad/nebula/spacemacs-fork/.cache/projectile-bookmarks.eld")
- '(projectile-project-search-path '("/home/chriad" "/home/chriad/emacs-projects"))
+ '(projectile-project-search-path '("/home/chriad" "/home/chriad/Desktop/PROJECTS"))
+ '(psession-object-to-save-alist
+   '((helm--locate-library-doc-cache . "helm--locate-library-doc-cache.el")
+     (helm--locate-library-cache . "helm--locate-library-cache.el")
+     (extended-command-history . "extended-command-history.el")
+     (helm-external-command-history . "helm-external-command-history.el")
+     (helm-surfraw-engines-history . "helm-surfraw-engines-history.el")
+     (psession--save-buffers-alist . "psession-save-buffers-alist.el")
+     (helm-ff-history . "helm-ff-history.el")
+     (helm-browse-project-history . "helm-browse-project-history.el")
+     (regexp-search-ring . "regexp-search-ring.el")
+     (search-ring . "search-ring.el")
+     (file-name-history . "file-name-history.el")
+     (kill-ring . "kill-ring.el")
+     (kill-ring-yank-pointer . "kill-ring-yank-pointer.el")
+     (register-alist . "register-alist.el")
+     (psession--winconf-alist . "psession-winconf-alist.el")
+     (psession--selected-frame-parameters . "psession-selected-frame-parameters.el")))
  '(racket-browse-url-function 'browse-url-firefox)
- '(racket-documentation-search-location ''local)
+ '(racket-documentation-search-location 'local)
  '(reb-re-syntax 'rx)
  '(safe-local-variable-values
    '((eval spacemacs/toggle-line-numbers-on)

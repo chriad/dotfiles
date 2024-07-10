@@ -122,3 +122,7 @@
 
 ;; define-key
 (define-key lisp-interaction-mode-map (kbd "C-e") 'pp-eval-last-sexp)
+;; open toc also from annots buffer
+;; (eval-after-load "pdf-annot"
+;;   (define-key pdf-annot-list-mode-map (kbd "o") #'(lambda () (interactive) (pdf-outline pdf-annot-list-document-buffer t)))
+;;   )

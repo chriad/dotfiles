@@ -121,7 +121,7 @@ SIZE is a string Columns x Rows like for example \"3x2\"."
              (pdf-view-create-image
                  (pdf-cache-renderpage-highlight
                   page (car size)
-                  `((el-patch-swap "white" "black") (el-patch-swap "steel blue" "white") (el-patch-swap 0.35 1) ,@edges))
+                  `((el-patch-swap "white" "black") (el-patch-swap "steel blue" "yellow") (el-patch-swap 0.35 0.7) ,@edges))
                :map (pdf-view-apply-hotspot-functions
                      window page size)
                :width (car size))))
@@ -186,6 +186,38 @@ Return the data of the corresponding PNG image."
                                                        `((el-patch-swap :highlight-region :highlight-text) ,edges))
                                                      elt)))
                         regions)))))
+
+;; ----------------
+
+;; TODO mapconcat check hyphenation first bla- bli -> blabli
+(defun copy-highlight-annotation-text ()
+  (interactive)
+        (let* ((a (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
+               (page (pdf-annot-get a 'page))
+               (edges (pdf-annot-get-display-edges a)))
+          (with-current-buffer pdf-annot-list-document-buffer
+            (pdf-view-goto-page page)
+          (setq txt (mapcar
+                (lambda (edg)
+                  (pdf-info-gettext
+                   (pdf-view-current-page)
+                   edg
+                   pdf-view-selection-style))
+                edges))
+          (kill-new (mapconcat 'identity txt " ")))
+        ))
+
+(with-eval-after-load 'pdf-annot
+
+  (el-patch-defvar pdf-annot-list-mode-map
+    (let ((km (make-sparse-keymap)))
+      (define-key km (kbd "C-c C-f") #'pdf-annot-list-follow-minor-mode)
+      (define-key km (kbd "SPC") #'pdf-annot-list-display-annotation-from-id)
+      (define-key km (kbd "y") #'copy-highlight-annotation-text)
+      km))
+  )
+
+
 
 
 (el-patch-feature org-pdftools)
