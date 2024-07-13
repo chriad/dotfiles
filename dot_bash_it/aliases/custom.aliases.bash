@@ -21,6 +21,7 @@ alias gpo='flatpak run --command=/app/bin/gpo org.gpodder.gpodder'
 alias operon='flatpak run --command=operon io.github.quodlibet.QuodLibet'
 alias ebook-meta='flatpak run --command=ebook-meta com.calibre_ebook.calibre'
 
+alias fullname="readlink -f"
 alias s="kitten ssh"
 alias catp="cat -p"
 alias fzf--screencasts="rg -g /home/chriad/Videos/Screencasts/*.{mkv,mp4,ogv,webm} --files 2> /dev/null | fzf --bind='enter:execute(mpv {})'"

@@ -731,6 +731,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   ;; The default is 800 kilobytes.  Measured in bytes.
   (setq gc-cons-threshold (* 50 1000 1000))
 
+  ;; (defvar key-quiz--custom-keys-alist '(("C-h k" . "describe-key")))
   ;; (set-face-attribute 'default nil :height 120)
   ;; Profile emacs startup
   (add-hook 'emacs-startup-hook
@@ -801,9 +802,8 @@ before packages are loaded."
         )
 
 (setq psession-elisp-objects-default-directory (no-littering-expand-var-file-name "elisp-objects/"))
-(psession-mode 1)
-(psession-autosave-mode 1)
-(psession-savehist-mode 1)
+(load (expand-file-name "key-quiz--custom-keys-alist.elc" psession-elisp-objects-default-directory))
+
 
 ;; creates a buffer *quelpa-build-checkout*
   (defun check-emacswiki-updates ()

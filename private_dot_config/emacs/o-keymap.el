@@ -126,3 +126,10 @@
 ;; (eval-after-load "pdf-annot"
 ;;   (define-key pdf-annot-list-mode-map (kbd "o") #'(lambda () (interactive) (pdf-outline pdf-annot-list-document-buffer t)))
 ;;   )
+(defun add-f-to-keyquiz ()
+  ;; TODO disambiguate map
+  ;; (("helm-command-map" "h h") ("ctl-x-map" "c h h") ("global-map" "C-x c h h"))
+  (interactive)
+  (add-to-list 'key-quiz--custom-keys-alist (cons (car (cdr (car (helpful--keymaps-containing helpful--sym)))) (symbol-name helpful--sym))))
+
+(evil-define-key 'normal helpful-mode-map (kbd "s") 'add-f-to-keyquiz)
