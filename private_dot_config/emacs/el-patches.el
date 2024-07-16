@@ -107,15 +107,6 @@ SIZE is a string Columns x Rows like for example \"3x2\"."
         (unless (= page (pdf-view-current-page))
           (pdf-view-goto-page page))
         (let ((edges (pdf-annot-get-display-edges a)))
-          (el-patch-add (let* ((txt  (mapcar
-                                      (lambda (edg)
-                                        (pdf-info-gettext
-                                         (pdf-view-current-page)
-                                         edg
-                                         pdf-view-selection-style))
-                                      edges)))
-                          ;; (pdf-view-deactivate-region)
-                          (kill-new (mapconcat 'identity txt " "))) )
           (when highlight-p
             (pdf-view-display-image
              (pdf-view-create-image
@@ -192,27 +183,27 @@ Return the data of the corresponding PNG image."
 ;; TODO mapconcat check hyphenation first bla- bli -> blabli
 (defun copy-highlight-annotation-text ()
   (interactive)
-        (let* ((a (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
-               (page (pdf-annot-get a 'page))
-               (edges (pdf-annot-get-display-edges a)))
-          (with-current-buffer pdf-annot-list-document-buffer
-            (pdf-view-goto-page page)
-          (setq txt (mapcar
-                (lambda (edg)
-                  (pdf-info-gettext
-                   (pdf-view-current-page)
-                   edg
-                   pdf-view-selection-style))
-                edges))
-          (kill-new (mapconcat 'identity txt " ")))
-        ))
+  (let* ((a (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
+         (page (pdf-annot-get a 'page))
+         (edges (pdf-annot-get-display-edges a)))
+    (with-current-buffer pdf-annot-list-document-buffer
+      (pdf-view-goto-page page)
+      (setq txt (mapcar
+                 (lambda (edg)
+                   (pdf-info-gettext
+                    (pdf-view-current-page)
+                    edg
+                    pdf-view-selection-style))
+                 edges))
+      (kill-new (mapconcat 'identity txt " ")))
+    ))
 
 (with-eval-after-load 'pdf-annot
 
   (el-patch-defvar pdf-annot-list-mode-map
     (let ((km (make-sparse-keymap)))
       (define-key km (kbd "C-c C-f") #'pdf-annot-list-follow-minor-mode)
-      (define-key km (kbd "SPC") #'pdf-annot-list-display-annotation-from-id)
+      (define-key km (kbd "C-c SPC") #'pdf-annot-list-display-annotation-from-id)
       (define-key km (kbd "y") #'copy-highlight-annotation-text)
       km))
   )
