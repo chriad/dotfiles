@@ -898,8 +898,8 @@ before packages are loaded."
   (setq highlight-indent-guides-method 'character)
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
 
-  (require 'evil-lispy)
-  (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
+  ;; (require 'evil-lispy)
+  ;; (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
   ;; (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hooks)
 
 
@@ -991,29 +991,6 @@ before packages are loaded."
 
 
 
-  ;; (use-package hydra)
-  ;; (require 'org-fc-hydra)
-  ;; (require 'org-fc-keymap-hint)
-  ;; (global-set-key (kbd "C-c f f") 'org-fc-hydra/body)
-  ;; (setq org-fc-directories '("~/roam/"))
-  ;; (setq org-fc-after-flip-hook '(org-hide-src-block-delimiters))
-  ;; (setq org-fc-after-setup-hook nil)
-  ;; (setq org-fc-review-history-file (no-littering-expand-var-file-name "org-fc-reviews.tsv"))
-  ;; (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-flip-mode
-  ;;   (kbd "RET") 'org-fc-review-flip
-  ;;   (kbd "n") 'org-fc-review-flip
-  ;;   (kbd "s") 'org-fc-review-suspend-card
-  ;;   (kbd "q") 'org-fc-review-quit)
-
-  ;; (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-rate-mode
-  ;;   (kbd "a") 'org-fc-review-rate-again
-  ;;   (kbd "h") 'org-fc-review-rate-hard
-  ;;   (kbd "g") 'org-fc-review-rate-good
-  ;;   (kbd "e") 'org-fc-review-rate-easy
-  ;;   (kbd "s") 'org-fc-review-suspend-card
-  ;;   (kbd "q") 'org-fc-review-quit)
-
-
     (use-package org-fc
       :defer t
       :config
@@ -1026,7 +1003,11 @@ before packages are loaded."
       (setq org-fc-review-history-file
             (no-littering-expand-var-file-name "org-fc-reviews.tsv"))
 
-      ;; :init (add-hook 'org-mode-hook #'org-starless-mode)
+
+      (defun org-fc-view-demo ()
+        (interactive)
+        (let ((path (expand-file-name "demo.org" org-fc-source-path)))
+          (with-current-buffer (find-file path))))
 
       (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-flip-mode
         (kbd "RET") 'org-fc-review-flip
@@ -1041,11 +1022,25 @@ before packages are loaded."
         (kbd "e") 'org-fc-review-rate-easy
         (kbd "s") 'org-fc-review-suspend-card
         (kbd "q") 'org-fc-review-quit)
+
+
+      (defhydra org-fc-hydra ()
+        ("m" org-fc-dashboard "Dashboard" :exit t)
+        ("r" org-fc-review "Start Review" :exit t)
+        ("u" org-fc-update "Update Card")
+        ("t" org-fc-hydra-type/body "Init Type" :exit t)
+        ("q" nil "Quit" :exit t)
+
+        ("c" org-fc-cloze-dwim "cloze-region" :exit t)
+        ("d" org-fc-view-demo "show demo file" :exit t)
+        )
+
       ;; (global-set-key (kbd "C-c f") 'org-fc-hydra/body)
       ;; (global-set-key (kbd "C-c f") 'org-fc-narrow)
       :bind
       ("C-c f" . org-fc-hydra/body)
       ;; ("C-c f" . org-fc-narrow)
+
       )
 
   (load "~/.config/emacs/roam-helpers.el")
@@ -1260,12 +1255,9 @@ This function is called at the very end of Spacemacs initialization."
  '(helm-apropos-fuzzy-match t)
  '(helm-buffers-fuzzy-matching t)
  '(helm-candidate-number-limit 700)
- '(helm-completion-style 'emacs)
  '(helm-file-preview-mode nil nil (helm-file-preview))
  '(helm-file-preview-only-when-line-numbers nil)
- '(helm-lisp-fuzzy-completion t)
  '(helm-show-completion-display-function 'helm-display-buffer-popup-frame)
- '(hl-sexp-background-colors '("white smoke" "white")) ;; for package highlight-sexp
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
      ("NEXT" . "#dc752f")
@@ -1282,7 +1274,6 @@ This function is called at the very end of Spacemacs initialization."
      ("FIXME" . "#dc752f")
      ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
- '(keyfreq-autosave-mode t)
  '(keyfreq-mode t)
  '(large-file-warning-threshold 100000000)
  '(lispy-completion-method 'helm)

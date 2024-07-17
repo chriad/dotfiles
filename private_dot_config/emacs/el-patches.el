@@ -203,7 +203,7 @@ Return the data of the corresponding PNG image."
   (el-patch-defvar pdf-annot-list-mode-map
     (let ((km (make-sparse-keymap)))
       (define-key km (kbd "C-c C-f") #'pdf-annot-list-follow-minor-mode)
-      (define-key km (kbd "C-c SPC") #'pdf-annot-list-display-annotation-from-id)
+      (define-key km (kbd "SPC") #'pdf-annot-list-display-annotation-from-id)
       (define-key km (kbd "y") #'copy-highlight-annotation-text)
       km))
   )

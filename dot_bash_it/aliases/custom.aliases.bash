@@ -4,6 +4,7 @@ alias ll='ls -alF'
 alias la='ls -A'
 # alias l='ls -CF'
 alias l=exa
+alias update-emacs='guix pull && guix package -u emacs'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
