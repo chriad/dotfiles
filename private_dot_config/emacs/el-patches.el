@@ -1,3 +1,4 @@
+;; change window split
 (el-patch-feature pdf-util)
 (with-eval-after-load 'pdf-util
   (el-patch-defun display-buffer-split-below-and-attach (buf alist)
@@ -52,7 +53,7 @@ SIZE is a string Columns x Rows like for example \"3x2\"."
   )
 
 
-;; get rid of comment window since my annotations are only highlight and don't contain text
+;; get rid of comment window that lists the contents of this annotation with a header (date, author etc.)
 (el-patch-feature pdf-annot)
 
 (with-eval-after-load 'pdf-annot
@@ -181,6 +182,7 @@ Return the data of the corresponding PNG image."
 ;; ----------------
 
 ;; TODO mapconcat check hyphenation first bla- bli -> blabli
+;; TODO bind to pdf-annot-list keymap
 (defun copy-highlight-annotation-text ()
   (interactive)
   (let* ((a (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
@@ -198,8 +200,15 @@ Return the data of the corresponding PNG image."
       (kill-new (mapconcat 'identity txt " ")))
     ))
 
-(with-eval-after-load 'pdf-annot
+;; TODO bind to key in annot-list-map
+;; to add pasting highlighted text, look at pdf-annot-edit-contents-noselect
+(defun edit-this-annot ()
+  (interactive)
+  (pdf-annot-edit-contents (pdf-annot-getannot (tabulated-list-get-id)
+                                               pdf-annot-list-document-buffer)))
 
+;; override some keys
+(with-eval-after-load 'pdf-annot
   (el-patch-defvar pdf-annot-list-mode-map
     (let ((km (make-sparse-keymap)))
       (define-key km (kbd "C-c C-f") #'pdf-annot-list-follow-minor-mode)
@@ -209,7 +218,42 @@ Return the data of the corresponding PNG image."
   )
 
 
+;; helm source for annotations
+;; TODO momoize, write to sidecar, get checksum to see if something changed
+;; TODO add action to edit highlighted text as annotation content (edit-this-annot)
+(with-eval-after-load 'pdf-annots
+  (defun get-text-from-annot (a)
+    (let* ((buf (alist-get 'buffer a))
+           (pag (alist-get 'page a))
+           (edges (pdf-annot-get-display-edges a)))
+      (with-current-buffer buf
+        (pdf-view-goto-page pag)
+        (setq txt (mapcar (lambda (edg)
+                            (pdf-info-gettext (pdf-view-current-page)
+                                              edg
+                                              pdf-view-selection-style))
+                          edges))
+        (mapconcat 'identity txt " "))))
+  ;; eval this in pdf-view-mode
+  ;; TODO bind to key
+  ;; not working
+  ;; (evil-define-key 'normal pdf-annot-minor-mode-map (kbd "x") 'helm-annots-get)
+  ;; (define-key pdf-annot-minor-mode-map (kbd "C-c C-x") 'helm-annots-get)
+  ;; (spacemacs/declare-prefix-for-mode 'spacemacs-pdf-view-mode "mo" "custom")
+  ;; (spacemacs/set-leader-keys-for-major-mode 'spacemacs-pdf-view-mode "ol" 'helm-annots-get)
+  (defun helm-annots-get ()
+    (interactive)
+    (helm :sources (helm-build-in-buffer-source "test"
+                     :data (-map (lambda (x)
+                                   (get-text-from-annot x))
+                                 (sort (pdf-annot-getannots nil
+                                                            '(highlight)
+                                                            pdf-annot-list-document-buffer)
+                                       #'pdf-annot-compare-annotations)))
+          :buffer "*helm pdf-annots*")))
 
+
+;;; ---- org-pdftools
 
 (el-patch-feature org-pdftools)
 (with-eval-after-load 'org-pdftools
