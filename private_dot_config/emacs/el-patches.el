@@ -183,7 +183,7 @@ Return the data of the corresponding PNG image."
 
 ;; TODO mapconcat check hyphenation first bla- bli -> blabli
 ;; TODO bind to pdf-annot-list keymap
-(defun copy-highlight-annotation-text ()
+(defun pdf-annot---copy-highlight-annotation-text ()
   (interactive)
   (let* ((a (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
          (page (pdf-annot-get a 'page))
@@ -201,11 +201,14 @@ Return the data of the corresponding PNG image."
     ))
 
 ;; TODO bind to key in annot-list-map
-;; to add pasting highlighted text, look at pdf-annot-edit-contents-noselect
-(defun edit-this-annot ()
+(defun pdf-annot---edit-this-annot ()
   (interactive)
   (pdf-annot-edit-contents (pdf-annot-getannot (tabulated-list-get-id)
                                                pdf-annot-list-document-buffer)))
+ 
+;; TODO to add pasting highlighted text, look at pdf-annot-edit-contents-noselect
+(defun pdf-annot---edit-this-annot-highlight-text-as-content ()
+  (ignore))
 
 ;; override some keys
 (with-eval-after-load 'pdf-annot
@@ -213,16 +216,17 @@ Return the data of the corresponding PNG image."
     (let ((km (make-sparse-keymap)))
       (define-key km (kbd "C-c C-f") #'pdf-annot-list-follow-minor-mode)
       (define-key km (kbd "SPC") #'pdf-annot-list-display-annotation-from-id)
-      (define-key km (kbd "y") #'copy-highlight-annotation-text)
+      (define-key km (kbd "y") #'pdf-annot---copy-highlight-annotation-text)
       km))
-  )
+  ;; TODO copy annotation text on y
+  (define-key pdf-annot-list-mode-map (kbd "y") 'pdf-annot---copy-highlight-annotation-text))
 
 
 ;; helm source for annotations
 ;; TODO momoize, write to sidecar, get checksum to see if something changed
-;; TODO add action to edit highlighted text as annotation content (edit-this-annot)
+;; TODO add action to edit highlighted text as annotation content (pdf-annot---edit-this-annot)
 (with-eval-after-load 'pdf-annots
-  (defun get-text-from-annot (a)
+  (defun pdf-annot---get-text-from-annot (a)
     (let* ((buf (alist-get 'buffer a))
            (pag (alist-get 'page a))
            (edges (pdf-annot-get-display-edges a)))
@@ -237,20 +241,23 @@ Return the data of the corresponding PNG image."
   ;; eval this in pdf-view-mode
   ;; TODO bind to key
   ;; not working
-  ;; (evil-define-key 'normal pdf-annot-minor-mode-map (kbd "x") 'helm-annots-get)
-  ;; (define-key pdf-annot-minor-mode-map (kbd "C-c C-x") 'helm-annots-get)
+  ;; (evil-define-key 'normal pdf-annot-minor-mode-map (kbd "x") 'pdf-annot---helm-annots-get)
+  ;; (define-key pdf-annot-minor-mode-map (kbd "C-c C-x") 'pdf-annot---helm-annots-get)
   ;; (spacemacs/declare-prefix-for-mode 'spacemacs-pdf-view-mode "mo" "custom")
-  ;; (spacemacs/set-leader-keys-for-major-mode 'spacemacs-pdf-view-mode "ol" 'helm-annots-get)
-  (defun helm-annots-get ()
+  ;; (spacemacs/set-leader-keys-for-major-mode 'spacemacs-pdf-view-mode "ol" 'pdf-annot---helm-annots-get)
+  (defun pdf-annot---helm-annots-get ()
     (interactive)
     (helm :sources (helm-build-in-buffer-source "test"
                      :data (-map (lambda (x)
-                                   (get-text-from-annot x))
+                                   (pdf-annot---get-text-from-annot x))
                                  (sort (pdf-annot-getannots nil
                                                             '(highlight)
                                                             pdf-annot-list-document-buffer)
                                        #'pdf-annot-compare-annotations)))
-          :buffer "*helm pdf-annots*")))
+          :buffer "*helm pdf-annots*"))
+
+  )
+
 
 
 ;;; ---- org-pdftools
