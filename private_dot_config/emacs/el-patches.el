@@ -201,6 +201,7 @@ Return the data of the corresponding PNG image."
     ))
 
 ;; TODO bind to key in annot-list-map
+;; TODO also maybe hook to pdf-annot-activate-handler-function
 (defun pdf-annot---edit-this-annot ()
   (interactive)
   (pdf-annot-edit-contents (pdf-annot-getannot (tabulated-list-get-id)

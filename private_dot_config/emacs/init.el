@@ -185,7 +185,7 @@ This function should only modify configuration layer settings."
                                       (org-fc
                                        :location (recipe :fetcher git
                                                          :url "https://git.sr.ht/~l3kn/org-fc"
-                                                         :files (:defaults "awk" "demo.org")))
+                                                         :files (:defaults "awk" "docs" "demo.org")))
                                       orca
                                       org-link-beautify
                                       ;; buttons
@@ -212,7 +212,6 @@ This function should only modify configuration layer settings."
                                       helm-file-preview
                                       org-ml
                                       ripgrep
-                                      helm-rg
                                       ;; beacon
                                       xr ;;     Convert string regexp to rx notation
                                       ;; (mplayer-mode :location (recipe :fetcher github :repo "markhepburn/mplayer-mode"))
@@ -769,25 +768,6 @@ before packages are loaded."
 ;; automatically enable follow mode for search results
 (add-hook 'pdf-occur-buffer-mode-hook (lambda () (next-error-follow-minor-mode)))
 
-(defun copy-highlight-annotation-text ()
-  (interactive)
-        (let* ((a (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
-               (page (pdf-annot-get a 'page))
-               (edges (pdf-annot-get-display-edges a)))
-          (with-current-buffer pdf-annot-list-document-buffer
-            (pdf-view-goto-page page)
-          (setq txt (mapcar
-                (lambda (edg)
-                  (pdf-info-gettext
-                   (pdf-view-current-page)
-                   edg
-                   pdf-view-selection-style))
-                edges))
-          (kill-new (mapconcat 'identity txt " ")))
-        ))
-
-;; TODO copy annotation text on y
-(define-key pdf-annot-list-mode-map (kbd "y") 'copy-highlight-annotation-text)
 
 
 (put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")
@@ -826,8 +806,8 @@ before packages are loaded."
 (use-package bookmark+
     ;; :defer t
     :config
-    ;; (require 'linkd) ;; how to do this?
-    (require 'narrow-indirect)
+    ;; (require 'linkd) ;; load manually: SPC h d p -> linkd -> , e b
+    ;; (require 'narrow-indirect)
     (setq bmkp-dired-history nil)
     (defun bmkp-list-types ()
       (interactive)
@@ -912,10 +892,6 @@ before packages are loaded."
     (setq org-roam-completion-everywhere t)
     (setq org-id-link-to-org-use-id t)
 
-    ;; (setq org-roam-completion-system 'helm)
-    ;; (setq org-roam-file-completion-tag-position 'append)
-    ;; (setq org-roam-index-file "~/roam/index.org")
-    ;; (setq org-roam-dailies-directory "journal/")
     (org-roam-db-autosync-mode 1)
     (cl-defmethod org-roam-node-uuid ((node org-roam-node))
       "Return the uuid of NODE."
@@ -965,9 +941,11 @@ before packages are loaded."
     ("C-c n a r" . org-roam-ref-add)
     ("C-c n f r" . org-roam-ref-find)
     ("C-c n f f" . org-roam-node-find)
+    ("C-c n t a" . org-roam-tag-add)
+    ("C-c n t r" . org-roam-tag-remove)
     ("C-c n r" . org-roam-refile)
     ("C-c n R" . org-roam-node-random)
-    ("C-c n e" . org-roam-extract-subtree)
+    ("C-c n e" . org-roam-extract-subtree) ;; notes shouldn't get too long. Better many files than one file with many notes
     ("C-c n o" . org-id-get-create)
     )
 
@@ -1033,6 +1011,7 @@ before packages are loaded."
 
         ("c" org-fc-cloze-dwim "cloze-region" :exit t)
         ("d" org-fc-view-demo "show demo file" :exit t)
+        ("h" org-fc-help "show help" :exit t)
         )
 
       ;; (global-set-key (kbd "C-c f") 'org-fc-hydra/body)
@@ -1220,13 +1199,16 @@ before packages are loaded."
   (setq op/site-main-title "My Blog")
   (setq op/site-sub-title "Spacemacs")
 
+
+  (require 'evil-surround)
+  (add-hook 'org-mode-hook (lambda ()
+                             (push '(?{ . ("{{" . "}}")) evil-surround-pairs-alist)))
+
   (setq custom-file "~/.config/emacs/.emacs-custom.el")
   ;; (setq custom-file (no-littering-expand-etc-file-name ".emacs-custom.el")
   (load custom-file)
 
-  (require 'evil-surround)
-  (add-hook 'org-mode-hook (lambda ()
-                             (push '(?{ . ("{{" . "}}")) evil-surround-pairs-alist))))
+  )
 
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
@@ -1238,82 +1220,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(company-backends '(company-capf company-semantic company-files))
- '(emacs-lisp-mode-hook
-   '(eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode eldoc-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode))
- '(enable-local-variables t)
- '(evil-move-cursor-back nil)
- '(evil-org-use-additional-insert t t)
- '(evil-want-Y-yank-to-eol nil)
- ;; '(gist-ask-for-description t)
- ;; '(gist-ask-for-filename t)
- '(global-semantic-decoration-mode nil)
- '(global-semantic-highlight-func-mode t)
- '(global-semantic-mru-bookmark-mode t)
- '(global-semantic-stickyfunc-mode t)
- '(global-visual-line-mode t)
- '(helm-apropos-fuzzy-match t)
- '(helm-buffers-fuzzy-matching t)
- '(helm-candidate-number-limit 700)
- '(helm-file-preview-mode nil nil (helm-file-preview))
- '(helm-file-preview-only-when-line-numbers nil)
- '(helm-show-completion-display-function 'helm-display-buffer-popup-frame)
- '(hl-todo-keyword-faces
-   '(("TODO" . "#dc752f")
-     ("NEXT" . "#dc752f")
-     ("THEM" . "#2d9574")
-     ("PROG" . "#3a81c3")
-     ("OKAY" . "#3a81c3")
-     ("DONT" . "#f2241f")
-     ("FAIL" . "#f2241f")
-     ("DONE" . "#42ae2c")
-     ("NOTE" . "#b1951d")
-     ("KLUDGE" . "#b1951d")
-     ("HACK" . "#b1951d")
-     ("TEMP" . "#b1951d")
-     ("FIXME" . "#dc752f")
-     ("XXX+" . "#dc752f")
-     ("\\?\\?\\?+" . "#dc752f")))
- '(keyfreq-mode t)
- '(large-file-warning-threshold 100000000)
- '(lispy-completion-method 'helm)
- '(lispy-eval-display-style 'overlay)
- '(lsp-pyright-diagnostic-mode "workspace")
- '(markdown-hide-markup t)
- '(org-M-RET-may-split-line '((default)))
- '(org-blank-before-new-entry '((heading) (plain-list-item)))
- '(org-clock-idle-time 10)
- '(org-clock-persist t)
- '(org-confirm-babel-evaluate nil)
- '(org-download-display-inline-images 'posframe)
- '(org-download-image-attr-list nil)
- '(org-download-image-org-width 700)
- '(org-download-screenshot-method "gnome-screenshot -a -f %s")
- '(org-ellipsis " ↴")
- '(org-export-headline-levels 6)
- '(org-hide-emphasis-markers t)
- '(org-hide-leading-stars t)
- '(org-insert-heading-respect-content t)
- '(org-journal-date-format "%d-%m-%Y")
- '(org-journal-dir "~/org-journal-fork")
- '(org-journal-enable-agenda-integration t)
- '(org-journal-file-format "%Y-%m-%d.org")
- '(org-journal-time-prefix "- ")
- '(org-protocol-default-template-key nil)
- '(org-startup-with-inline-images nil t)
- '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
- '(paradox-automatically-star nil)
- '(paren-sexp-mode t)
- '(pdfgrep-options " -H -n -r ")
- '(persp-use-workgroups t)
- '(racket-browse-url-function 'browse-url-firefox)
- '(racket-documentation-search-location 'local)
- '(scroll-conservatively 10000)
- '(scroll-margin 1)
- '(scroll-step 1)
- '(symex-highlight-p t)
- '(treemacs-icons-dired-mode t)
- '(warning-suppress-types '((comp))))
+
+ ;; this is done in .emacs-custom.el
+
+ )
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
