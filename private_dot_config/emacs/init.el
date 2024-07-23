@@ -129,17 +129,18 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      with-simulated-input
                                       psession ;; for helm-locate-library
                                       tldr
-                                      el-patch
-                                      org-tidy
+                                      el-patch ;; I like this
+                                      org-tidy 
                                       ;; mic-paren ;; customize paren-face-match
-                                      helm-apt
+                                      helm-apt ;; ???
                                       ;; helm-dired-history
                                       geiser ;; installed with guix
                                       geiser-guile ;; installed with guix
                                       magit-popup ;; guix
-                                      (director :location (recipe
+                                      (director :location (recipe ;; automate is king
                                                           :fetcher github
                                                           :repo "bard/emacs-director"
                                                           :files (:defaults "util/*.el" "examples/demo/*.el")))
@@ -153,9 +154,9 @@ This function should only modify configuration layer settings."
                                       ;; shackle
                                       ;; sway
                                       minions ;; minions-minor-mode-menu
-                                      ink-mode
+                                      ink-mode ;; ???
                                       ;; dired-git-info ;; disable for debug
-                                      fountain-mode
+                                      fountain-mode ;; 
                                       ;; camcorder
                                       org-gtd
                                       ;; org-edna
@@ -164,7 +165,7 @@ This function should only modify configuration layer settings."
                                       ;; niceify-info ;; breaks helm-info
                                       ;; helm-recoll
                                       dyncloze
-                                      no-littering
+                                      no-littering ;; useful
                                       ;; ascii-table
                                       clhs
                                       org-roam
@@ -777,9 +778,9 @@ before packages are loaded."
 
 
 (setq bibtex-completion-bibliography '("~/.config/bibliographies/fixed-layout.bib")
-        ;; bibtex-completion-library-path "~/Papers/"
-        ;; bibtex-completion-notes-path "~/Papers/notes.org"
-        )
+      ;; bibtex-completion-library-path "~/Papers/"
+      ;; bibtex-completion-notes-path "~/Papers/notes.org"
+      )
 
 (setq psession-elisp-objects-default-directory (no-littering-expand-var-file-name "elisp-objects/"))
 (load (expand-file-name "key-quiz--custom-keys-alist.elc" psession-elisp-objects-default-directory))
@@ -1192,13 +1193,13 @@ before packages are loaded."
     (global-set-key (kbd "s-;") 'symex-mode-interface)
     :custom (symex-modal-backend 'hydra))
 
+
   (require 'org-page)
   (setq op/repository-directory "~/blog/")
   (setq op/site-domain "http://chriad.github.io/")
   (setq op/personal-github-link "https://github.com/chriad")
   (setq op/site-main-title "My Blog")
   (setq op/site-sub-title "Spacemacs")
-
 
   (require 'evil-surround)
   (add-hook 'org-mode-hook (lambda ()

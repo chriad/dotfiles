@@ -61,6 +61,7 @@ with the `org-roam-find-file' interface"
   (interactive)
   (save-window-excursion (org-roam-node-find) buffer-file-name))
 
+;; TODO capture-sexp-as-cloze
 (setq org-capture-templates
         '(
           ;; go directly to a note heading in roam
@@ -75,9 +76,8 @@ with the `org-roam-find-file' interface"
           ;;  ;; ...?
           ;;  ;; Me: ...
           ;;  ;; end
-          ;;  entry (file (lambda () (org-gtd--path org-gtd-inbox-file-basename) ))
-          ;;  "* %?\n%U\n\n  %i"
-          ;;  :kill-buffer t)
+          ("g" "Dialog" plain (file "/home/chriad/Documents/dialogs.org")
+           (file "~/.config/emacs/capture-templates/dialog-snippet.capture"))
 
           ;; ("a" "webpage region to node" plain          ; s = selection
           ;;  (function (lambda () (org-roam-node-find)))
@@ -106,15 +106,33 @@ with the `org-roam-find-file' interface"
           ("o" "notes" plain (file "/home/chriad/Documents/notes.org")
            "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
 
-;;           ("l" "org-fc")
-;;           ("lx" "input" entry (file+headline "/home/chriad/Documents/org-fc.org" "org-fc")
-;;            "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
+         
+          ("l" "org-fc")
+          ("lx" "front-back _ _" entry (file+headline "/home/chriad/Documents/org_fc.org" "org-fc")
+           "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
 
-;;           ("ll" "code" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
-;;            "* %a
-;; #+begin_src %?
-;; %i
-;; #+end_src\n")
+          ;; TODO still requires manual entry, e.g. c-c f c, c-c f t s
+          ;; TODO hook org-capture-finalize
+          ;; card type for code is `cloze single` (s)''
+          ("lc" "cloze")
+          ("lcs" "single" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
+
+          ;; needs some manual work. c-c ' -> edit source and cloze, then c-c c-c
+           :hook (lambda () (progn
+                         (org-babel-next-src-block)
+                         ;; (recursive-edit)
+                         ;; (org-edit-src-code)
+                         ;; (avy-goto-char-timer)
+                         ;; (evil-normal-state)
+                         ))
+           :before-finalize (lambda () (progn (outline-previous-heading)
+                                         (org-fc-type-cloze-init 'single))) ;; outline-up-heading
+           ;; :before-finalize (lambda () (org-up-heading-safe)) ;; outline-up-heading
+           ;; :before-finalize (lambda () (org-fc-type-cloze-init 'single))
+           )
+
+          ("lcd" "deletion" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
+           :before-finalize (lambda () (org-fc-type-cloze-init 'deletion)))
 
 
 
@@ -125,6 +143,9 @@ with the `org-roam-find-file' interface"
            "|%^{stimulus}|%^{response}|"
            :table-line-pos "I+1"
            :immediate-finish t)
+
+          ;; ("mk" "key quiz"
+          ;;  )
 
           ("ms" "_ r"
            table-line

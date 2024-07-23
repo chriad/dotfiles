@@ -65,6 +65,7 @@ alias powershell=pwsh
 alias info=pinfo
 alias lisp=clisp
 alias chriad-browse--kernel-handbook="www-browser /usr/share/doc/debian-kernel-handbook/kernel-handbook.html"
+alias chriad-browse--ocrmypdf="www-browser /usr/share/doc/ocrmypdf/html/index.html"
 alias chriad-browse--racket="www-browser /usr/share/doc/racket/r5rs/index.html"
 
 # first order alias
