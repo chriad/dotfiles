@@ -1,6 +1,6 @@
 #!/bin/bash
 #GDK_BACKEND=x11
 #QT_QPA_PLATFORM=x11
-path=/media/chriad/ext4/SOFTWARE/tika/
+path=$CHRIAD_SOFTWARE/tika/
 vers=tika-eval-app-3.0.0-BETA2.jar
 env _JAVA_AWT_WM_NONREPARENTING=1 java -jar $path$vers "$@"

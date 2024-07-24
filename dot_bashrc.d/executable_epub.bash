@@ -59,5 +59,4 @@ epub--extract-images-here() {
 epub--subchaps-pipeline() {
     # epub--subchaps-pipeline "<h3" <file.epub>
     epub--subchaps "${1}" "${2}" | epub--sed-remove-epubzip-file-prefix | html2text -style pretty | sed--remove-empty-lines
-    
 }

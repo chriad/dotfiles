@@ -63,148 +63,144 @@ with the `org-roam-find-file' interface"
 
 ;; TODO capture-sexp-as-cloze
 (setq org-capture-templates
-        '(
-          ;; go directly to a note heading in roam
-          ("h" "roam headline" entry
-           (function (lambda () (my/helm-in-org-buffer (my/org-roam-find-file-name))))
-           "* %?\n%a"
-           :kill-buffer t :unnarrowed t)
+      '(
+        ;; go directly to a note heading in roam
+        ("h" "roam headline" entry
+         (function (lambda () (my/helm-in-org-buffer (my/org-roam-find-file-name))))
+         "* %?\n%a"
+         :kill-buffer t :unnarrowed t)
 
-          ;; ("g" "Imaginary contentful microdialogue"
-          ;;  ;; ...?
-          ;;  ;; Me: ...
-          ;;  ;; ...?
-          ;;  ;; Me: ...
-          ;;  ;; end
-          ("g" "Dialog" plain (file "/home/chriad/Documents/dialogs.org")
-           (file "~/.config/emacs/capture-templates/dialog-snippet.capture"))
+        ;;  ;; ...?
+        ;;  ;; Me: ...
+        ;;  ;; ...?
+        ;;  ;; Me: ...
+        ;;  ;; end
+        ("g" "Dialog" plain (file "/home/chriad/Documents/dialogs.org")
+         (file "~/.config/emacs/capture-templates/dialog-snippet.capture"))
 
-          ;; ("a" "webpage region to node" plain          ; s = selection
-          ;;  (function (lambda () (org-roam-node-find)))
-          ;;  "%i" :unnarrowed t)
+        ;; ("a" "webpage region to node" plain          ; s = selection
+        ;;  (function (lambda () (org-roam-node-find)))
+        ;;  "%i" :unnarrowed t)
 
-          ; ===
+        ("t" "Todo" entry (file+headline "~/roam/inbox.org" "Tasks")
+         "* TODO %?\n  %i\n  %a")
 
-          ("f" "fortune from url" plain
-           #'chriad/fortune-append
-           "%i\n\n          -- %:link%(eval fortune-end-sep)" :immediate-finish t)
+        ("f" "fortune from url" plain
+         #'chriad/fortune-append
+         "%i\n\n          -- %:link%(eval fortune-end-sep)" :immediate-finish t)
 
-          ("x" "firefox Org Capture Selected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
-           "* %?%i\n%u\n%a\n")
+        ;; ("x" "firefox Org Capture Selected template" entry (file+headline "/home/chriad/roam/Inbox.org" "firefox")
+        ;;  "* %?%i\n%u\n%a\n")
 
-          ;; ("y" "firefox Org Capture Unselected template" entry (file+headline "/home/chriad/agenda/org-fc.org" "org-fc")
-          ;;  "* %?\n%u\n%a\n")
+        ("y" "firefox Org Capture Unselected template" entry (file+headline "/home/chriad/roam/Inbox.org" "firefox links")
+         "* %?\n%u\n%a\n")
 
-          ;; ("z" "video" plain (file "/home/chriad/Documents/video-urls.txt")
-          ;;  "%:link" :immediate-finish t)
+        ("x" "notes" plain (file "/home/chriad/Documents/notes.org")
+         "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
 
-          ;; javascript:location.href='org-protocol://capture?template=o&url='
-          ;; +encodeURIComponent(location.href)+'&title='
-          ;; +encodeURIComponent(document.title)+'&body='
-          ;; +encodeURIComponent(window.getSelection())
+        ("l" "org-fc")
+        ("lx" "front-back _ _" entry (file+headline "/home/chriad/Documents/org_fc.org" "org-fc")
+         "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
 
-          ("o" "notes" plain (file "/home/chriad/Documents/notes.org")
-           "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
+        ;; TODO still requires manual entry, e.g. c-c f c, c-c f t s
+        ;; TODO change to file+function where function finds the node which designates the mode of the buffer we capture from, e.g. org-mode
+        ;; card type for code is `cloze single` (s)''
+        ("lc" "cloze")
+        ;; ("lcs" "single" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
+        ("lcs" "single" entry (file+function "/home/chriad/Documents/org-fc-flashcard-captures.org"
+                                             (lambda () (symbol-name (symbol-value 'major-mode))) (file "~/.config/emacs/capture-templates/code-snippet.capture"))
 
-         
-          ("l" "org-fc")
-          ("lx" "front-back _ _" entry (file+headline "/home/chriad/Documents/org_fc.org" "org-fc")
-           "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
+         ;; (evil-set-initial-state 'org-capture-mode 'insert)
+         ;; needs some manual work. c-c ' -> edit source and cloze, then c-c c-c
+         ;; :hook (lambda () (progn
+         ;;               (org-babel-next-src-block)
+         ;;               ;; (evil-normal-state)
+         ;;               ;; (recursive-edit)
+         ;;               ;; (with-current-buffer
+         ;;               ;;     (current-buffer)
+         ;;               ;;   (org-edit-special))
+         ;;               ;; (avy-goto-char-timer)
+         ;;               ))
+         :before-finalize (lambda () (progn (outline-previous-heading)
+                                       (org-fc-type-cloze-init 'single))) ;; outline-up-heading
+         ;; :before-finalize (lambda () (org-up-heading-safe)) ;; outline-up-heading
+         ;; :before-finalize (lambda () (org-fc-type-cloze-init 'single))
+         )
 
-          ;; TODO still requires manual entry, e.g. c-c f c, c-c f t s
-          ;; TODO hook org-capture-finalize
-          ;; card type for code is `cloze single` (s)''
-          ("lc" "cloze")
-          ("lcs" "single" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
-
-          ;; needs some manual work. c-c ' -> edit source and cloze, then c-c c-c
-           :hook (lambda () (progn
-                         (org-babel-next-src-block)
-                         ;; (recursive-edit)
-                         ;; (org-edit-src-code)
-                         ;; (avy-goto-char-timer)
-                         ;; (evil-normal-state)
-                         ))
-           :before-finalize (lambda () (progn (outline-previous-heading)
-                                         (org-fc-type-cloze-init 'single))) ;; outline-up-heading
-           ;; :before-finalize (lambda () (org-up-heading-safe)) ;; outline-up-heading
-           ;; :before-finalize (lambda () (org-fc-type-cloze-init 'single))
-           )
-
-          ("lcd" "deletion" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
-           :before-finalize (lambda () (org-fc-type-cloze-init 'deletion)))
+        ("lcd" "deletion" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
+         :before-finalize (lambda () (org-fc-type-cloze-init 'deletion)))
 
 
 
-          ("m" "maps")
-          ("mf" "_ _"
-           table-line
-           (file "~/Documents/vocabulary-map.org")
-           "|%^{stimulus}|%^{response}|"
-           :table-line-pos "I+1"
-           :immediate-finish t)
+        ("m" "maps")
+        ("mf" "_ _"
+         table-line
+         (file "~/Documents/vocabulary-map.org")
+         "|%^{stimulus}|%^{response}|"
+         :table-line-pos "I+1"
+         :immediate-finish t)
 
-          ;; ("mk" "key quiz"
-          ;;  )
+        ;; ("mk" "key quiz"
+        ;;  )
 
-          ("ms" "_ r"
-           table-line
-           (file "~/Documents/vocabulary-map.org")
-           "|%^{stimulus}|%i|"
-           :table-line-pos "I+1"
-           :immediate-finish t)
+        ("ms" "_ r"
+         table-line
+         (file "~/Documents/vocabulary-map.org")
+         "|%^{stimulus}|%i|"
+         :table-line-pos "I+1"
+         :immediate-finish t)
 
-          ("mr" "s _"
-           table-line
-           (file "~/Documents/vocabulary-map.org")
-           "|%i|%^{response}|"
-           :table-line-pos "I+1"
-           :immediate-finish t)
+        ("mr" "s _"
+         table-line
+         (file "~/Documents/vocabulary-map.org")
+         "|%i|%^{response}|"
+         :table-line-pos "I+1"
+         :immediate-finish t)
 
 
-          ("c" "~/Documents/_")
+        ("c" "~/Documents/_")
 
-          ("cp" "Code" entry (file "/home/chriad/Documents/code-review.org")
-           (file "~/.config/emacs/capture-templates/code-snippet.capture"))
+        ("cp" "Code" entry (file "/home/chriad/Documents/code-review.org")
+         (file "~/.config/emacs/capture-templates/code-snippet.capture"))
 
-          ("cw" "low-freq-words-list"
-           plain
-           (file "~/Documents/specialwords.txt")
-           "%^{word}"
-           :immediate-finish t)
+        ("cw" "low-freq-words-list"
+         plain
+         (file "~/Documents/specialwords.txt")
+         "%^{word}"
+         :immediate-finish t)
 
-          ("cc" "curious-words-list"
-           plain
-           (file "~/Documents/curious-words.org")
-           "%^{word}"
-           :immediate-finish t)
+        ("cc" "curious-words-list"
+         plain
+         (file "~/Documents/curious-words.org")
+         "%^{word}"
+         :immediate-finish t)
 
-          ("cx" "analogies"
-           plain
-           (file "~/Documents/analogies.org")
-           "%^{analogy}"
-           :immediate-finish t)
+        ("cx" "analogies"
+         plain
+         (file "~/Documents/analogies.org")
+         "%^{analogy}"
+         :immediate-finish t)
 
-          ("ca" "antipatterns"
-           table-line
-           (file "~/Documents/antipatterns.org")
-           "|%^{antipattern}|%^{solution}|"
-           :table-line-pos "I+1"
-           :immediate-finish t)
+        ("ca" "antipatterns"
+         table-line
+         (file "~/Documents/antipatterns.org")
+         "|%^{antipattern}|%^{solution}|"
+         :table-line-pos "I+1"
+         :immediate-finish t)
 
-          ("cf" "functions"
-           table-line
-           (file "~/Documents/wiki/funcs.org")
-           "|%^{function}|%^{description}|%^{interactive?|y|n}|%a|"
-           :table-line-pos "I+1"
-           :immediate-finish t)
+        ("cf" "functions"
+         table-line
+         (file "~/Documents/wiki/funcs.org")
+         "|%^{function}|%^{description}|%^{interactive?|y|n}|%a|"
+         :table-line-pos "I+1"
+         :immediate-finish t)
 
-          ("cq" "Questions"
-           plain
-           (file "~/Documents/q-and-a.txt")
-           "%^{Question}?"
-           :immediate-finish t)
-          ))
+        ("cq" "Questions"
+         plain
+         (file "~/Documents/q-and-a.txt")
+         "%^{Question}?"
+         :immediate-finish t)
+        ))
 
 ;; emacsclient --eval "(abs--quick-capture)" --alternate-editor= --create-frame
 (defun abs--quick-capture ()
@@ -224,4 +220,3 @@ with the `org-roam-find-file' interface"
   (add-hook 'org-capture-after-finalize-hook 'abs--delete-frame-after-capture)
   (abs--org-capture-place-template-dont-delete-windows 'org-capture nil)
   )
-
