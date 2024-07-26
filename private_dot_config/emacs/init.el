@@ -786,6 +786,27 @@ before packages are loaded."
   (load (expand-file-name "key-quiz--custom-keys-alist.elc" psession-elisp-objects-default-directory))
 
 
+
+    (defun insert-org-mode-link-from-helm-result (candidate)
+      (interactive)
+      (with-helm-current-buffer
+        (insert (format "[[file:%s][%s]]"
+                        (plist-get candidate :file)
+                        ;; Extract the title from the file name
+                        (subst-char-in-string
+                         ?_ ?\s
+                         (first
+                          (split-string
+                           (first
+                            (last
+                             (split-string (plist-get candidate :file) "\\-")))
+                           "\\.")))))))
+
+    (helm-add-action-to-source "Insert org-mode link"
+                               'insert-org-mode-link-from-helm-result
+                               helm-rg-process-source)
+
+    
   ;; creates a buffer *quelpa-build-checkout*
   (defun check-emacswiki-updates ()
     (quelpa '(bookmark+ :fetcher wiki
@@ -839,10 +860,11 @@ before packages are loaded."
   ;; (sway-undertaker-mode) ;; If you want to use :dedicate, read below.
   ;; (sway-x-focus-through-sway-mode) ;; Temporary workaround for Sway bug 6216
 
-  (use-package org-tidy
-    :ensure t
-    :hook
-    (org-mode . org-tidy-mode))
+  ;; (use-package org-tidy
+  ;;   :ensure t
+  ;;   :hook
+  ;;   (org-mode . org-tidy-mode)
+  ;;   )
 
 
   (load "~/.config/emacs/el-patches.el")
@@ -980,15 +1002,18 @@ before packages are loaded."
     (setq org-fc-review-history-file
           (no-littering-expand-var-file-name "org-fc-reviews.tsv"))
 
-    ;; (setq org-fc-after-flip-hook '(org-hide-src-block-delimiters))
-    ;; (setq org-fc-after-setup-hook
-    ;;       '((lambda nil
-    ;;           (progn
-    ;;             (org-babel-next-src-block)
-    ;;             (org-narrow-to-element)))))
+    ;; (defun org-fc-after-setup-hook--narrow-to-src-element ()
+    ;;   (save-excursion
+    ;;     (progn
+    ;;       (org-babel-next-src-block)
+    ;;       (org-narrow-to-element)
+    ;;       )))
+
+    ;; (setq org-fc-after-flip-hook '(org-hide-src-block-delimiters)) ;; this functionality is built-in in org-fc
+    ;; (setq org-fc-after-setup-hook '(org-fc-after-setup-hook--narrow-to-src-element))
     ;; (setq org-fc-after-review-hook '(#[0 "\300\301!\207" [message ""] 2] ignore))
 
-    (defun org-capture-mode-org-fc-cloze-code-hook ()
+    (defun org-capture-mode-hook--org-fc-cloze-code-hook ()
       (if (equal (org-capture-get :key) "lcs")
           (progn
             (org-babel-next-src-block)

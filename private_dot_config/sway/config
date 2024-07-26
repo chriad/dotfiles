@@ -21,6 +21,11 @@ set $term /home/chriad/.local/kitty.app/bin/kitty
 ## set $menu dmenu_path | wmenu | xargs swaymsg exec --
 set $menu 'rofi -modi run, drun, window  -show drun'
 
+# custom
+exec wl-paste -t text --watch clipman store
+exec wl-paste -p -t text --watch clipman store -P --histpath="~/.local/share/clipman-primary.json"
+# bindsym $mod+h exec clipman pick -t rofi # find another binding already in use
+
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/local/share/backgrounds/sway/)
@@ -29,6 +34,8 @@ output * bg /usr/local/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png 
 # Example configuration:
 #
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
+
+output DP-3 scale 1.2
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
@@ -71,6 +78,8 @@ output * bg /usr/local/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png 
 
     # Start your launcher
     bindsym $mod+d exec $menu
+
+    bindsym $mod+o exec /home/chriad/.local/bin/emacs-note.sh
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -216,3 +225,5 @@ bar {
 }
 
 include /usr/local/etc/sway/config.d/*
+
+exec systemctl --user import-environment
