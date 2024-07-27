@@ -79,7 +79,6 @@ output DP-3 scale 1.2
     # Start your launcher
     bindsym $mod+d exec $menu
 
-    bindsym $mod+o exec /home/chriad/.local/bin/emacs-note.sh
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -206,6 +205,8 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
+bindsym $mod+o exec "/home/chriad/.guix-profile/bin/emacsclient --alternate-editor= --create-frame"
+
 #
 # Status Bar:
 #
@@ -226,4 +227,7 @@ bar {
 
 include /usr/local/etc/sway/config.d/*
 
-exec systemctl --user import-environment
+ exec systemctl --user import-environment
+ # exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
+ # exec hash dbus-update-activation-environment 2>/dev/null && \
+ # dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway

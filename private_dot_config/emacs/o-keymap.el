@@ -1,17 +1,13 @@
 ;;;; spacemacs private ``o'' keymap
 
 (global-set-key (kbd "C-`") 'spacemacs/shell-pop-ansi-term)
-(global-set-key (kbd "C-c r") 'org-roam-capture)
-(global-set-key (kbd "s-.") 'org-next-link)
-(global-set-key (kbd "s-,") 'org-previous-link)
 ;; (global-set-key (kbd "<f5>") 'helm-org-in-buffer-headings)
-(global-set-key (kbd "s-]") 'tab-next)
-(global-set-key (kbd "s-[") 'tab-previous)
+;; (global-set-key (kbd "s-]") 'tab-next)
+;; (global-set-key (kbd "s-[") 'tab-previous)
 ;; (global-set-key (kbd "s-c") 'helm-lisp-completion-at-point)
-(global-set-key (kbd "s-j") 'bookmark-jump)
+;; (global-set-key (kbd "s-j") 'bookmark-jump)
 ;; (global-set-key (kbd "s-s") 'select-frame-by-name)
-(global-set-key (kbd "s-b") 'org-roam-switch-to-buffer)
-(keymap-global-set "s-y" 'spacemacs/helm-yas)
+;; (keymap-global-set "s-y" 'spacemacs/helm-yas)
 
 ;; -----------------
 
@@ -44,6 +40,8 @@
 (spacemacs/declare-prefix "oo" "org")
 (spacemacs/set-leader-keys "ool" 'ace-link-org)
 (spacemacs/set-leader-keys "oor" 'org-ref-cite-insert-helm)
+(spacemacs/set-leader-keys "oop" 'org-previous-link)
+(spacemacs/set-leader-keys "oon" 'org-next-link)
 (spacemacs/declare-prefix "ooC" "org clocks")
 (spacemacs/set-leader-keys "ooCi" 'org-mru-clock-in)
 (spacemacs/set-leader-keys "ooCr" 'org-mru-clock-select-recent-task)
@@ -105,10 +103,17 @@
   (interactive)
   (switch-to-buffer (find-file-noselect "/home/chriad/.config/emacs/bookmarks")))
 
+
+(defun spacemacs/find-bashrc ()
+  (interactive)
+  (switch-to-buffer (find-file-noselect "/home/chriad/.bashrc")))
+
+
 (spacemacs/declare-prefix "of" "files")
 (spacemacs/set-leader-keys "ofa" 'spacemacs/find-custom-alias-file)
 (spacemacs/set-leader-keys "ofo" 'spacemacs/find-custom-keymap-file)
-(spacemacs/set-leader-keys "ofb" 'spacemacs/find-custom-bookmark-file)
+(spacemacs/set-leader-keys "ofB" 'spacemacs/find-custom-bookmark-file)
+(spacemacs/set-leader-keys "ofb" 'spacemacs/find-bashrc)
 
 ;; (spacemacs/set-leader-keys "srh" 'helm-rg)
 

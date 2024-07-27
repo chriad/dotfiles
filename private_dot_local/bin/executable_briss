@@ -1,3 +1,6 @@
 #!/bin/bash
+#java -jar /media/chriad/ext4/SOFTWARE/briss-0.9/briss-0.9.jar "$@"
+#
 
-java -jar /media/chriad/ext4/SOFTWARE/briss-0.9/briss-0.9.jar "$@"
+/media/chriad/ext4/SOFTWARE/Briss-2.0-shadow/bin/Briss-2.0
+#env _JAVA_AWT_WM_NONREPARENTING=1 java -jar /media/chriad/ext4/SOFTWARE/Briss-2.0-shadow/lib/Briss-2.0-all.jar "$@"

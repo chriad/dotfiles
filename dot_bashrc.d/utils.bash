@@ -28,6 +28,6 @@ mkcdir ()
         cd -P -- "$1"
 }
 
-add-bak-ext() {
+chriad--add-bak-ext() {
     fd -e "${1}" -x cp "{}" "{}".bak
 }
