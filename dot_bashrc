@@ -10,47 +10,15 @@ esac
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
-PATH=$PATH:/home/chriad/.local/bin:/home/chriad/.fzf/bin
-PATH=$PATH:/home/chriad/.local/bin/platform-tools
-PATH=$PATH:/usr/lib/stardict-tools
-PATH=$PATH:/usr/lib/android-sdk/cmdline-tools/latest/bin
-PATH=$PATH:/usr/lib/android-sdk/platform-tools
+HISTCONTROL=ignoreboth
 
-# why is it not on path?
-XDG_DATA_DIRS=$XDG_DATA_DIRS:/home/chriad/.local/share
-ANDROID_HOME=/usr/lib/android-sdk
+# append to the history file, don't overwrite it
+shopt -s histappend
 
-GUIX_PROFILE="/home/chriad/.guix-profile"
-. "$GUIX_PROFILE/etc/profile"
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
 
-PREFIX="CHRIAD_"
-CONFIG_SUFFIX="_CONFIG"
-HOME_SUFFIX="_HOME"
-SYNC_SUFFIX="_SYNC"
-# koreader
-export $PREFIX"KOREADER_SIDECAR"$HOME_SUFFIX=$HOME/koreader-books
-export $PREFIX"KOREADER"$CONFIG_SUFFIX=$HOME/koreader
-# quaderno
-export $PREFIX"QUADERNO"$HOME_SUFFIX=/media/chriad/ext4/dpt-mirror
-export $PREFIX"JELLYFIN_MEDIA"$HOME_SUFFIX=/media/chriad/lenovo
-
-export CALIBRE_ROOT=/media/chriad/ssd-45
-export GPODDER_ROOT=/media/chriad/ssd-45
-export QUADERNO_ROOT=/media/chriad/ext4/dpt-mirror # use $QUADERNO_ROOT/dpt
-
-export TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
-
-export GOROOT=$HOME/go
-export PATH=$PATH:$GOROOT/bin
-export PATH=$PATH:/var/lib/flatpak/exports/bin
-
-export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
-
-export TEXINPUT=.:/home/chriad/.local/share/mystyles/:$TEXINPUTS # for tex2page
-export LISP=sbcl
-export EDITOR="emacsclient"                  # $EDITOR opens in terminal
-#export VISUAL="emacsclient -c -a emacs"
-export HUGO_BASE_DIR="~/chriad-blog"
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
@@ -104,7 +72,6 @@ xterm*|rxvt*)
     ;;
 esac
 
-
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -125,10 +92,14 @@ fi
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-# ~/.bash_it/aliases/custom.aliases.bash
-# if [ -f ~/.bash_aliases ]; then
-#     . ~/.bash_aliases
-# fi
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# import old cluttered .bashrc
+if [ -f ~/.bashrc.d/bashrc.old ]; then
+    . ~/.bashrc.d/bashrc.old
+fi
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -140,338 +111,3 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-
-# jump
-eval "$(jump shell bash)"
-
-# <<< bashit
-
-# Path to the bash it configuration
-export BASH_IT="/home/chriad/.bash_it"
-
-# Lock and Load a custom theme file.
-# Leave empty to disable theming.
-# location /.bash_it/themes/
-# export BASH_IT_THEME='bobby'
-
-# (Advanced): Change this to the name of your remote repo if you
-# cloned bash-it with a remote other than origin such as `bash-it`.
-# export BASH_IT_REMOTE='bash-it'
-
-# (Advanced): Change this to the name of the main development branch if
-# you renamed it or if it was changed for some reason
-# export BASH_IT_DEVELOPMENT_BRANCH='master'
-
-# Your place for hosting Git repos. I use this for private repos.
-# export GIT_HOSTING='git@git.domain.com'
-
-# Don't check mail when opening terminal.
-unset MAILCHECK
-
-# Change this to your console based IRC client of choice.
-# export IRC_CLIENT='irssi'
-
-# Set this to the command you use for todo.txt-cli
-# export TODO="t"
-
-# Set this to false to turn off version control status checking within the prompt for all themes
-# export SCM_CHECK=true
-# Set to actual location of gitstatus directory if installed
-#export SCM_GIT_GITSTATUS_DIR="$HOME/gitstatus"
-# per default gitstatus uses 2 times as many threads as CPU cores, you can change this here if you must
-#export GITSTATUS_NUM_THREADS=8
-
-# Set Xterm/screen/Tmux title with only a short hostname.
-# Uncomment this (or set SHORT_HOSTNAME to something else),
-# Will otherwise fall back on $HOSTNAME.
-#export SHORT_HOSTNAME=$(hostname -s)
-
-# Set Xterm/screen/Tmux title with only a short username.
-# Uncomment this (or set SHORT_USER to something else),
-# Will otherwise fall back on $USER.
-#export SHORT_USER=${USER:0:8}
-
-# If your theme use command duration, uncomment this to
-# enable display of last command duration.
-#export BASH_IT_COMMAND_DURATION=true
-# You can choose the minimum time in seconds before
-# command duration is displayed.
-#export COMMAND_DURATION_MIN_SECONDS=1
-
-# Set Xterm/screen/Tmux title with shortened command and directory.
-# Uncomment this to set.
-#export SHORT_TERM_LINE=true
-
-# Set vcprompt executable path for scm advance info in prompt (demula theme)
-# https://github.com/djl/vcprompt
-#export VCPROMPT_EXECUTABLE=~/.vcprompt/bin/vcprompt
-
-# (Advanced): Uncomment this to make Bash-it reload itself automatically
-# after enabling or disabling aliases, plugins, and completions.
-# export BASH_IT_AUTOMATIC_RELOAD_AFTER_CONFIG_CHANGE=1
-
-# Uncomment this to make Bash-it create alias reload.
-# export BASH_IT_RELOAD_LEGACY=1
-
-# Load Bash It
-source "$BASH_IT"/bash_it.sh
-# unalias gpo # installed by bashit, conflicts with gpodder executable
-
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-source ~/.local/bin/{sync-history.sh,fzf-params.sh}
-
-eval "$(starship init bash)"
-
-# select a parent directory of the current, means cd parent
-p() {
-    local declare dirs=()
-    get_parent_dirs() {
-        if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
-        if [[ "${1}" == '/' ]]; then
-            for _dir in "${dirs[@]}"; do echo $_dir; done
-        else
-            get_parent_dirs $(dirname "$1")
-        fi
-    }
-    local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux --tac)
-    cd "$DIR"
-}
-
-# Another fd - cd into the selected directory
-# This one differs from the above, by only showing the sub directories and not
-#  showing the directories within those.
-d() {
-    # DIR=`find * -maxdepth 0 -type d -print 2> /dev/null | fzf-tmux` \
-        DIR=`fdfind ".*" -d 1 --type d 2> /dev/null | fzf-tmux` \
-            && cd "$DIR"
-}
-
-mkcdir ()
-{
-    mkdir -p -- "$1" &&
-        cd -P -- "$1"
-}
-
-yt--tv() {
-    local prefix=$CHRIAD_JELLYFIN_MEDIA_HOME
-    youtube-dl --config-location ~/.config/youtube-dl/config.embed \
-               -o $prefix'/TV/%(extractor)s/%(title)s/%(title)s.%(ext)s' \
-               "$@"
-}
-
-# https://gist.github.com/abesto/4286574
-# on the fly composition
-
-function curry() {
-    exportfun=$1; shift
-    fun=$1; shift
-    params=$*
-    cmd=$"function $exportfun() {
-        more_params=\$*;
-        $fun $params \$more_params;
-    }"
-    eval $cmd
-}
-
-curry yt--tv-srf yt--tv --hls-prefer-ffmpeg
-
-git--diff-pdf() {
-    yes | git difftool --tool=diffpdf $1
-}
-
-emby-poster-here() {
-	  # first copy pic from firefox contex menu into clipboard: "Copy Image"
-	  xclip -selection clipboard -t image/png -o > folder.png
-}
-
-mdw() { pandoc "$@" | w3m -T text/html; }
-
-wno() { wn "$1" -over; }
-
-dlocate() { locate -0 "$1" | xargs -0 rm -rf; }
-
-# dirlocate() { locate -r "/$1$"; }
-dirlocate() { locate -r "/*$1*"; }
-
-
-folderjail() {
-    # wrap single file to folder with same name
-    fname=`echo "$1" | inline-detox`
-    mkdir "${fname%%.*}"
-    mv "$1" "${fname%%.*}"
-}
-
-m4a--prefixcut-inplace ()
-{
-    mkdir out
-    for f in *.m4a ; do
-        ffmpeg -ss 00:00:"${1}" -i "${f}" -c:v copy -c:a copy ./out/"${f}";
-        /usr/bin/mv -f ./out/"${f}" "${f}"; done
-    rm -rf ./out
-}
-
-# example: mp3--bulk-title-here chaps.txt
-# chaps.txt: file with titles each on one line
-mp3--bulk-title-here() {
-    dos2unix "${1}"
-    operon clear 'title' *.mp3
-    ls -1 *.mp3 > flist.txt
-    paste flist.txt "$1" > out.txt
-    while IFS=$'\t' read -r fname title ; do
-        operon add 'title' "${title}" "${fname}"
-        # printf '%s\n' "$fname"
-        # printf '%s\n' "$title"
-    done < out.txt
-    rm flist.txt out.txt
-}
-
-
-rename-from-2c-tsv() {
-    fd -a -e mkv -S +5m > flist.txt
-    paste flist.txt titles.txt > out.txt
-    dos2unix out.txt
-    local i=1
-    while IFS=$'\t' read -r fname title ; do
-        # mv "${fname}" "S${1}E${i} - ${title}.mkv"
-        printf '%s %s\n' "${fname}" "S${1}E${i} - ${title}.mkv"
-        cp "${fname}" "S${1}E${i} - ${title}.mkv"
-        # printf '%s\n' "S${1}E${i} - ${title}.mkv"
-        # printf '%s\n' "$fname"
-        ((i++))
-    done < out.txt
-}
-
-
-bachsplit() {
-    flacsplt -o @b__@t__@A__@n -c "$1" "$2"
-}
-
-quodlibet--sort-queries() {
-    fp='/home/chriad/.var/app/io.github.quodlibet.QuodLibet/config/quodlibet/lists/'
-    out=$(paste -sd"\t\n" ${fp}queries.saved | sort -k 2 | tr "\t" "\n" > ${fp}queries.saved.sorted)
-    exec $out
-    mv ${fp}queries.saved /home/chriad/queries.saved.backup
-    mv ${fp}queries.saved.sorted ${fp}queries.saved
-}
-
-sed--quote-lines() {
-    sed 's/^.*$/"&"/g'
-}
-
-mp3--merge-chapters() {
-    local a
-    local b
-    a="${1}"
-    b="${2}"
-    tr '"' '`' < "$b" > "${b%txt}"clean.txt
-    sed 's/^.*$/"&"/g' "${b%txt}"clean.txt > "${b%txt}"quoted.txt
-    paste "${a}" "${b%txt}"quoted.txt |tr -d '\t' > "${b%txt}"out.csv
-}
-
-
-fzf--images() {
-    IMPATH=/home/chriad/essential-images/cheat
-    fdfind . $IMPATH 2> /dev/null | fzf --bind='enter:execute(eog {}  &>/dev/null &)+abort'
-}
-
-flatpak--flatapps() {
-    flatpak list | cut -f 2 | fzf
-}
-
-# from linux phrasebook
-listfunc () {
-    for func in $(compgen -A function | grep -v _);
-    do
-        declare -f $func;
-        echo -e "\r";
-    done
-}
-
-function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
-
-# m4b functions
-
-function m4b--rmlyrics() {
-    # remove lyrics from source file before using LosslessCut
-    fil="$1"
-    case $fil in
-      *.m4b)
-        mp4tags -r "lyrics" "${fil}"
-        ;;
-
-      *.mp3)
-        operon clear lyrics "${fil}"
-        ;;
-
-      *)
-        exit 1
-        ;;
-    esac
-}
-
-
-function audacity--labels-to-csv() {
-    # some file exported by audacity called Labels.txt
-    fil="$1"
-    csvformat -t -D, "${fil}" > "${fil%txt}"csv
-}
-
-function m4b--title() {
-    # Set title to filename in LosslessCut output
-    for rc in *.m4b; do
-        operon fill --dry-run "<title>.m4b" "$rc"
-        operon fill "<title>.m4b" "$rc"
-    done
-    for rc in *.mp3; do
-        operon fill --dry-run "<title>.mp3" "$rc"
-        operon fill "<title>.mp3" "$rc"
-    done
-
-}
-
-mp4chaps--pipeline() {
-    local fname="${1}"
-    mp4chaps -x "${fname}"
-    emacsclient -c "${fname%m4b}chapters.txt"
-    mp4chaps -r "${fname}"
-    mp4chaps -i "${fname}"
-}
-
-# chriad-mount sdi1 usb
-chriad-mount() {
-   sudo mount -o uid=chriad,gid=chriad,rw,defaults /dev/"${1}" /home/chriad/"${2}"
-}
-
-# flatpak aliases
-if [ -d ~/.bashrc.d ]; then
-    for rc in ~/.bashrc.d/*; do
-        if [ -f "$rc" ]; then
-            . "$rc"
-        fi
-    done
-fi
-unset rc
-
-# opam configuration
-test -r /home/chriad/.opam/opam-init/init.sh && . /home/chriad/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
-
-# BEGIN_KITTY_SHELL_INTEGRATION
-if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
-# END_KITTY_SHELL_INTEGRATION
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/chriad/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/chriad/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/chriad/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/chriad/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-

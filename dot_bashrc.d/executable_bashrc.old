@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+PATH=$PATH:/home/chriad/.local/bin:/home/chriad/.fzf/bin
+
+PATH=$PATH:/usr/lib/stardict-tools
+
+PATH=$PATH:/usr/lib/android-sdk/cmdline-tools/latest/bin
+PATH=$PATH:/usr/lib/android-sdk/platform-tools
+
+# why is it not on path?
+XDG_DATA_DIRS=$XDG_DATA_DIRS:/home/chriad/.local/share:/home/chriad/.guix-profile/share
+
+# load custom env
+. ~/.bashrc.d/bash.env
+
+GUIX_PROFILE="$HOME/.guix-profile"
+. "$GUIX_PROFILE/etc/profile"
+
+export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+export PATH=$PATH:"$HOME/.guix-profile/bin"
+
+
+export GOROOT=$HOME/go
+export PATH=$PATH:$GOROOT/bin
+export PATH=$PATH:/var/lib/flatpak/exports/bin
+
+
+export TEXINPUT=.:/home/chriad/.local/share/mystyles/:$TEXINPUTS # for tex2page
+export EDITOR="emacsclient"                  # $EDITOR opens in terminal
+
+#export VISUAL="emacsclient -c -a emacs"
+# ~/.bash_it/aliases/custom.aliases.bash
+# if [ -f ~/.bash_aliases ]; then
+#     . ~/.bash_aliases
+# fi
+
+
+# jump
+eval "$(jump shell bash)"
+
+. ~/.bashrc.d/bashit.bash
+. ~/.bashrc.d/conda.bash
+. ~/.bashrc.d/kitty.bash
+
+# unalias gpo # installed by bashit, conflicts with gpodder executable
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+source ~/.local/bin/{sync-history.sh,fzf-params.sh}
+
+eval "$(starship init bash)"
+
+# opam configuration
+test -r /home/chriad/.opam/opam-init/init.sh && . /home/chriad/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+# # source helpers
+# if [ -d ~/.bashrc.d ]; then
+#     for rc in ~/.bashrc.d/*; do
+#         if [ -f "$rc" ]; then
+#             . "$rc"
+#         fi
+#     done
+# fi
+# unset rc
