@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Ubuntu Sway (custom)
+Comment=An i3-compatible Wayland compositor
+Exec=/usr/bin/bash -l -c ssway
+Type=Application
+DesktopNames=sway
