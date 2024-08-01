@@ -104,31 +104,29 @@ output * bg /usr/local/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png 
     for_window [window_type="dialog"] floating enable
     for_window [window_type="menu"] floating enable
     for_window [window_role="About"] floating enable
-    for_window [class="xdg-desktop-portal-kde"] floating enable
-    for_window [class="ksysguard"] floating enable
-    for_window [class="ksysguard"] sticky enable
-    #for_window [app_id="mpv"] layout tabbed
-    for_window [class="Wine"] floating enable
-    for_window [app_id="lutris"] floating enable
+
+    # for_window [class="xdg-desktop-portal-kde"] floating enable
+    # for_window [class="ksysguard"] floating enable
+    # for_window [class="ksysguard"] sticky enable
+    for_window [app_id="mpv"] floating enable
+    # for_window [class="Wine"] floating enable
+    # for_window [app_id="lutris"] floating enable
 
     # bindsym $mod+F12 exec shutdown now
     # bindsym Mod4+L exec $lock
     # bindsym Control+Mod1+Delete exec ksysguard
     bindsym $mod+F1 exec nautilus
-    bindsym $mod+F2 exec /var/lib/flatpak/exports/bin/io.github.quodlibet.QuodLibet
+    bindsym $mod+F2 exec emacsclient --alternate-editor= --create-frame
     # bindsym $mod+F3 exec mpv --player-operation-mode=pseudo-gui
     bindsym $mod+F3 exec systemctl suspend
     bindsym $mod+F4 exec firefox
     # bindsym $mod+F5 exec kate
     bindsym $mod+F5 exec sudo systemctl hibernate
+    bindsym $mod+F6 exec io.github.quodlibet.QuodLibet
     # bindsym $mod+F6 exec lutris
     # bindsym $mod+F7 exec notify-send $(weather)
     # bindsym $mod+F8 exec pkill kmousetool || kmousetool
     # bindsym $mod+shift+F4 exec firefox --private-window
-    # bindsym Print exec grim -o $(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .name') $(xdg-user-dir)/Pictures/Screenshot_$(date +'%Y-%m-%d-%H%M%S.png')
-    # bindsym Alt+Print exec grim $(xdg-user-dir)/Pictures/Screenshot_$(date +'%Y-%m-%d-%H%M%S.png')
-    # bindsym Control+Print exec grim -g "$(slurp)" $(xdg-user-dir)/Pictures/Screenshot_$(date +'%Y-%m-%d-%H%M%S.png')
-    # bindsym Shift+Print exec grim -g "$(slurp)" - | wl-copy
     bindsym $mod+tab workspace back_and_forth
 
 #

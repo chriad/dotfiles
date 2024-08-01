@@ -10,9 +10,9 @@
 
 
 # keep unlimited shell history because it's very useful
-export HISTFILESIZE=-1
-export HISTSIZE=-1
-shopt -s histappend   # don't overwrite history file after each session
+# export HISTFILESIZE=-1
+# export HISTSIZE=-1
+# shopt -s histappend   # don't overwrite history file after each session
 
 
 # on every prompt, save new history to dedicated file and recreate full history
