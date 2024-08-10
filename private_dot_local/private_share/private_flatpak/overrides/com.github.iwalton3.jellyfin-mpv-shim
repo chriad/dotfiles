@@ -1,0 +1,7 @@
+[Context]
+sockets=!fallback-x11;!x11
+devices=!all;dri
+filesystems=home;host-etc;host-os;host
+
+[Environment]
+DISPLAY=:.0
