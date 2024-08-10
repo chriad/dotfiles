@@ -106,11 +106,9 @@
   (interactive)
   (switch-to-buffer (find-file-noselect "/home/chriad/.config/emacs/bookmarks")))
 
-
 (defun spacemacs/find-bashrc ()
   (interactive)
-  (chezmoi-find "/home/chriad/.bashrc")
-  (chezmoi-mode))
+  (chezmoi-find "/home/chriad/.bashrc"))
 
 
 (spacemacs/declare-prefix "of" "files")
