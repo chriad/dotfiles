@@ -112,6 +112,7 @@
 
 
 (spacemacs/declare-prefix "of" "files")
+(spacemacs/set-leader-keys "off" 'chezmoi-find)
 (spacemacs/set-leader-keys "ofa" 'spacemacs/find-custom-alias-file)
 (spacemacs/set-leader-keys "ofo" 'spacemacs/find-custom-keymap-file)
 (spacemacs/set-leader-keys "ofB" 'spacemacs/find-custom-bookmark-file)

@@ -122,20 +122,24 @@ output * bg /usr/local/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png 
     bindsym $mod+F4 exec firefox
     # bindsym $mod+F5 exec kate
     bindsym $mod+F5 exec sudo systemctl hibernate
-    bindsym $mod+F6 exec io.github.quodlibet.QuodLibet
+    # bindsym $mod+F6 exec io.github.quodlibet.QuodLibet
+    bindsym $mod+F6 exec /var/lib/flatpak/exports/bin/io.github.quodlibet.QuodLibet
     # bindsym $mod+F6 exec lutris
     # bindsym $mod+F7 exec notify-send $(weather)
     # bindsym $mod+F8 exec pkill kmousetool || kmousetool
     # bindsym $mod+shift+F4 exec firefox --private-window
     bindsym $mod+tab workspace back_and_forth
 
+    # exec --no-startup-id /home/chriad/.local/kitty.app/bin/kitty --name dropdown
+    # for_window [title="dropdown"] floating enable, border none, move absolute position 0px 0px, resize set 1920px 384px, move scratchpad
+    # bindsym $mod+F7 [title="dropdown"] scratchpad show
 #
 # Multimedia keys
 #
 
     # Pulse Audio controls
-    # bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5% #increase sound volume
-    # bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5% #decrease sound volume
+    bindsym KP_Prior exec --no-startup-id pactl set-sink-volume 0 +5% #increase sound volume
+    bindsym KP_Next exec --no-startup-id pactl set-sink-volume 0 -5% #decrease sound volume
     # bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
     # # Media player controls
     # bindsym XF86AudioPlay exec playerctl play-pause
