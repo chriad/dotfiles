@@ -109,7 +109,8 @@
 
 (defun spacemacs/find-bashrc ()
   (interactive)
-  (switch-to-buffer (find-file-noselect "/home/chriad/.bashrc")))
+  (chezmoi-find "/home/chriad/.bashrc")
+  (chezmoi-mode))
 
 
 (spacemacs/declare-prefix "of" "files")
