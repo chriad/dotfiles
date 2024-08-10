@@ -63,6 +63,11 @@
 (spacemacs/declare-prefix "ohi" "helm info")
 (spacemacs/set-leader-keys "ohii" 'helm-info)
 (spacemacs/set-leader-keys "ohiu" 'helm-info-use-package)
+(spacemacs/declare-prefix  "ohie" "helm-info-{lisp related}")
+(spacemacs/set-leader-keys "ohiei" 'helm-info-eintr)
+(spacemacs/set-leader-keys "ohiem" 'helm-info-emacs)
+(spacemacs/set-leader-keys "ohiel" 'helm-info-elisp)
+(spacemacs/set-leader-keys "ohiec" 'helm-info-cl)
 
 (spacemacs/declare-prefix "op" "play")
 ;; (spacemacs/set-leader-keys "opd" 'doctor)
@@ -73,7 +78,6 @@
 ;; (spacemacs/set-leader-keys "opa" 'academic-phrases)
 
 ;; (spacemacs/set-leader-keys "ot" 'tab-bar-new-tab)
-;; (spacemacs/set-leader-keys "oh" 'eaf-open-pdf-from-history)
 
 ;; (spacemacs/declare-prefix "or" "roam")
 ;; (spacemacs/set-leader-keys "orn" 'my/navigate-note)
@@ -92,13 +96,12 @@
 (defun spacemacs/find-custom-alias-file ()
   (interactive)
   ;; (find-file (concat (getenv "BASH_IT") "/aliases/custom.aliases.bash")
-     (find-file (concat "/home/chriad/.bash_it" "/aliases/custom.aliases.bash")))
+  (chezmoi-find (concat "/home/chriad/.bash_it" "/aliases/custom.aliases.bash")))
 
 (defun spacemacs/find-custom-keymap-file ()
   (interactive)
-  (switch-to-buffer (find-file-noselect "/home/chriad/.config/emacs/o-keymap.el"))
-  ;; (find-file "/home/chriad/.config/emacs/o-keymap.el")
-  )
+  (chezmoi-find "/home/chriad/.config/emacs/o-keymap.el"))
+
 (defun spacemacs/find-custom-bookmark-file ()
   (interactive)
   (switch-to-buffer (find-file-noselect "/home/chriad/.config/emacs/bookmarks")))

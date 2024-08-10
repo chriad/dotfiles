@@ -6,6 +6,8 @@ alias la='ls -A'
 alias l=exa
 alias update-emacs='guix pull && guix package -u emacs'
 
+alias count-images="sqlite3 /home/chriad/digikam-db/digikam4.db 'SELECT COUNT(*) FROM Images WHERE album IS NOT NULL;'"
+
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -17,7 +19,7 @@ alias dmesg="dmesg -wL" # color and --tail
 
 # flatpak --command
 alias mpvshim='flatpak run com.github.iwalton3.jellyfin-mpv-shim'
-alias gpodder="taskset -c 0 /usr/bin/flatpak run --command=/app/bin/gpodder org.gpodder.gpodder 2> /dev/null &"
+# alias gpodder="taskset -c 0 /usr/bin/flatpak run --command=/app/bin/gpodder org.gpodder.gpodder 2> /dev/null &"
 alias gpo='flatpak run --command=/app/bin/gpo org.gpodder.gpodder'
 alias operon='flatpak run --command=operon io.github.quodlibet.QuodLibet'
 alias ebook-meta='flatpak run --command=ebook-meta com.calibre_ebook.calibre'
@@ -26,14 +28,17 @@ alias fullname="readlink -f"
 alias s="kitten ssh"
 alias catp="cat -p"
 alias fzf--screencasts="rg -g /home/chriad/Videos/Screencasts/*.{mkv,mp4,ogv,webm} --files 2> /dev/null | fzf --bind='enter:execute(mpv {})'"
+alias fzf--PATH="echo $PATH | tr ':' '\n' |fzf"
+alias fzf--XDG_DATA_DIRS="echo $XDG_DATA_DIRS | tr ':' '\n' |fzf"
 alias reload_custom_aliases=". ~/.bash_it/aliases/custom.aliases.bash"
-alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
+# only for `ubuntu` type wayland session
+# alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
 alias task--count="task count status:pending"
 alias gedit=gnome-text-editor
 
 # 1 letter
 alias n='nautilus . &'
-alias e="emacsclient --no-wait --create-frame --alternate-editor="
+# alias e="emacsclient --no-wait --create-frame --alternate-editor="
 alias a="alias|fzf"
 alias T="task|fzf"
 alias zz="ls|fzf"
@@ -50,7 +55,7 @@ alias cpdf--list-bookmarks="cpdf -list-bookmarks"
 alias cpdf--list-annotations="cpdf -list-annotations-json"
 alias space='gdu /media/chriad -sd'
 
-alias losslesscut-export='nohup snap run losslesscut_export &'
+# alias losslesscut-export='nohup snap run losslesscut_export &'
 
 # simplest alias
 alias fd=fdfind
@@ -64,9 +69,13 @@ alias pdf2text=pdftotext
 alias powershell=pwsh
 alias info=pinfo
 alias lisp=clisp
-alias chriad-browse--kernel-handbook="www-browser /usr/share/doc/debian-kernel-handbook/kernel-handbook.html"
+
+export www_browser=www-browser
+export docdir="/usr/share/doc"
+alias chriad-browse--kernel-handbook="$www_browser $docdir/debian-kernel-handbook/kernel-handbook.html"
 alias chriad-browse--ocrmypdf="www-browser /usr/share/doc/ocrmypdf/html/index.html"
 alias chriad-browse--racket="www-browser /usr/share/doc/racket/r5rs/index.html"
+alias chriad-browse--debian-handbook="$www_browser $docdir/debian-handbook/html/en-US/index.html"
 
 # first order alias
 alias detox="detox --remove-trailing"
@@ -118,7 +127,7 @@ alias git-summary='/home/chriad/git-summary/git-summary'
 alias raspb-connect="screen /dev/ttyUSB0 115200"
 # alias regex-buddy="wine /home/chriad/.wine/dosdevices/c\:/Program\ Files\ \(x86\)/JGsoft/RegexBuddy3/RegexBuddy.exe"
 alias lisp-works="/usr/local/lib64/LispWorksPersonal/lispworks-personal-7-1-2-amd64-linux"
-alias et="emacsclient -t"
+# alias et="emacsclient -t"
 alias c2='cd ../../'
 # alias xpdf="~/Desktop/XpdfReader-linux64-4.01.01/xpdf"
 alias gsadd='git submodule add'
@@ -131,7 +140,7 @@ alias git-aliases='bash-it help aliases git|fzf'
 # exact match by default
 # alias=fzf='fzf -e'
 # alias ls="exa"
-alias enw="emacs -nw"
+# alias enw="emacs -nw"
 alias pretty-json="python2 -mjson.tool"
 #Unfortunately doesn't work
 #alias ;s=ls
