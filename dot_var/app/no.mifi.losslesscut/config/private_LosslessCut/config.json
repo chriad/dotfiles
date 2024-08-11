@@ -1,0 +1,271 @@
+{
+	"captureFormat": "png",
+	"keyframeCut": true,
+	"autoMerge": true,
+	"autoDeleteMergedSegments": true,
+	"segmentsToChaptersOnly": false,
+	"enableSmartCut": false,
+	"timecodeFormat": "timecodeWithDecimalFraction",
+	"invertCutSegments": false,
+	"autoExportExtraStreams": true,
+	"exportConfirmEnabled": true,
+	"askBeforeClose": false,
+	"enableAskForImportChapters": true,
+	"enableAskForFileOpenAction": true,
+	"playbackVolume": 1,
+	"autoSaveProjectFile": true,
+	"wheelSensitivity": 0.2,
+	"ffmpegExperimental": true,
+	"preserveMovData": false,
+	"movFastStart": true,
+	"avoidNegativeTs": "auto",
+	"autoLoadTimecode": false,
+	"segmentsToChapters": false,
+	"preserveMetadataOnMerge": true,
+	"simpleMode": false,
+	"outSegTemplate": "${SEG_LABEL}--${SEG_NUM}${EXT}",
+	"keyboardSeekAccFactor": 1.03,
+	"keyboardNormalSeekSpeed": 1,
+	"enableTransferTimestamps": true,
+	"safeOutputFileName": false,
+	"windowBounds": {
+		"x": 2846,
+		"y": 25,
+		"width": 2048,
+		"height": 1659
+	},
+	"enableAutoHtml5ify": false,
+	"keyBindings": [
+		{
+			"keys": "plus",
+			"action": "addSegment"
+		},
+		{
+			"keys": "space",
+			"action": "togglePlayResetSpeed"
+		},
+		{
+			"keys": "k",
+			"action": "togglePlayNoResetSpeed"
+		},
+		{
+			"keys": "j",
+			"action": "reducePlaybackRate"
+		},
+		{
+			"keys": "shift+j",
+			"action": "reducePlaybackRateMore"
+		},
+		{
+			"keys": "l",
+			"action": "increasePlaybackRate"
+		},
+		{
+			"keys": "shift+l",
+			"action": "increasePlaybackRateMore"
+		},
+		{
+			"keys": "z",
+			"action": "timelineToggleComfortZoom"
+		},
+		{
+			"keys": ",",
+			"action": "seekPreviousFrame"
+		},
+		{
+			"keys": ".",
+			"action": "seekNextFrame"
+		},
+		{
+			"keys": "backspace",
+			"action": "removeCurrentSegment"
+		},
+		{
+			"keys": "d",
+			"action": "cleanupFilesDialog"
+		},
+		{
+			"keys": "b",
+			"action": "splitCurrentSegment"
+		},
+		{
+			"keys": "r",
+			"action": "increaseRotation"
+		},
+		{
+			"keys": "g",
+			"action": "goToTimecode"
+		},
+		{
+			"keys": "left",
+			"action": "seekBackwards"
+		},
+		{
+			"keys": "ctrl+left",
+			"action": "seekBackwardsPercent"
+		},
+		{
+			"keys": "command+left",
+			"action": "seekBackwardsPercent"
+		},
+		{
+			"keys": "alt+left",
+			"action": "seekBackwardsKeyframe"
+		},
+		{
+			"keys": "shift+left",
+			"action": "jumpCutStart"
+		},
+		{
+			"keys": "right",
+			"action": "seekForwards"
+		},
+		{
+			"keys": "ctrl+right",
+			"action": "seekForwardsPercent"
+		},
+		{
+			"keys": "command+right",
+			"action": "seekForwardsPercent"
+		},
+		{
+			"keys": "alt+right",
+			"action": "seekForwardsKeyframe"
+		},
+		{
+			"keys": "shift+right",
+			"action": "jumpCutEnd"
+		},
+		{
+			"keys": "ctrl+home",
+			"action": "jumpTimelineStart"
+		},
+		{
+			"keys": "ctrl+end",
+			"action": "jumpTimelineEnd"
+		},
+		{
+			"keys": "up",
+			"action": "jumpPrevSegment"
+		},
+		{
+			"keys": "ctrl+up",
+			"action": "timelineZoomIn"
+		},
+		{
+			"keys": "command+up",
+			"action": "timelineZoomIn"
+		},
+		{
+			"keys": "shift+up",
+			"action": "batchPreviousFile"
+		},
+		{
+			"keys": "down",
+			"action": "jumpNextSegment"
+		},
+		{
+			"keys": "ctrl+down",
+			"action": "timelineZoomOut"
+		},
+		{
+			"keys": "command+down",
+			"action": "timelineZoomOut"
+		},
+		{
+			"keys": "shift+down",
+			"action": "batchNextFile"
+		},
+		{
+			"keys": "shift+enter",
+			"action": "batchOpenSelectedFile"
+		},
+		{
+			"keys": "ctrl+z",
+			"action": "undo"
+		},
+		{
+			"keys": "command+z",
+			"action": "undo"
+		},
+		{
+			"keys": "ctrl+shift+z",
+			"action": "redo"
+		},
+		{
+			"keys": "command+shift+z",
+			"action": "redo"
+		},
+		{
+			"keys": "enter",
+			"action": "labelCurrentSegment"
+		},
+		{
+			"keys": "e",
+			"action": "export"
+		},
+		{
+			"keys": "shift+/",
+			"action": "toggleKeyboardShortcuts"
+		},
+		{
+			"keys": "escape",
+			"action": "closeActiveScreen"
+		},
+		{
+			"keys": "alt+up",
+			"action": "increaseVolume"
+		},
+		{
+			"keys": "alt+down",
+			"action": "decreaseVolume"
+		},
+		{
+			"action": "deselectAllSegments",
+			"keys": "ctrl+backspace"
+		},
+		{
+			"action": "toggleCurrentSegmentSelected",
+			"keys": "s"
+		},
+		{
+			"action": "invertAllSegments",
+			"keys": "i"
+		},
+		{
+			"action": "setCutStart",
+			"keys": "0"
+		},
+		{
+			"action": "setCutEnd",
+			"keys": "shift+4"
+		},
+		{
+			"action": "combineSelectedSegments",
+			"keys": "c"
+		},
+		{
+			"action": "toggleLoopStartEndOnlyCurrentSegment",
+			"keys": "o"
+		}
+	],
+	"storeProjectInWorkingDir": true,
+	"enableOverwriteOutput": true,
+	"mouseWheelZoomModifierKey": "ctrl",
+	"captureFrameMethod": "videotag",
+	"captureFrameQuality": 0.95,
+	"captureFrameFileNameFormat": "timestamp",
+	"enableNativeHevc": true,
+	"enableUpdateCheck": true,
+	"cleanupChoices": {
+		"trashTmpFiles": true,
+		"askForCleanup": true,
+		"trashProjectFile": true,
+		"trashSourceFile": true,
+		"deleteIfTrashFails": false,
+		"cleanupAfterExport": true
+	},
+	"allowMultipleInstances": true,
+	"darkMode": true,
+	"preferStrongColors": false
+}
