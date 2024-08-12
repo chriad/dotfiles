@@ -110,11 +110,17 @@
   (interactive)
   (chezmoi-find "/home/chriad/.bashrc"))
 
+(defun chriad/find-dotfile ()
+  "Edit the `dotfile', in the current window."
+  (interactive)
+  (chezmoi-find (dotspacemacs/location)))
 
 (spacemacs/declare-prefix "of" "files")
 (spacemacs/set-leader-keys "off" 'chezmoi-find)
 (spacemacs/set-leader-keys "ofa" 'spacemacs/find-custom-alias-file)
-(spacemacs/set-leader-keys "ofo" 'spacemacs/find-custom-keymap-file)
+;; ofd -> chezmoi prefix
+(spacemacs/set-leader-keys "ofe" 'chriad/find-dotfile)
+(spacemacs/set-leader-keys "ofk" 'spacemacs/find-custom-keymap-file)
 (spacemacs/set-leader-keys "ofB" 'spacemacs/find-custom-bookmark-file)
 (spacemacs/set-leader-keys "ofb" 'spacemacs/find-bashrc)
 

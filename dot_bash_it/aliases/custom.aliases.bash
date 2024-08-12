@@ -49,13 +49,14 @@ alias recollcmd=recollq
 alias ffplay='ffplay -hide_banner -autoexit '
 alias ffprobe='ffprobe -hide_banner  '
 
+alias swaymsg--gettree-all='swaymsg -t get_tree | grep "app_id"'
+alias swaymsg--gettree-focused="swaymsg -t get_tree | jq -r '..|try select(.focused == true)'"
+
 # alias cpdf="cpdf 2>/dev/null"
 alias cpdf--help-browse='cpdf -help 2>&1 | fzf'
 alias cpdf--list-bookmarks="cpdf -list-bookmarks"
 alias cpdf--list-annotations="cpdf -list-annotations-json"
 alias space='gdu /media/chriad -sd'
-
-# alias losslesscut-export='nohup snap run losslesscut_export &'
 
 # simplest alias
 alias fd=fdfind
