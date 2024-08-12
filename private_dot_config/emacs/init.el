@@ -34,8 +34,10 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '((python :variables python-backend 'lsp python-lsp-server 'pyright)
+   '(toml
+     (python :variables python-backend 'lsp python-lsp-server 'pyright)
      ;; rust
+     curiophenalia
      ocaml
      asciidoc
      lua
@@ -129,6 +131,21 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      (narrow-indirect :fetcher wiki) ;; for bookmark+
+                                      (linkd :fetcher wiki) ;; for bookmark+
+                                      (bookmark+ :fetcher wiki
+                                                 :files
+                                                 ("bookmark+.el"
+                                                  "bookmark+-mac.el"
+                                                  "bookmark+-bmu.el"
+                                                  "bookmark+-1.el"
+                                                  "bookmark+-key.el"
+                                                  "bookmark+-lit.el"
+                                                  "bookmark+-doc.el"
+                                                  "bookmark+-chg.el"))
+                                      sway
+                                      ;; helm-systemd
+                                      anki-mode
                                       with-simulated-input
                                       psession ;; for helm-locate-library
                                       tldr
@@ -137,8 +154,8 @@ This function should only modify configuration layer settings."
                                       ;; mic-paren ;; customize paren-face-match
                                       helm-apt ;; ???
                                       ;; helm-dired-history
-                                      geiser ;; installed with guix
-                                      geiser-guile ;; installed with guix
+                                      ;; geiser ;; installed with guix
+                                      ;; geiser-guile ;; installed with guix
                                       magit-popup ;; guix
                                       (director :location (recipe ;; automate is king
                                                            :fetcher github
@@ -154,9 +171,7 @@ This function should only modify configuration layer settings."
                                       ;; shackle
                                       ;; sway
                                       minions ;; minions-minor-mode-menu
-                                      ink-mode ;; ???
                                       ;; dired-git-info ;; disable for debug
-                                      fountain-mode ;;
                                       ;; camcorder
                                       org-gtd
                                       ;; org-edna
@@ -190,9 +205,7 @@ This function should only modify configuration layer settings."
                                       orca
                                       org-link-beautify
                                       ;; buttons
-                                      ;; keymap-utils
                                       good-scroll
-                                      ;; emacs application framework
                                       ctable
                                       deferred
                                       epc
@@ -202,13 +215,13 @@ This function should only modify configuration layer settings."
                                       (code-spelunk :location local)
                                       (screenshot :location local)
                                       ;; helm-posframe
-                                      on-screen
                                       ;; which-key-posframe
+                                      on-screen
                                       highlight-function-calls
                                       sicp
                                       pdfgrep
                                       auto-dim-other-buffers
-                                      edebug-x
+                                      edebug-x ;; edebug e*x*tensions
                                       edebug-inline-result
                                       helm-file-preview
                                       org-ml
@@ -223,8 +236,8 @@ This function should only modify configuration layer settings."
                                       scrollkeeper
                                       org-web-tools
                                       ;; org-noter
-                                      org-pdftools
                                       ;; org-noter-pdftools
+                                      org-pdftools ;; important
                                       edit-indirect
                                       mpv
                                       yasnippet-classic-snippets
@@ -245,7 +258,7 @@ This function should only modify configuration layer settings."
    ;; installs only the used packages but won't delete unused ones. `all'
    ;; installs *all* packages supported by Spacemacs and never uninstalls them.
    ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-but-keep-unused))
+   dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
   "Initialization:
