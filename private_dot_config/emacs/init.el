@@ -131,8 +131,9 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
-                                      (narrow-indirect :fetcher wiki) ;; for bookmark+
-                                      (linkd :fetcher wiki) ;; for bookmark+
+                                      ;; (narrow-indirect :fetcher wiki) ;; for bookmark+
+                                      (narrow-indirect :fetcher wiki :upgrade nil) ;; for bookmark+
+                                      (linkd :fetcher wiki :upgrade nil) ;; for bookmark+
                                       (bookmark+ :fetcher wiki
                                                  :files
                                                  ("bookmark+.el"
@@ -142,7 +143,8 @@ This function should only modify configuration layer settings."
                                                   "bookmark+-key.el"
                                                   "bookmark+-lit.el"
                                                   "bookmark+-doc.el"
-                                                  "bookmark+-chg.el"))
+                                                  "bookmark+-chg.el")
+                                                 :upgrade nil)
                                       sway
                                       ;; helm-systemd
                                       anki-mode
@@ -245,12 +247,12 @@ This function should only modify configuration layer settings."
                                       )
 
    ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '(
-                                  ;; linkd
-                                  )
+   dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(
+                                    ;; narrow-indirect
+                                    )
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -827,36 +829,34 @@ before packages are loaded."
 
 
     ;; creates a buffer *quelpa-build-checkout*
-    ;; (defun check-emacswiki-updates ()
-    ;;   (quelpa '(bookmark+ :fetcher wiki
-    ;;                       :files
-    ;;                       ("bookmark+.el"
-    ;;                        "bookmark+-mac.el"
-    ;;                        "bookmark+-bmu.el"
-    ;;                        "bookmark+-1.el"
-    ;;                        "bookmark+-key.el"
-    ;;                        "bookmark+-lit.el"
-    ;;                        "bookmark+-doc.el"
-    ;;                        "bookmark+-chg.el")))
-    ;;   (quelpa '(narrow-indirect :fetcher wiki))
-    ;;   (quelpa '(linkd :fetcher wiki))
-    ;;   )
+    (defun check-emacswiki-updates ()
+      (quelpa '(bookmark+ :fetcher wiki
+                          :files
+                          ("bookmark+.el"
+                           "bookmark+-mac.el"
+                           "bookmark+-bmu.el"
+                           "bookmark+-1.el"
+                           "bookmark+-key.el"
+                           "bookmark+-lit.el"
+                           "bookmark+-doc.el"
+                           "bookmark+-chg.el")))
+      (quelpa '(narrow-indirect :fetcher wiki))
+      (quelpa '(linkd :fetcher wiki)))
 
-    ;; (setq paradox-menu-mode-hook '(paradox-refresh-upgradeable-packages check-emacswiki-updates))
+    (setq paradox-menu-mode-hook '(paradox-refresh-upgradeable-packages check-emacswiki-updates))
 
     (use-package bookmark+
       ;; :defer t
       :config
-      ;; (require 'linkd) ;; load manually: SPC h d p -> linkd -> , e b
-      ;; (require 'narrow-indirect)
+      (require 'linkd) ;; load manually: SPC h d p -> linkd -> , e b
+      (require 'narrow-indirect)
       (setq bmkp-dired-history nil)
       (defun bmkp-list-types ()
         (interactive)
         ;; TODO print in temporary, fileless buffer
         (pp (bmkp-types-alist)))
       (defun helm-documentation-f ()
-        (call-interactively 'helm-documentation))
-      )
+        (call-interactively 'helm-documentation)))
 
     (require 'org-ref)
     (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))
