@@ -7,7 +7,7 @@
  '(backup-by-copying t)
  '(backup-directory-alist '(("\".\"" . "\"~/.saves\"")))
  '(bibtex-completion-pdf-field "file")
- '(blink-matching-delay 2)
+ '(blink-matching-delay 3)
  '(bmkp-last-as-first-bookmark-file nil)
  '(bookmark-default-file "/home/chriad/.config/emacs/bookmarks")
  '(clhs-root "file:/media/chriad/ext4/SOFTWARE/HyperSpec/")

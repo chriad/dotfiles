@@ -247,6 +247,10 @@
 		{
 			"action": "toggleLoopStartEndOnlyCurrentSegment",
 			"keys": "o"
+		},
+		{
+			"action": "increasePlaybackRate",
+			"keys": "]"
 		}
 	],
 	"storeProjectInWorkingDir": true,

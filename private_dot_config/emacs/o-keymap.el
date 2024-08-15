@@ -93,20 +93,24 @@
 
 ;; nonstandard keys
 
-(defun spacemacs/find-custom-alias-file ()
+(defun chriad/find-custom-aliases ()
   (interactive)
   ;; (find-file (concat (getenv "BASH_IT") "/aliases/custom.aliases.bash")
   (chezmoi-find (concat "/home/chriad/.bash_it" "/aliases/custom.aliases.bash")))
 
-(defun spacemacs/find-custom-keymap-file ()
+(defun chriad/find-custom-keymap ()
   (interactive)
   (chezmoi-find "/home/chriad/.config/emacs/o-keymap.el"))
 
-(defun spacemacs/find-custom-bookmark-file ()
+(defun chriad/find-custom-settings ()
+  (interactive)
+  (find-file "/home/chriad/.local/share/chezmoi/ignored/emacs-custom.el"))
+
+(defun chriad/find-custom-bookmark-file ()
   (interactive)
   (switch-to-buffer (find-file-noselect "/home/chriad/.config/emacs/bookmarks")))
 
-(defun spacemacs/find-bashrc ()
+(defun chriad/find-bashrc ()
   (interactive)
   (chezmoi-find "/home/chriad/.bashrc"))
 
@@ -117,12 +121,13 @@
 
 (spacemacs/declare-prefix "of" "files")
 (spacemacs/set-leader-keys "off" 'chezmoi-find)
-(spacemacs/set-leader-keys "ofa" 'spacemacs/find-custom-alias-file)
+(spacemacs/set-leader-keys "ofa" 'chriad/find-custom-aliases)
 ;; ofd -> chezmoi prefix
 (spacemacs/set-leader-keys "ofe" 'chriad/find-dotfile)
-(spacemacs/set-leader-keys "ofk" 'spacemacs/find-custom-keymap-file)
-(spacemacs/set-leader-keys "ofB" 'spacemacs/find-custom-bookmark-file)
-(spacemacs/set-leader-keys "ofb" 'spacemacs/find-bashrc)
+(spacemacs/set-leader-keys "ofc" 'chriad/find-custom-settings)
+(spacemacs/set-leader-keys "ofk" 'chriad/find-custom-keymap)
+(spacemacs/set-leader-keys "ofB" 'chriad/find-custom-bookmark-file)
+(spacemacs/set-leader-keys "ofb" 'chriad/find-bashrc)
 
 ;; (spacemacs/set-leader-keys "srh" 'helm-rg)
 
