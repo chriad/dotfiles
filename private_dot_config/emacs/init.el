@@ -1268,8 +1268,7 @@ before packages are loaded."
     (add-hook 'org-mode-hook (lambda ()
                                (push '(?{ . ("{{" . "}}")) evil-surround-pairs-alist)))
 
-    ;; CHEZMOI_SOURCE_DIR=/home/chriad/.local/share/chezmoi
-    (setq custom-file "/home/chriad/.local/share/chezmoi/ignored/emacs-custom.el")
+    (setq custom-file "/home/chriad/.config/emacs/emacs-custom.el")
     ;; (setq custom-file "/home/chriad/.local/share/chezmoi/private_dot_config/emacs/dot_emacs-custom.el")
     (load custom-file)))
 

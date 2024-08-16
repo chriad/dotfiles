@@ -3,3 +3,4 @@ user-overrides.js
 scripts/fzf-params.sh
 crontab.backup
 gnome-settingsignored/@Favorites.xspf
+ignored/emacs-custom.el
