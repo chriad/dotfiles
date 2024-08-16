@@ -119,6 +119,11 @@
   (interactive)
   (chezmoi-find (dotspacemacs/location)))
 
+
+(spacemacs/declare-prefix "on" "navigate")
+(spacemacs/set-leader-keys "ons" 'sway-focus-container)
+
+
 (spacemacs/declare-prefix "of" "files")
 (spacemacs/set-leader-keys "off" 'chezmoi-find)
 (spacemacs/set-leader-keys "ofa" 'chriad/find-custom-aliases)

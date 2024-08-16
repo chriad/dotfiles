@@ -23,7 +23,7 @@ HISTSIZE=-1
 
 
 # don't loose history
-source ~/.local/bin/sync-history.sh
+# source ~/.local/bin/sync-history.sh
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
