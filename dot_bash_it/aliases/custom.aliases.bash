@@ -5,7 +5,8 @@ alias ll='ls -alF'
 alias la='ls -A'
 # alias l='ls -CF'
 alias l=exa
-alias update-emacs='guix pull && guix package -u emacs'
+alias chriad--update-emacs='guix pull && guix package -u emacs'
+alias chriad--update-kitty='curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin'
 
 alias count-images="sqlite3 /home/chriad/digikam-db/digikam4.db 'SELECT COUNT(*) FROM Images WHERE album IS NOT NULL;'"
 

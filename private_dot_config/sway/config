@@ -66,6 +66,7 @@ output * bg /usr/local/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png 
 # Read `man 5 sway-input` for more information about this section.
     # input "2385:5815:Kingston_HyperX_Alloy_FPS_Mechanical_Gaming_Keyboard" {
     #     xkb_layout hr(us)
+
     # }
 
 ### Key bindings
