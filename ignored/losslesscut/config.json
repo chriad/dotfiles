@@ -69,14 +69,6 @@
 			"action": "seekNextFrame"
 		},
 		{
-			"keys": "c",
-			"action": "captureSnapshot"
-		},
-		{
-			"keys": "i",
-			"action": "setCutStart"
-		},
-		{
 			"keys": "o",
 			"action": "setCutEnd"
 		},
@@ -85,16 +77,8 @@
 			"action": "removeCurrentSegment"
 		},
 		{
-			"keys": "d",
-			"action": "cleanupFilesDialog"
-		},
-		{
 			"keys": "b",
 			"action": "splitCurrentSegment"
-		},
-		{
-			"keys": "r",
-			"action": "increaseRotation"
 		},
 		{
 			"keys": "g",
@@ -239,6 +223,18 @@
 		{
 			"action": "reducePlaybackRate",
 			"keys": "["
+		},
+		{
+			"action": "invertAllSegments",
+			"keys": "i"
+		},
+		{
+			"action": "selectOnlyCurrentSegment",
+			"keys": "s"
+		},
+		{
+			"action": "combineSelectedSegments",
+			"keys": "c"
 		}
 	],
 	"storeProjectInWorkingDir": true,
