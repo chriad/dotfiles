@@ -2,7 +2,7 @@ IFS_BAK=$IFS
 IFS="
 "
 
-calibre --shutdown-running-calibre
+flatpak run --command=calibre com.calibre_ebook.calibre --shutdown-running-calibre
 
 for line in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
     xattr=$(xattr -p user.xdg.origin.url "$line")

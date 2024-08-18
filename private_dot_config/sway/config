@@ -117,7 +117,7 @@ output * bg /usr/local/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png 
     # bindsym $mod+F12 exec shutdown now
     # bindsym Mod4+L exec $lock
     # bindsym Control+Mod1+Delete exec ksysguard
-    bindsym $mod+F1 exec nautilus
+    bindsym $mod+F1 exec nautilus --new-window
     bindsym $mod+F2 exec emacsclient --alternate-editor= --create-frame
     # bindsym $mod+F3 exec mpv --player-operation-mode=pseudo-gui
     bindsym $mod+F3 exec systemctl suspend

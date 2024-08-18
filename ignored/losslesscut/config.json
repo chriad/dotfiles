@@ -31,7 +31,7 @@
 	"windowBounds": {
 		"x": 0,
 		"y": 0,
-		"width": 1418,
+		"width": 1061,
 		"height": 1770
 	},
 	"enableAutoHtml5ify": true,
@@ -39,14 +39,6 @@
 		{
 			"keys": "plus",
 			"action": "addSegment"
-		},
-		{
-			"keys": "space",
-			"action": "togglePlayResetSpeed"
-		},
-		{
-			"keys": "k",
-			"action": "togglePlayNoResetSpeed"
 		},
 		{
 			"keys": "shift+j",
@@ -71,10 +63,6 @@
 		{
 			"keys": "o",
 			"action": "setCutEnd"
-		},
-		{
-			"keys": "backspace",
-			"action": "removeCurrentSegment"
 		},
 		{
 			"keys": "b",
@@ -229,12 +217,40 @@
 			"keys": "i"
 		},
 		{
-			"action": "selectOnlyCurrentSegment",
+			"action": "combineSelectedSegments",
+			"keys": "c"
+		},
+		{
+			"action": "deselectAllSegments",
+			"keys": "backspace"
+		},
+		{
+			"action": "toggleCurrentSegmentSelected",
 			"keys": "s"
 		},
 		{
-			"action": "combineSelectedSegments",
-			"keys": "c"
+			"action": "selectAllSegments",
+			"keys": "shift+s"
+		},
+		{
+			"action": "toggleLoopOnlyCurrentSegment",
+			"keys": "l"
+		},
+		{
+			"action": "removeCurrentSegment",
+			"keys": "d"
+		},
+		{
+			"action": "togglePlayNoResetSpeed",
+			"keys": "space"
+		},
+		{
+			"action": "removeSelectedSegments",
+			"keys": "shift+d"
+		},
+		{
+			"action": "clearSegments",
+			"keys": "shift+backspace"
 		}
 	],
 	"storeProjectInWorkingDir": true,
