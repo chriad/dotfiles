@@ -7,8 +7,11 @@ alias la='ls -A'
 alias l=exa
 alias chriad--update-emacs='guix pull && guix package -u emacs'
 alias chriad--update-kitty='curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin'
-
-alias count-images="sqlite3 /home/chriad/digikam-db/digikam4.db 'SELECT COUNT(*) FROM Images WHERE album IS NOT NULL;'"
+alias chriad--count-koreader-unread="sqlite3 /home/chriad/koreader/settings/statistics.sqlite3 'SELECT COUNT(*) FROM book WHERE highlights IS NOT 0 AND notes IS NOT 0;'"
+# counters
+alias chriad--count-loaded-units="systemctl --legend=0 list-units|wc -l"
+alias chriad--count-images="sqlite3 /home/chriad/digikam-db/digikam4.db 'SELECT COUNT(*) FROM Images WHERE album IS NOT NULL;'"
+alias chriad--count-tasks="task count status:pending"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -35,8 +38,6 @@ alias fzf--XDG_DATA_DIRS="echo $XDG_DATA_DIRS | tr ':' '\n' |fzf"
 alias reload_custom_aliases=". ~/.bash_it/aliases/custom.aliases.bash"
 # only for `ubuntu` type wayland session
 # alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
-alias task--count="task count status:pending"
-alias gedit=gnome-text-editor
 
 # 1 letter
 alias n='nautilus . &'
