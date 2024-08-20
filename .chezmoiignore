@@ -5,3 +5,4 @@ crontab.backup
 gnome-settingsignored/@Favorites.xspf
 ignored/emacs-custom.el
 ignored/losslesscut/config.json
+ignored/vocabulary-map.org
