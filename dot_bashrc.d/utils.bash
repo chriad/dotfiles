@@ -31,3 +31,8 @@ mkcdir ()
 chriad--add-bak-ext() {
     fd -e "${1}" -x cp "{}" "{}".bak
 }
+
+chriad--motd() {
+    # on a LBS (linux base system) compliant system
+    whatis true | cut -d- -f2 | cut -c2-
+}
