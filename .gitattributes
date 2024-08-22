@@ -1,2 +1,3 @@
 ignored/@Favorites.xspf filter=git-crypt diff=git-crypt
 ignored/vocabulary-map.org filter=git-crypt diff=git-crypt
+ignored/emacs/bookmarks filter=git-crypt diff=git-crypt
