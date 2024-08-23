@@ -120,8 +120,9 @@
 
 
 (spacemacs/declare-prefix "on" "navigate")
-(spacemacs/set-leader-keys "onb" 'select-frame-by-name)
+(spacemacs/set-leader-keys "onf" 'select-frame-by-name)
 (spacemacs/set-leader-keys "ons" 'sway-focus-container)
+(spacemacs/set-leader-keys "onb" 'spacemacs/switch-to-buffer-other-frame)
 
 
 (spacemacs/declare-prefix "of" "files")

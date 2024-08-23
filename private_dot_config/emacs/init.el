@@ -156,8 +156,10 @@ This function should only modify configuration layer settings."
                                       org-tidy
                                       ;; mic-paren ;; customize paren-face-match
                                       ;; helm-dired-history
-                                      ;; geiser ;; installed with guix
-                                      ;; geiser-guile ;; installed with guix
+                                      ;; (guix-emacs :location "~/.guix-profile/share/emacs/site-lisp/guix-emacs.el")
+                                      guix ;; install with guix
+                                      geiser ;; installed with guix
+                                      geiser-guile ;; installed with guix
                                       magit-popup ;; guix
                                       (director :location (recipe ;; automate is king
                                                            :fetcher github
@@ -169,8 +171,6 @@ This function should only modify configuration layer settings."
                                       (highlight-sexp :location (recipe
                                                                  :fetcher github
                                                                  :repo "daimrod/highlight-sexp"))
-                                      ;; (guix-emacs :location "~/.guix-profile/share/emacs/site-lisp/guix-emacs.el")
-                                      guix
                                       ;; m-buffer
                                       ;; shackle
                                       ;; sway
@@ -248,12 +248,14 @@ This function should only modify configuration layer settings."
                                       )
 
    ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '()
+   dotspacemacs-frozen-packages '(
+                                  guix
+                                  geiser
+                                  geiser-guile
+                                  )
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(
-                                    ;; narrow-indirect
-                                    )
+   dotspacemacs-excluded-packages '()
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -781,6 +783,32 @@ before packages are loaded."
   (with-eval-after-load 'info
     (define-key Info-mode-map "n" 'Info-next)
 
+;; integrate bookmark+ with helm-bookmarks
+    (defun helm-bookmark-dired-setup-alist ()
+  "Specialized filter function for Org file bookmarks."
+  (helm-bookmark-filter-setup-alist 'bmkp-dired-bookmark-p))
+
+    (defun helm-source-bookmark-dired-builder ()
+      (helm-bookmark-build-source "Dired" #'helm-bookmark-dired-setup-alist))
+
+    (defvar helm-source-bookmark-dired (helm-source-bookmark-dired-builder))
+
+;; TODO el-patch
+;; (defun helm-bookmark-uncategorized-bookmark-p (bookmark)
+;;   "Return non--nil if BOOKMARK match no known category."
+;;   (cl-loop for pred in '(helm-bookmark-org-file-p
+;;                          helm-bookmark-addressbook-p
+;;                          helm-bookmark-gnus-bookmark-p
+;;                          helm-bookmark-mu4e-bookmark-p
+;;                          helm-bookmark-w3m-bookmark-p
+;;                          helm-bookmark-woman-man-bookmark-p
+;;                          helm-bookmark-info-bookmark-p
+;;                          helm-bookmark-image-bookmark-p
+;;                          helm-bookmark-file-p
+;;                          helm-bookmark-helm-find-files-p
+;;                          helm-bookmark-addressbook-p)
+;;            never (funcall pred bookmark)))
+
 
 
     ;; not customizable
@@ -870,6 +898,16 @@ before packages are loaded."
         (pp (bmkp-types-alist)))
       (defun helm-documentation-f ()
         (call-interactively 'helm-documentation)))
+
+
+    (defun chriad/bmkp-help ()
+        (interactive)
+        (message "Getting Bookmark+ doc from file commentary...")
+        (finder-commentary "bookmark+-doc")
+        (when (condition-case nil (require 'linkd nil t) (error nil)) (linkd-mode 1))
+        (when (condition-case nil (require 'fit-frame nil t) (error nil))
+          (fit-frame)))
+
 
     (require 'org-ref)
     (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))
@@ -1269,6 +1307,5 @@ before packages are loaded."
                                (push '(?{ . ("{{" . "}}")) evil-surround-pairs-alist)))
 
     (setq custom-file "/home/chriad/.config/emacs/emacs-custom.el")
-    ;; (setq custom-file "/home/chriad/.local/share/chezmoi/private_dot_config/emacs/dot_emacs-custom.el")
     (load custom-file)))
 
