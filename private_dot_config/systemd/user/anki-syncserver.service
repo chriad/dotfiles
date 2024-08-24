@@ -4,21 +4,23 @@ Description=Anki sync server
 # StartLimitIntervalSec=60
 # StartLimitBurst=4
 ConditionPathExists=/home/chriad/.syncserver
+After=network.target
+After=flatpak-system-helper.service
 
 [Service]
 # ExecStart=flatpak run --branch=stable --arch=x86_64 --command=anki --file-forwarding net.ankiweb.Anki --syncserver
-Type=oneshot
+Type=exec
 ExecStart=systemd-cat -t anki-syncserver /var/lib/flatpak/exports/bin/net.ankiweb.Anki --syncserver
 ## to not require full path name, use flatpak-system-helper.service
 # RemainAfterExit=yes
-Restart=on-failure
-RestartSec=1
+Restart=no
 # SuccessExitStatus=3 4
 # RestartForceExitStatus=3 4
-# ExecReload=/bin/kill -SIGHUP $MAINPID
-# ExecStop=systemctl --user kill anki-syncserver.service
-ExecStop=/bin/kill -SIGHUP $MAINPID
-
+# ExecStop=systemctl --user kill anki-syncserver.service # ctrl+c is SIGINT and exits the syncserver with 0
+# ExecStop=/bin/kill -SIGINT $MAINPID
+RemainAfterExit=no
+ExitType=main
+# TODO: ExecCondition -> only start if sync client available, e.g. adb tcpip
 
 # Hardening
 # SystemCallArchitectures=native

@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: el-patch-defun
+# key: el-patch-defun
+# --
+
+(el-patch-feature $1)
+(with-eval-after-load '$1
+  $0
+)

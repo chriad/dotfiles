@@ -1,4 +1,4 @@
-;; -*- mode: emacs-lisp; lexical-binding: t; eval: (semantic-mode); -*-
+;; -*- mode: emacs-lisp; lexical-binding: t; -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -779,35 +779,23 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
-  ;; does not work
-  (with-eval-after-load 'info
-    (define-key Info-mode-map "n" 'Info-next)
-
-;; integrate bookmark+ with helm-bookmarks
+  (with-eval-after-load 'helm-bookmark
+    ;; integrate bookmark+ with helm-bookmarks
     (defun helm-bookmark-dired-setup-alist ()
-  "Specialized filter function for Org file bookmarks."
-  (helm-bookmark-filter-setup-alist 'bmkp-dired-bookmark-p))
+      "Specialized filter function for Org file bookmarks."
+      (helm-bookmark-filter-setup-alist 'bmkp-dired-bookmark-p))
 
     (defun helm-source-bookmark-dired-builder ()
       (helm-bookmark-build-source "Dired" #'helm-bookmark-dired-setup-alist))
 
     (defvar helm-source-bookmark-dired (helm-source-bookmark-dired-builder))
 
-;; TODO el-patch
-;; (defun helm-bookmark-uncategorized-bookmark-p (bookmark)
-;;   "Return non--nil if BOOKMARK match no known category."
-;;   (cl-loop for pred in '(helm-bookmark-org-file-p
-;;                          helm-bookmark-addressbook-p
-;;                          helm-bookmark-gnus-bookmark-p
-;;                          helm-bookmark-mu4e-bookmark-p
-;;                          helm-bookmark-w3m-bookmark-p
-;;                          helm-bookmark-woman-man-bookmark-p
-;;                          helm-bookmark-info-bookmark-p
-;;                          helm-bookmark-image-bookmark-p
-;;                          helm-bookmark-file-p
-;;                          helm-bookmark-helm-find-files-p
-;;                          helm-bookmark-addressbook-p)
-;;            never (funcall pred bookmark)))
+    )
+
+  ;; does not work
+  (with-eval-after-load 'info
+    (define-key Info-mode-map "n" 'Info-next)
+
 
 
 
@@ -901,12 +889,12 @@ before packages are loaded."
 
 
     (defun chriad/bmkp-help ()
-        (interactive)
-        (message "Getting Bookmark+ doc from file commentary...")
-        (finder-commentary "bookmark+-doc")
-        (when (condition-case nil (require 'linkd nil t) (error nil)) (linkd-mode 1))
-        (when (condition-case nil (require 'fit-frame nil t) (error nil))
-          (fit-frame)))
+      (interactive)
+      (message "Getting Bookmark+ doc from file commentary...")
+      (finder-commentary "bookmark+-doc")
+      (when (condition-case nil (require 'linkd nil t) (error nil)) (linkd-mode 1))
+      (when (condition-case nil (require 'fit-frame nil t) (error nil))
+        (fit-frame)))
 
 
     (require 'org-ref)
@@ -956,14 +944,8 @@ before packages are loaded."
     ;; (load (expand-file-name "~/quicklisp/slime-helper.el"))
     ;; required so that yasnippets are loaded
 
-    ;; (load "/usr/share/emacs/site-lisp/elpa-src/yasnippet-snippets-0.20/yasnippet-snippets.el")
-
-    (require 'common-lisp-snippets)
-
-    (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
+    (dolist (hook '(ielm-mode-hook))
       (add-hook hook #'elisp-def-mode))
-
-
 
     (push 'elisp-def spacemacs-jump-handlers-emacs-lisp-mode)
 
@@ -1308,4 +1290,3 @@ before packages are loaded."
 
     (setq custom-file "/home/chriad/.config/emacs/emacs-custom.el")
     (load custom-file)))
-

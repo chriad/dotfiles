@@ -9,6 +9,7 @@
  '(bibtex-completion-pdf-field "file")
  '(blink-matching-delay 2)
  '(bmkp-last-as-first-bookmark-file nil)
+ '(bmkp-propertize-bookmark-names-flag t)
  '(bookmark-default-file "/home/chriad/.local/share/chezmoi/ignored/emacs/bookmarks")
  '(bookmark-save-flag 1)
  '(clhs-root "file:/media/chriad/ext4/SOFTWARE/HyperSpec/")
@@ -37,7 +38,7 @@
  '(eaf-org-override-pdf-links-store t)
  '(eaf-pdf-extension-list '("pdf" "xps" "oxps" "cbz" "fb2" "fbz"))
  '(emacs-lisp-mode-hook
-   '(eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode eldoc-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode))
+   '(eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode spacemacs//init-company-emacs-lisp-mode company-mode elisp-def-mode spacemacs//define-elisp-comment-text-object))
  '(enable-local-variables t)
  '(epa-file-cache-passphrase-for-symmetric-encryption t)
  '(epa-file-inhibit-auto-save nil)
@@ -83,15 +84,18 @@
    '(("Jump to bookmark" . helm-bookmark-jump)
      ("Jump to BM other window" . helm-bookmark-jump-other-window)
      ("Jump to BM other frame" . helm-bookmark-jump-other-frame)
-     ("Bookmark edit annotation" . bookmark-edit-annotation)
+     ("!! destructive !! Bookmark edit annotation" . bookmark-edit-annotation)
      ("Bookmark show annotation" . bookmark-show-annotation)
-     ("Delete bookmark(s)" . helm-delete-marked-bookmarks)
-     ("Edit Bookmark" . helm-bookmark-edit-bookmark)
-     ("Describe Bookmark" . bmkp-describe-bookmark)
-     ("Rename bookmark" . helm-bookmark-rename)
+     ("!! destructive !! Delete bookmark(s)" . helm-delete-marked-bookmarks)
+     ("!! destructive !! Edit Bookmark" . helm-bookmark-edit-bookmark)
+     ("bookmark+: Describe Bookmark" . bmkp-describe-bookmark)
+     ("!! destructive !! Rename bookmark" . helm-bookmark-rename)
      ("Relocate bookmark" . bookmark-relocate)
-     ("bmkp-find-file" . bmkp-find-file)
-     ("Add tag with bmkp-add-tags" . ignore)))
+     ("bookmark+: Find file" . bmkp-find-file)
+     ("bookmark+: Add tag" . ignore)
+     ("bookmark+: Edit bookmark " . bmkp-edit-bookmark-record)))
+ '(helm-yas-display-key-on-candidate t)
+ '(helm-yas-space-match-any-greedy t)
  '(hl-sexp-background-colors '("white smoke" "white"))
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
@@ -244,7 +248,12 @@
  '(racket-documentation-search-location 'local)
  '(reb-re-syntax 'rx)
  '(safe-local-variable-values
-   '((eval face-remap-add-relative 'org-link
+   '((org-blank-before-new-entry
+      (heading . auto)
+      (plain-list-item . auto))
+     (org-list-description-max-indent . 5)
+     (org-list-two-spaces-after-bullet-regexp)
+     (eval face-remap-add-relative 'org-link
            '(:foreground "dark-green" :underline nil :slant oblique))
      (eval require 'org-starless)
      (eval spacemacs/toggle-line-numbers-on)
@@ -266,8 +275,10 @@
  '(wakatime-python-bin "python" t)
  '(warning-suppress-log-types '(((tar link)) (comp)))
  '(warning-suppress-types '((comp)))
+ '(yas-global-mode t)
  '(yas-snippet-dirs
-   '("/media/chriad/nebula/spacemacs-fork/private/snippets/" "/media/chriad/nebula/spacemacs-fork/layers/+completion/auto-completion/local/snippets" yasnippet-snippets-dir yasnippet-classic-snippets-dir)))
+   '("/home/chriad/.local/share/chezmoi/ignored/snippets/" "/media/chriad/nebula/spacemacs-fork/elpa/29.4/develop/common-lisp-snippets-20180226.1523/snippets" yasnippet-classic-snippets-dir yasnippet-snippets-dir))
+ '(yas-wrap-around-region t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
