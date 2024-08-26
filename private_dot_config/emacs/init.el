@@ -208,28 +208,25 @@ This function should only modify configuration layer settings."
                                        :location (recipe :fetcher git
                                                          :url "https://git.sr.ht/~l3kn/org-fc"
                                                          :files (:defaults "awk" "docs" "demo.org")))
-                                      orca
-                                      org-link-beautify
+                                      orca ;; TODO add to org-additional
+                                      org-link-beautify ;; TODO add to org-additional
                                       ;; buttons
-                                      good-scroll
                                       ctable
                                       deferred
                                       epc
-                                      orca
+                                      orca ;; org-capture convenience
                                       olivetti
                                       ;; (nov :location local)
-                                      (code-spelunk :location local)
-                                      (screenshot :location local)
+                                      ;; (code-spelunk :location local)
+                                      ;; (screenshot :location local)
                                       ;; helm-posframe
                                       ;; which-key-posframe
-                                      on-screen
                                       highlight-function-calls
                                       sicp
                                       pdfgrep
                                       auto-dim-other-buffers
                                       edebug-x ;; edebug e*x*tensions
                                       edebug-inline-result
-                                      helm-file-preview
                                       org-ml
                                       ripgrep
                                       ;; beacon
@@ -239,7 +236,11 @@ This function should only modify configuration layer settings."
                                       (evil-motion-trainer :location (recipe :fetcher github :repo "martinbaillie/evil-motion-trainer"))
                                       keyfreq
                                       epkg
+
+                                      good-scroll
+                                      on-screen
                                       scrollkeeper
+
                                       org-web-tools
                                       ;; org-noter
                                       ;; org-noter-pdftools

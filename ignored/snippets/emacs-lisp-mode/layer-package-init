@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+#name : layer-package-init
+#key : layer-package-init
+#contributor : chriad
+# --
+(defun ${1}/init-${2} ()
+  (use-package ${2}
+    :defer t
+    ${0}))

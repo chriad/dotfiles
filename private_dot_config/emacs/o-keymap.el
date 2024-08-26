@@ -6,7 +6,6 @@
 ;; (global-set-key (kbd "s-[") 'tab-previous)
 ;; (global-set-key (kbd "s-c") 'helm-lisp-completion-at-point)
 ;; (global-set-key (kbd "s-j") 'bookmark-jump)
-;; (global-set-key (kbd "s-s") 'select-frame-by-name)
 ;; (keymap-global-set "s-y" 'spacemacs/helm-yas)
 
 ;; -----------------
@@ -28,7 +27,6 @@
 (spacemacs/declare-prefix "ox" "sometimes useful")
 (spacemacs/set-leader-keys "oxp" 'spacemacs/paradox-list-packages)
 (spacemacs/set-leader-keys "oxe" 'epkg-list-packages)
-(spacemacs/set-leader-keys "oxt" 'edebug-eval-top-level-form)
 
 (spacemacs/declare-prefix "od" "describe")
 (spacemacs/set-leader-keys "odb" 'describe-bindings)
@@ -61,7 +59,11 @@
 (spacemacs/set-leader-keys "ohc" 'helm-lisp-completion-at-point)
 (spacemacs/set-leader-keys "oho" 'helm-org-in-buffer-headings)
 (spacemacs/set-leader-keys "oht" 'helm-org-capture-templates)
-(spacemacs/set-leader-keys "ohy" 'spacemacs/helm-yas)
+(spacemacs/declare-prefix "ohy" "helm-yas")
+(spacemacs/set-leader-keys "ohyy" 'spacemacs/helm-yas)
+(spacemacs/set-leader-keys "ohyr" 'helm-yas-create-snippet-on-region)
+
+
 (spacemacs/declare-prefix "ohi" "helm info")
 (spacemacs/set-leader-keys "ohii" 'helm-info)
 (spacemacs/set-leader-keys "ohiu" 'helm-info-use-package)
@@ -71,8 +73,12 @@
 (spacemacs/set-leader-keys "ohiel" 'helm-info-elisp)
 (spacemacs/set-leader-keys "ohiec" 'helm-info-cl)
 
+;; games
 (spacemacs/declare-prefix "op" "play")
-;; (spacemacs/set-leader-keys "opd" 'doctor)
+(spacemacs/declare-prefix "opa" "achievements")
+(spacemacs/set-leader-keys "opal" 'achievements-list-achievements)
+
+
 (spacemacs/set-leader-keys "opf" 'fortune-from-region)
 ;; (spacemacs/set-leader-keys "opc" 'chronometer)
 (spacemacs/set-leader-keys "opc" 'world-clock)
@@ -142,11 +148,16 @@
 
 ;; ---------------
 
+;;; eww-mode
 (spacemacs/declare-prefix-for-mode 'eww-mode "mo" "custom")
 (spacemacs/set-leader-keys-for-major-mode 'eww-mode "ol" 'ace-link-eww)
 
+;;; emacs-lisp-mode
 (spacemacs/declare-prefix-for-mode 'emacs-lisp-mode "mo" "custom")
 (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "ot" 'tiny-expand)
+(spacemacs/declare-prefix-for-mode 'emacs-lisp-mode "moe" "edebug")
+(spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "oei" 'edebug-x-show-instrumented)
+(spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "oee" 'edebug-eval-top-level-form)
 
 ;; define-key
 (define-key lisp-interaction-mode-map (kbd "C-e") 'pp-eval-last-sexp)

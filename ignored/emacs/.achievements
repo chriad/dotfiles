@@ -24,11 +24,7 @@
                         nil nil 5 0 nil)
    #s(emacs-achievement "First things first" "You learned new things by using `help-for-help'." t nil nil 5 0 nil)
    #s(emacs-achievement "Show me the way" "You learned new things by using `help-with-tutorial'." t nil nil 5 0 nil)
-   #s(emacs-achievement "RTFM" "You learned new things by using `info-emacs-manual'."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run 'info-emacs-manual)))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "RTFM" "You learned new things by using `info-emacs-manual'." t nil nil 5 0 nil)
    #s(emacs-achievement "Log Auditor" "You learned new things by using `view-echo-area-messages'." t nil nil 5 0 nil)
    #s(emacs-achievement "FAQ" "You learned new things by using `view-emacs-FAQ'."
                         (lambda nil
@@ -492,27 +488,7 @@
                            (achievements-command-was-run 'proced)))
                         nil nil 5 0 nil)
    #s(emacs-achievement "Archer" "You use the arrow keys a lot." t nil nil 5 0 nil)
-   #s(emacs-achievement "William Tell" "You use the arrow keys for almost everything."
-                        (lambda nil
-                          (and
-                           (let
-                               ((in-a-row 0)
-                                (success nil))
-                             (mapc
-                              (lambda
-                                (e)
-                                (if
-                                    (memq e
-                                          '(right left up down))
-                                    (if
-                                        (>=
-                                         (incf in-a-row)
-                                         20)
-                                        (setq success t))
-                                  (setq in-a-row 0)))
-                              (recent-keys))
-                             success)))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "William Tell" "You use the arrow keys for almost everything." t nil nil 5 0 nil)
    #s(emacs-achievement "No arrows" "You know the replacements for the arrow keys."
                         (lambda nil
                           (and nil))
@@ -613,18 +589,5 @@
                             '((smerge-keep-all smerge-keep-base smerge-keep-current smerge-keep-mine smerge-keep-other)))))
                         nil nil 5 0 nil)
    #s(emacs-achievement "Surfs up" "You use Emacs for surfing the web" t nil nil 5 0 nil)
-   #s(emacs-achievement "Polyglot" "You have used over 20 major-modes at once."
-                        (lambda nil
-                          (and
-                           (<= 20
-                               (length
-                                (let
-                                    ((modes nil))
-                                  (cl-loop for buf in
-                                           (buffer-list)
-                                           do
-                                           (add-to-list 'modes
-                                                        (buffer-local-value 'major-mode buf)))
-                                  modes)))))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "Polyglot" "You have used over 20 major-modes at once." t nil nil 5 0 nil)
    #s(emacs-achievement "Org-anizer" "You have used `org-mode'." t nil nil 5 0 org-achievements))
