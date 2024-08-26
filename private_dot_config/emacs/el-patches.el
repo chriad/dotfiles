@@ -313,3 +313,10 @@ Return the data of the corresponding PNG image."
                            helm-bookmark-addressbook-p)
              never (funcall pred bookmark)))
   )
+
+
+(el-patch-feature achievements-functions)
+(with-eval-after-load 'achievements-functions
+    (el-patch-defconst achievements-file
+      (expand-file-name ".achievements" "/home/chriad/.local/share/chezmoi/ignored/emacs/")
+      "File to store the achievements in."))
