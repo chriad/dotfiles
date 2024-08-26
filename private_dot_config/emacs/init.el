@@ -131,6 +131,7 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      zones ;; TODO: try multiple narrowings
                                       ;; (narrow-indirect :fetcher wiki) ;; for bookmark+
                                       (narrow-indirect :fetcher wiki :upgrade nil) ;; for bookmark+
                                       (linkd :fetcher wiki :upgrade nil) ;; for bookmark+
@@ -788,9 +789,12 @@ before packages are loaded."
     (defun helm-source-bookmark-dired-builder ()
       (helm-bookmark-build-source "Dired" #'helm-bookmark-dired-setup-alist))
 
-    (defvar helm-source-bookmark-dired (helm-source-bookmark-dired-builder))
+    (defvar helm-source-bookmark-dired (helm-source-bookmark-dired-builder)))
 
-    )
+
+
+  ;; (defun save-emacs-uptime (ignore))
+  ;; (add-hook 'kill-emacs-hook #'save-emacs-uptime)
 
   ;; does not work
   (with-eval-after-load 'info

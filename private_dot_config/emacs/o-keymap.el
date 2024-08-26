@@ -16,6 +16,9 @@
 (spacemacs/set-leader-keys "oa" 'projectile-add-known-project)
 
 
+(spacemacs/declare-prefix "ob" "bookmarks")
+(spacemacs/set-leader-keys "obt" 'bmkp-jump-to-type-other-window)
+
 (spacemacs/declare-prefix "ow" "which key")
 (spacemacs/set-leader-keys "owf" 'which-key-show-full-major-mode)
 (spacemacs/set-leader-keys "owj" 'which-key-show-major-mode)
