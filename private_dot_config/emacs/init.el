@@ -131,6 +131,7 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      org-roam-ui
                                       zones ;; TODO: try multiple narrowings
                                       ;; (narrow-indirect :fetcher wiki) ;; for bookmark+
                                       (narrow-indirect :fetcher wiki :upgrade nil) ;; for bookmark+
@@ -969,8 +970,8 @@ before packages are loaded."
       (setq org-roam-node-display-template "${title:*} ${tags:15}")
       (setq org-roam-completion-everywhere t)
       (setq org-id-link-to-org-use-id t)
-
       (org-roam-db-autosync-mode 1)
+
       (cl-defmethod org-roam-node-uuid ((node org-roam-node))
         "Return the uuid of NODE."
         (uuidgen-1))
@@ -1014,7 +1015,7 @@ before packages are loaded."
       ("C-c n i" . org-roam-node-insert)
       ("C-c n d" . org-roam-dailies-capture-today)
       ("C-c n g" . org-roam-show-graph)
-      ("C-c n r" . org-roam-refile)
+      ("C-c n u" . org-roam-ui-open) ;;  http://localhost:35901/
       ("C-c n a t" . org-roam-tag-add)
       ("C-c n a a" . org-roam-alias-add)
       ("C-c n a r" . org-roam-ref-add)
@@ -1026,26 +1027,12 @@ before packages are loaded."
       ("C-c n R" . org-roam-node-random)
       ("C-c n e" . org-roam-extract-subtree) ;; notes shouldn't get too long. Better many files than one file with many notes
       ("C-c n o" . org-id-get-create)
+      ("C-c n o" . org-id-get-create)
       )
 
-    (require 'org-roam-protocol)
+    ;; (require 'org-roam-protocol)
 
-    (require 'dap-python)
-    ;; (use-package org-roam-server
-    ;;   :ensure t
-    ;;   :config
-    ;;   (setq org-roam-server-host "127.0.0.1"
-    ;;         org-roam-server-port 8080
-    ;;         org-roam-server-authenticate nil
-    ;;         org-roam-server-export-inline-images t
-    ;;         org-roam-server-serve-files nil
-    ;;         org-roam-server-served-file-extensions '("pdf" "mp4" "ogv")
-    ;;         org-roam-server-network-poll t
-    ;;         org-roam-server-network-arrows nil
-    ;;         org-roam-server-network-label-truncate t
-    ;;         org-roam-server-network-label-truncate-length 60
-    ;;         org-roam-server-network-label-wrap-length 20))
-
+    ;; (require 'dap-python)
 
     (defun org-capture-mode-hook--org-fc-cloze-code-hook ()
       (if (equal (org-capture-get :key) "lcs")
@@ -1115,15 +1102,6 @@ before packages are loaded."
 
       )
 
-    ;; (require 'mplayer-mode)
-
-
-;;;; org-roam-in-buffer-headings
-
-    ;; (setq deft-directory "~/roam/")
-
-
-
 
     ;; (global-evil-motion-trainer-mode 1)
     ;; (setq evil-motion-trainer-threshold 6)
@@ -1133,24 +1111,17 @@ before packages are loaded."
   ;;; initial states
 
     ;; working
-    (evil-set-initial-state 'paradox-menu-mode 'emacs)
     ;; not working
-    ;; (evil-set-initial-state 'Info-mode 'emacs)
-    ;; (evil-set-initial-state 'Info-edit-mode 'emacs)
+    (evil-set-initial-state 'Info-edit-mode 'emacs)
     ;; (evil-set-initial-state 'debugger-mode 'emacs)
     ;; (remove-hook 'paradox-menu-mode-hook 'evil-mode)
     ;; (remove-hook 'paradox-mode-hook 'evil-mode)
     ;; (remove-hook 'package-mode-hook 'evil-mode)
     ;; (remove-hook 'package-menu-mode-hook 'evil-mode)
 
-    ;; (evil-set-initial-state 'backtrace-mode 'emacs)
     ;; (evil-set-initial-state 'org-capture-mode 'insert)
-    ;; (evil-set-initial-state 'sly-db-mode 'emacs)
 
     (add-hook 'org-mode-hook 'org-indent-mode)
-
-    (setq helm-file-preview-preview-only t)
-    (setq helm-file-preview-only-when-line-numbers t)
 
     ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/dired-plus/dired+.el")
     ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/pp-plus/pp+.el")
@@ -1192,7 +1163,7 @@ before packages are loaded."
     ;; (add-hook 'nov-mode-hook 'on-screen-mode)
     ;; (evil-set-initial-state 'nov-mode 'emacs)
 
-    (require 'window-purpose)
+    ;; (require 'window-purpose)
 
 
     ;; (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
@@ -1226,26 +1197,12 @@ before packages are loaded."
     (add-hook 'dired-mode-hook
               (lambda ()
                 (dired-hide-details-mode)))
-    (require 'orca)
+
+    ;; (require 'orca)
 
 
     (load "~/.config/emacs/capture.el")
     (load "~/.config/emacs/o-keymap.el")
-    ;; (load "/media/chriad/nebula/spacemacs-config-files/fork/eaf-config.el")
-
-
-
-;;;; org-roam-capture-templates
-
-
-    ;; (setq org-agenda-files (apply 'append
-    ;;                               (mapcar
-    ;;                                (lambda (directory)
-    ;;                                  (directory-files-recursively
-    ;;                                   directory org-agenda-file-regexp))
-    ;;                                '("/home/chriad/roam"))))
-
-
 
     ;; (setq org-refile-targets '((nil :maxlevel . 3)
     ;;                            (org-agenda-files :maxlevel . 3)))
