@@ -28,42 +28,39 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
     ;;       (fortune-compile file)))
     ))
 
-;;; org-capture
-
-;; capture directly without goin through dispatcher
-(define-key global-map (kbd "C-c x")
-            (lambda () (interactive) (org-roam-capture nil "t")))
-
-(defun org-capture-at-point ()
-  "Insert an org capture template at point."
-  (interactive)
-  (org-capture 0))
-
+;; TODO does not work
 ;; helper for "h" capture template
-(defun my/helm-in-org-buffer (filename &optional preselect)
+(defun chriad/helm-in-org-buffer (filename &optional preselect)
   "Display and filter headlines in an org file with `helm'.
 FILENAME is the org file to filter PRESELECT is the default entry"
   (interactive)
+  (require 'helm-org)
   (helm :sources (helm-org-build-sources
                   (list filename))
-        :candidate-number-limit 99999
+        :candidate-number-limit 100
         :truncate-lines helm-org-truncate-lines
         :preselect preselect
         :buffer "*helm org in buffers*"))
 
 ;; helper for "h" capture template
-(defun my/org-roam-find-file-name ()
+(defun chriad/org-roam-find-file-name ()
   "Find and return the path to an org-roam file
 with the `org-roam-find-file' interface"
   (interactive)
   (save-window-excursion (org-roam-node-find) buffer-file-name))
 
-;; TODO capture-sexp-as-cloze
+;; TODO use this
+;; (setq org-capture-templates-contexts
+;;       '(("c" ((in-mode . "message-mode")))
+;;           ("d" (my-context-function
+;;                   (in-mode . "org-mode")))))
+
+
 (setq org-capture-templates
       '(
         ;; go directly to a note heading in roam
         ("h" "roam headline" entry
-         (function (lambda () (my/helm-in-org-buffer (my/org-roam-find-file-name))))
+         (function (lambda () (chriad/helm-in-org-buffer (chriad/org-roam-find-file-name))))
          "* %?\n%a"
          :kill-buffer t :unnarrowed t)
 
