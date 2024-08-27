@@ -1,12 +1,9 @@
 ;;; capture.el --- My personal capture templates.
 
-;; (use-package org-capture
-;;   :after org
-;;   :hook
-;;   (org-capture-mode . evil-insert-state))
-
 (defun chriad/fortune-append (&optional interactive file)
-  "Append STRING to the fortune FILE.
+  "Helper function for capture template `f'
+
+Append STRING to the fortune FILE.
 
 If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
   (require 'fortune)
@@ -85,6 +82,7 @@ with the `org-roam-find-file' interface"
         ("t" "Todo" entry (file+headline "~/roam/inbox.org" "Tasks")
          "* TODO %?\n  %i\n  %a")
 
+        ;; TODO add visited file %f for author
         ("f" "fortune from url" plain
          #'chriad/fortune-append
          "%i\n\n          -- %:link%(eval fortune-end-sep)" :immediate-finish t)

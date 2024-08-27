@@ -53,8 +53,9 @@
  '(evil-org-use-additional-insert t)
  '(evil-undo-system 'undo-tree)
  '(evil-want-Y-yank-to-eol nil)
- '(fortune-dir "~/.config/fortune")
- '(fortune-file "~/.config/fortune/fortunes")
+ '(fortune-dir "/home/chriad/.local/share/chezmoi/ignored/emacs/fortune")
+ '(fortune-file
+   "/home/chriad/.local/share/chezmoi/ignored/emacs/fortune/fortunes")
  '(gist-ask-for-description t)
  '(gist-ask-for-filename t)
  '(global-semantic-decoration-mode nil)
