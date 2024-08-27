@@ -295,23 +295,26 @@ Return the data of the corresponding PNG image."
               :description (concat "Search: " occur-search-string)))))))
 
 
-(el-patch-feature helm-bookmark)
-(with-eval-after-load 'helm-bookmark
-  (el-patch-defun helm-bookmark-uncategorized-bookmark-p (bookmark)
-    "Return non--nil if BOOKMARK match no known category."
-    (cl-loop for pred in '(bmkp-dired-bookmark-p
-                           helm-bookmark-org-file-p
-                           helm-bookmark-addressbook-p
-                           helm-bookmark-gnus-bookmark-p
-                           helm-bookmark-mu4e-bookmark-p
-                           helm-bookmark-w3m-bookmark-p
-                           helm-bookmark-woman-man-bookmark-p
-                           helm-bookmark-info-bookmark-p
-                           helm-bookmark-image-bookmark-p
-                           helm-bookmark-file-p
-                           helm-bookmark-helm-find-files-p
-                           helm-bookmark-addressbook-p)
-             never (funcall pred bookmark)))
+(el-patch-feature achievements-functions)
+(with-eval-after-load 'achievements-functions
+    (el-patch-defun achievements-earned-message (achievement)
+      "Display the message when an achievement is earned."
+      (message "ACHIEVEMENT UNLOCKED: You've earned the `%s' achievement!"
+               (emacs-achievement-name achievement))
+      (require 'notifications)
+      (notifications-notify :title (format "ACHIEVEMENT UNLOCKED: You've earned the `%s' achievement!"
+                            (emacs-achievement-name achievement)
+                            :body (format "You've earned the `%s' achievement! [%s]"
+                                          (emacs-achievement-name achievement)
+                                          (emacs-achievement-description achievement))))
+      (with-current-buffer (get-buffer-create "*achievements-log*")
+        (goto-char (point-min))
+        (when (> (buffer-size) 0)
+          (insert "\n")
+          (goto-char (point-min)))
+        (insert (format "You've earned the `%s' achievement! [%s]"
+                        (emacs-achievement-name achievement)
+                        (emacs-achievement-description achievement)))))
   )
 
 

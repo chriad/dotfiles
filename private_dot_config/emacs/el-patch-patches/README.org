@@ -1,0 +1,4 @@
+use case: you are on a function in a lib that you want to patch.
+
+
+el-patch-edit-mode

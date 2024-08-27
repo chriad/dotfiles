@@ -932,7 +932,7 @@ before packages are loaded."
 
 
     (load "~/.config/emacs/el-patches.el")
-
+    (add-to-list 'load-path "~/.config/emacs/el-patch-patches")
 
     (setq pylookup-html-locations '("https://docs.python.org/3"))
     ;; for pylookup
