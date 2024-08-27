@@ -155,7 +155,6 @@ This function should only modify configuration layer settings."
                                       psession ;; for helm-locate-library
                                       tldr
                                       el-patch ;; I like this
-                                      org-tidy
                                       ;; mic-paren ;; customize paren-face-match
                                       ;; helm-dired-history
                                       ;; (guix-emacs :location "~/.guix-profile/share/emacs/site-lisp/guix-emacs.el")
@@ -175,12 +174,9 @@ This function should only modify configuration layer settings."
                                                                  :repo "daimrod/highlight-sexp"))
                                       ;; m-buffer
                                       ;; shackle
-                                      ;; sway
                                       minions ;; minions-minor-mode-menu
                                       ;; dired-git-info ;; disable for debug
                                       ;; camcorder
-                                      org-gtd
-                                      ;; org-edna
                                       run-command
                                       symex
                                       ;; niceify-info ;; breaks helm-info
@@ -189,10 +185,22 @@ This function should only modify configuration layer settings."
                                       no-littering ;; useful
                                       ;; ascii-table
                                       clhs
-                                      org-roam
                                       evil-lispy
+                                      ;;; TODO move to org-additional
+                                      org-roam
                                       org-mru-clock
                                       org-page
+                                      org-gtd
+                                      ;; org-edna
+                                      orca
+                                      org-link-beautify
+                                      org-tidy
+                                      org-ml
+                                      org-web-tools
+                                      ;; org-noter
+                                      ;; org-noter-pdftools
+                                      org-pdftools ;; important
+
                                       lisp-extra-font-lock
                                       highlight-indent-guides
                                       elisp-def
@@ -208,8 +216,6 @@ This function should only modify configuration layer settings."
                                        :location (recipe :fetcher git
                                                          :url "https://git.sr.ht/~l3kn/org-fc"
                                                          :files (:defaults "awk" "docs" "demo.org")))
-                                      orca ;; TODO add to org-additional
-                                      org-link-beautify ;; TODO add to org-additional
                                       ;; buttons
                                       ctable
                                       deferred
@@ -227,7 +233,6 @@ This function should only modify configuration layer settings."
                                       auto-dim-other-buffers
                                       edebug-x ;; edebug e*x*tensions
                                       edebug-inline-result
-                                      org-ml
                                       ripgrep
                                       ;; beacon
                                       xr ;;     Convert string regexp to rx notation
@@ -241,10 +246,6 @@ This function should only modify configuration layer settings."
                                       on-screen
                                       scrollkeeper
 
-                                      org-web-tools
-                                      ;; org-noter
-                                      ;; org-noter-pdftools
-                                      org-pdftools ;; important
                                       edit-indirect
                                       mpv
                                       yasnippet-classic-snippets
