@@ -217,11 +217,7 @@
                           (and
                            (achievements-command-was-run 'morse-region)))
                         nil nil 5 50 nil)
-   #s(emacs-achievement "Arithmetician" "You have enjoyed `mpuz'."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run 'mpuz)))
-                        nil nil 5 50 nil)
+   #s(emacs-achievement "Arithmetician" "You have enjoyed `mpuz'." t nil nil 5 50 nil)
    #s(emacs-achievement "Ping" "You have enjoyed `pong'."
                         (lambda nil
                           (and
