@@ -973,6 +973,10 @@ before packages are loaded."
       (setq org-roam-completion-everywhere t)
       (setq org-id-link-to-org-use-id t)
       (org-roam-db-autosync-mode 1)
+      ;; TODO
+      (defun chriad/org-roam-publishable-p ()
+          "The node is publishable if (1) at least on backlink exists and (2) all backlinks are also publishable"
+        (ignore))
 
       (cl-defmethod org-roam-node-uuid ((node org-roam-node))
         "Return the uuid of NODE."
@@ -1029,8 +1033,7 @@ before packages are loaded."
       ("C-c n R" . org-roam-node-random)
       ("C-c n e" . org-roam-extract-subtree) ;; notes shouldn't get too long. Better many files than one file with many notes
       ("C-c n o" . org-id-get-create)
-      ("C-c n o" . org-id-get-create)
-      )
+      ("C-c n o" . org-id-get-create))
 
     ;; (require 'org-roam-protocol)
 
