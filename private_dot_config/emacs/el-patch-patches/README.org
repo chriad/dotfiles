@@ -1,4 +1,11 @@
+Only use when advice won't do.
+
 use case: you are on a function in a lib that you want to patch.
 
+write a package el-patch-manager
 
-el-patch-edit-mode
+el-patch-manager-
+*patches-dir
+*path-this-form
+*edit-mode
+*find-patch

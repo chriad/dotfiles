@@ -1,8 +1,18 @@
 ;;; helpers
 (defun achievements-goto-definition ()
-    "Go to the source of this achievement"
+    "Go to the source of this achievement. Traverse achievements-list and extract source"
   (ignore))
 
+;; (defun achievements-disable ()
+;;   "Disable the current achievement.
+;; This expects to be called from `achievements-list-mode'."
+;;   (interactive)
+;;   (let* ((id (tabulated-list-get-id))
+;;          (achievement (achievements-get-achievements-by-name id)))
+;;     (when (and achievement
+;;                (y-or-n-p "Do you really want to disable this achievement? "))
+;;       (setf (emacs-achievement-predicate achievement) nil)
+;;       (revert-buffer))))
 
 
 ;;; patches
@@ -36,31 +46,14 @@
 
   ;; modify default keybindings
   (el-patch-defvar achievements-list-mode-map
-    (let ((map (make-sparse-keymap))
-          (menu-map (make-sparse-keymap "Achievements")))
+    (let ((map (make-sparse-keymap)))
       (set-keymap-parent map tabulated-list-mode-map)
       (define-key map "d" 'achievements-disable)
+      (define-key map "g" 'achievements-goto-definition)
+      (define-key map "r" 'revert-buffer) ;; recalculate list
       ;; (define-key map "t" 'achievements-toggle-show-disabled)
-      (define-key map [menu-bar achievements-menu] (cons "Achievements" menu-map))
-      (define-key menu-map [mq]
-                  '(menu-item "Quit" quit-window
-                              :help "Quit Viewing Achievements"))
-      (define-key menu-map [s1] '("--"))
-      (define-key menu-map [mn]
-                  '(menu-item "Next" next-line
-                              :help "Next Line"))
-      (define-key menu-map [mp]
-                  '(menu-item "Previous" previous-line
-                              :help "Previous Line"))
-      (define-key menu-map [s2] '("--"))
-      (define-key menu-map [md]
-                  '(menu-item "Disable" achievements-disable
-                              :help "Disable an achievement. It won't show up in this list, and you can never earn it"))
-      (define-key menu-map [s3] '("--"))
-      (define-key menu-map [mg]
-                  '(menu-item "Refresh list" revert-buffer
-                              :help "Recalculate this list"))
       map)
     "Local keymap for `achievements-list-mode' buffers.")
+
 
   )
