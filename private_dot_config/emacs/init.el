@@ -805,6 +805,8 @@ before packages are loaded."
 
 
 
+    ;; (require 'delight)
+    ;; (delight 'achievements-mode nil)
 
     ;; not customizable
     (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
@@ -975,7 +977,7 @@ before packages are loaded."
       (org-roam-db-autosync-mode 1)
       ;; TODO
       (defun chriad/org-roam-publishable-p ()
-          "The node is publishable if (1) at least on backlink exists and (2) all backlinks are also publishable"
+        "The node is publishable if (1) at least on backlink exists and (2) all backlinks are also publishable"
         (ignore))
 
       (cl-defmethod org-roam-node-uuid ((node org-roam-node))
@@ -1111,7 +1113,7 @@ before packages are loaded."
     ;; (global-evil-motion-trainer-mode 1)
     ;; (setq evil-motion-trainer-threshold 6)
     ;; (setq evil-motion-trainer-super-annoying-mode t)
-    ;; (emt-add-suggestion 'evil-next-line 'evil-avy-goto-char-timer)
+    ;; (emt-add-suggestion 'evil-next-line 'evil-avy-goto-char-timer) ;;emt= evil-motion-trainer
 
   ;;; initial states
 
@@ -1178,8 +1180,9 @@ before packages are loaded."
     ;; (setq ranger-cleanup-on-disable t)
     ;; (setq ranger-cleanup-eagerly t)
 
-    (set-face-attribute 'default nil :family "Source Code Pro")
-    (set-face-attribute 'default nil :height 125)
+
+    ;; (set-face-attribute 'default nil :family "Source Code Pro")
+    ;; (set-face-attribute 'default nil :height 125)
 
     ;; (use-package edebug-inline-result
     ;;   :ensure t
@@ -1187,12 +1190,6 @@ before packages are loaded."
     ;;   :custom (edebug-inline-result-backend 'posframe)
     ;;   :hook (edebug-mode . edebug-inline-result-mode))
 
-;;;; org-roam-capture-ref-templates
-
-    ;; (defun zp/org-protocol-insert-selection-dwim (selection)
-    ;;   "Insert SELECTION as an org blockquote."
-    ;;   (unless (string= selection "")
-    ;;     (format "#+begin_quote\n%s\n#+end_quote" selection)))
 
 
     (good-scroll-mode 1)
@@ -1209,10 +1206,8 @@ before packages are loaded."
     (load "~/.config/emacs/capture.el")
     (load "~/.config/emacs/o-keymap.el")
 
-    ;; (setq org-refile-targets '((nil :maxlevel . 3)
-    ;;                            (org-agenda-files :maxlevel . 3)))
-    (setq org-outline-path-complete-in-steps nil) ; Refile in a single go
-    (setq org-refile-use-outline-path t)          ; Show full paths for refiling
+    ;; (setq org-outline-path-complete-in-steps nil) ; Refile in a single go
+    ;; (setq org-refile-use-outline-path t)          ; Show full paths for refiling
 
 
     ;;(setq common-lisp-hyperspec-root "file:///usr/share/doc/hyperspec/")
@@ -1220,8 +1215,8 @@ before packages are loaded."
     ;;(setq common-lisp-hyperspec-symbol-table
     ;;      (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))
 
-    (org-clock-persistence-insinuate)
     (setq spaceline-org-clock-p t)
+    ;; TODO move to org-additional
     (setq org-mru-clock-keep-formatting t)
 
     (add-hook 'org-mode-hook
