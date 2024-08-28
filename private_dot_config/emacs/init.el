@@ -966,7 +966,11 @@ before packages are loaded."
     ;; (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hooks)
 
 
-    (add-hook 'pdf-annot-list-mode-hook 'pdf-annot-list-follow-minor-mode)
+    ;; (add-hook 'pdf-annot-list-mode-hook 'pdf-annot-list-follow-minor-mode)
+    ;; extends pdf layer declaration
+    (use-package pdf-tools
+      :defer t
+      :hook (pdf-annot-list-mode . pdf-annot-list-follow-minor-mode))
 
     (use-package org-roam
       :config
