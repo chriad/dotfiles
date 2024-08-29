@@ -275,6 +275,7 @@
  '(spaceline-helm-mode t)
  '(spaceline-info-mode t)
  '(symex-highlight-p t)
+ '(tags-apropos-additional-actions '(("Common Lisp" clhs-doc clhs-symbols)))
  '(tramp-adb-connect-if-not-connected t)
  '(treemacs-icons-dired-mode t)
  '(undo-tree-auto-save-history nil)

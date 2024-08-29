@@ -1236,11 +1236,27 @@ If it is a record then it need not belong to `bookmark-alist'."
     ;; (setq org-outline-path-complete-in-steps nil) ; Refile in a single go
     ;; (setq org-refile-use-outline-path t)          ; Show full paths for refiling
 
+    ;; from debian package hyperspec
+    ;; hyperspec.el that defines ``common-lisp-hyperspec-root'' is part of package slime
+    (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
+    (setq common-lisp-hyperspec-symbol-table
+          (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))
 
-    ;;(setq common-lisp-hyperspec-root "file:///usr/share/doc/hyperspec/")
+    ;; TODO browse-url does not work
     ;; http://dnaeon.github.io/starting-with-common-lisp-in-2020/
-    ;;(setq common-lisp-hyperspec-symbol-table
-    ;;      (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))
+    (use-package clhs
+      :defer t
+      :config
+      ;; (setq clhs-root (concat "file:" common-lisp-hyperspec-root))
+      (setq clhs-root (concat "file:/" "/usr/share/doc/hyperspec"))
+      (autoload 'clhs-doc "clhs" "Get doc on ANSI CL" t)
+      (define-key help-map "\C-l" 'clhs-doc)
+      (custom-set-variables
+       '(tags-apropos-additional-actions '(("Common Lisp" clhs-doc clhs-symbols)))))
+
+
+
+
 
     (setq spaceline-org-clock-p t)
     ;; TODO move to org-additional
