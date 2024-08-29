@@ -222,7 +222,7 @@ This function should only modify configuration layer settings."
                                       epc
                                       orca ;; org-capture convenience
                                       olivetti
-                                      ;; (nov :location local)
+                                      nov
                                       ;; (code-spelunk :location local)
                                       ;; (screenshot :location local)
                                       ;; helm-posframe
@@ -894,7 +894,28 @@ before packages are loaded."
         ;; TODO print in temporary, fileless buffer
         (pp (bmkp-types-alist)))
       (defun helm-documentation-f ()
-        (call-interactively 'helm-documentation)))
+        (call-interactively 'helm-documentation))
+
+      ;; register nov bookmarks
+
+      (defun bmkp-nov-bookmark-alist-only ()
+        "`bookmark-alist', filtered to retain only W3M bookmarks. A new list is returned (no side effects)."
+        (bookmark-maybe-load-default-file)
+        (bmkp-remove-if-not #'nov-bookmark-p bookmark-alist))
+
+
+      (defun nov-bookmark-p (bookmark)
+        "Return non-nil if BOOKMARK is a `browse-url' bookmark.
+BOOKMARK is a bookmark name or a bookmark record.
+If it is a record then it need not belong to `bookmark-alist'."
+        (eq (bookmark-get-handler bookmark) 'nov-bookmark-jump-handler))
+
+      ;; This provides the `defvar's for all Bookmark+ history variables.
+      ;; Use this again, after you define any of your own filter functions
+      ;; `bmkp-*-alist-only', for new kinds of bookmarks.
+      ;;
+      (bmkp-define-history-variables)   ; Macro defined in `bookmark+-mac.el'.
+      )
 
 
     (defun chriad/bmkp-help ()
@@ -1170,13 +1191,15 @@ before packages are loaded."
     ;;   (s-concat "./" (f-filename bfn)))
     ;; ;; (helm-posframe-enable)
 
-    ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/nov/nov.el")
+
+
+
+    (use-package nov
+      :defer t
+      :init (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
+    :config
     ;; (add-hook 'nov-mode-hook 'on-screen-mode)
     ;; (evil-set-initial-state 'nov-mode 'emacs)
-
-    ;; (require 'window-purpose)
-
-
     ;; (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
 
                                         ; ranger
