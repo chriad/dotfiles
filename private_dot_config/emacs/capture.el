@@ -122,6 +122,7 @@ with the `org-roam-find-file' interface"
          ;; :before-finalize (lambda () (org-fc-type-cloze-init 'single))
          )
 
+        ;; TODO use`:jump-to-captured' to add cloze afterwords manually
         ("lcd" "deletion" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
          :before-finalize (lambda () (org-fc-type-cloze-init 'deletion)))
 
@@ -155,8 +156,12 @@ with the `org-roam-find-file' interface"
 
         ("c" "~/Documents/_")
 
+        ;; TODO dynamically resolve captured mode: %(symbol-name (symbol-value 'major-mode))
+        ;; TODO could use plain and add metadata to source code block header
         ("cp" "Code" entry (file "/home/chriad/Documents/code-review.org")
-         (file "~/.config/emacs/capture-templates/code-snippet.capture"))
+         (file "~/.config/emacs/capture-templates/code-snippet.capture")
+         :immediate-finish t
+         :empty-lines-before 1)
 
         ("cw" "low-freq-words-list"
          plain

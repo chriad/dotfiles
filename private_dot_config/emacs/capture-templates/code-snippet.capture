@@ -1,9 +1,10 @@
-* %a
+* %^{Description}
 :PROPERTIES:
 :CREATED: %U
+:LOCATION: %f
 :END:
 
-%(symbol-name (symbol-value 'major-mode))
+;; %(symbol-name (symbol-value 'major-mode))
 
 #+BEGIN_SRC %^{Source type}
 %i
