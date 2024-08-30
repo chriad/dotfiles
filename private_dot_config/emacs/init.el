@@ -131,6 +131,7 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      load-dir
                                       org-roam-ui
                                       zones ;; TODO: try multiple narrowings
                                       ;; (narrow-indirect :fetcher wiki) ;; for bookmark+
@@ -956,7 +957,8 @@ If it is a record then it need not belong to `bookmark-alist'."
 
 
     (load "~/.config/emacs/el-patches.el")
-    (add-to-list 'load-path "~/.config/emacs/el-patch-patches")
+    ;; load patches
+    (load-dirs)
 
     (setq pylookup-html-locations '("https://docs.python.org/3"))
     ;; for pylookup
