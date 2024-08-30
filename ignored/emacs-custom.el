@@ -8,13 +8,20 @@
  '(backup-directory-alist '(("\".\"" . "\"~/.saves\"")))
  '(bibtex-completion-pdf-field "file")
  '(blink-matching-delay 2)
- '(bmkp-default-handlers-for-file-types nil nil nil "TODO")
+ '(bmkp-bmenu-commands-file
+   "/home/chriad/.local/share/chezmoi/ignored/emacs/.emacs-bmk-bmenu-commands.el")
+ '(bmkp-bmenu-image-bookmark-icon-file
+   "~/.local/share/chezmoi/ignored/emacs/bookmark-plus/BookmarkPlusImageFileDefaultIcon")
+ '(bmkp-bmenu-state-file
+   "~/.local/share/chezmoi/ignored/emacs/bookmark-plus/.emacs-bmk-bmenu-state.el")
  '(bmkp-last-as-first-bookmark-file nil)
  '(bmkp-propertize-bookmark-names-flag t)
+ '(bookmark-bmenu-file-column 50)
  '(bookmark-default-file "/home/chriad/.local/share/chezmoi/ignored/emacs/bookmarks")
+ '(bookmark-inhibit-context-functions
+   '(auth-source-pass-file-name-p auth-source-file-name-p epa-file-name-p))
  '(bookmark-save-flag 1)
  '(bookmark-use-annotations nil)
- '(clhs-root "file:/media/chriad/ext4/SOFTWARE/HyperSpec/")
  '(company-backends '(company-capf company-semantic company-files))
  '(create-lockfiles nil)
  '(dash-docs-docsets-path "/home/chriad/.local/Zeal/Zeal/docsets")
