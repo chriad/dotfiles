@@ -809,13 +809,6 @@ before packages are loaded."
     ;; (require 'delight)
     ;; (delight 'achievements-mode nil)
 
-    ;; not customizable
-    (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
-    (setq define-word-offline-dict-directory "/media/chriad/ext4/SOFTWARE/dictionaries_enwiktionary/ding/")
-    (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
-
-    ;; automatically enable follow mode for search results
-    (add-hook 'pdf-occur-buffer-mode-hook (lambda () (next-error-follow-minor-mode)))
 
 
 
@@ -928,8 +921,8 @@ If it is a record then it need not belong to `bookmark-alist'."
         (fit-frame)))
 
 
-    (require 'org-ref)
     (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))
+
     ;; (add-to-list 'org-ref-default-bibliography calibredb-ref-default-bibliography)
     ;; (setq org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename)
     ;; ;;; TODO
@@ -938,7 +931,6 @@ If it is a record then it need not belong to `bookmark-alist'."
     ;;       auto-save-file-name-transforms
     ;;       `((".*" ,temporary-file-directory t)))
 
-    (setq epa-pinentry-mode 'loopback)
     ;; not needed currently
     ;; (load-library "~/.config/emacs/secrets.el.gpg")
 
@@ -981,7 +973,7 @@ If it is a record then it need not belong to `bookmark-alist'."
 
     (push 'elisp-def spacemacs-jump-handlers-emacs-lisp-mode)
 
-    (setq highlight-indent-guides-method 'character)
+    ;; (setq highlight-indent-guides-method 'character)
     (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
 
     ;; (require 'evil-lispy)

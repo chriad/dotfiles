@@ -1,7 +1,39 @@
-;; get rid of comment window that lists the contents of this annotation with a header (date, author etc.)
+;;; helpers
+;; TODO mapconcat check hyphenation first bla- bli -> blabli
+;; TODO bind to pdf-annot-list keymap
+(defun pdf-annot---copy-highlight-annotation-text ()
+  (interactive)
+  (let* ((a (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
+         (page (pdf-annot-get a 'page))
+         (edges (pdf-annot-get-display-edges a)))
+    (with-current-buffer pdf-annot-list-document-buffer
+      (pdf-view-goto-page page)
+      (setq txt (mapcar
+                 (lambda (edg)
+                   (pdf-info-gettext
+                    (pdf-view-current-page)
+                    edg
+                    pdf-view-selection-style))
+                 edges))
+      (kill-new (mapconcat 'identity txt " ")))))
+
+;; TODO bind to key in annot-list-map
+;; TODO also maybe hook to pdf-annot-activate-handler-function
+(defun pdf-annot---edit-this-annot ()
+  (interactive)
+  (pdf-annot-edit-contents (pdf-annot-getannot (tabulated-list-get-id)
+                                               pdf-annot-list-document-buffer)))
+
+;; TODO to add pasting highlighted text, look at pdf-annot-edit-contents-noselect
+(defun pdf-annot---edit-this-annot-highlight-text-as-content ()
+  (ignore))
+
+
+;;; patches
 (el-patch-feature pdf-annot)
 
 (with-eval-after-load 'pdf-annot
+  ;; inelegant way to get rid of comment window that lists the contents of this annotation with a header (date, author etc.)
   (el-patch-defun pdf-annot-list-annotations ()
     "List annotations in a Dired like buffer.
 
@@ -36,15 +68,11 @@
       (add-hook 'pdf-info-close-document-hook
                 #'pdf-annot-list-update nil t)
       (add-hook 'pdf-annot-modified-functions
-                #'pdf-annot-list-update nil t))))
+                #'pdf-annot-list-update nil t)))
 
-
-;; when browsing annotations, copy the corresponding text to clipboard
-;; also change highlight attributes
-
-(with-eval-after-load 'pdf-annot
+  ;; when browsing annotations, copy the corresponding text to clipboard
+  ;; also change highlight attributes
   (el-patch-defun pdf-annot-show-annotation (a &optional highlight-p window)
-
     (save-selected-window
       (when window (select-window window 'norecord))
       (pdf-util-assert-pdf-window)
@@ -56,12 +84,12 @@
           (when highlight-p
             (pdf-view-display-image
              (pdf-view-create-image
-                 (pdf-cache-renderpage-highlight
-                  page (car size)
-                  `((el-patch-swap "white" "black") (el-patch-swap "steel blue" "yellow") (el-patch-swap 0.35 0.7) ,@edges))
-               :map (pdf-view-apply-hotspot-functions
-                     window page size)
-               :width (car size))))
+              (pdf-cache-renderpage-highlight
+               page (car size)
+               `((el-patch-swap "white" "black") (el-patch-swap "steel blue" "yellow") (el-patch-swap 0.35 0.7) ,@edges))
+              :map (pdf-view-apply-hotspot-functions
+                    window page size)
+              :width (car size))))
           (pdf-util-scroll-to-edges
            (pdf-util-scale-relative-to-pixel (car edges)))))))
 
@@ -89,56 +117,22 @@ have the PDF buffer automatically move along with us."
                                        (pdf-annot-show-annotation a (el-patch-swap t t)))))
                                  pdf-annot-list-document-buffer
                                  (pdf-annot-getannot id pdf-annot-list-document-buffer)))))
-  )
 
-
-;; ----------------
-
-;; TODO mapconcat check hyphenation first bla- bli -> blabli
-;; TODO bind to pdf-annot-list keymap
-(defun pdf-annot---copy-highlight-annotation-text ()
-  (interactive)
-  (let* ((a (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
-         (page (pdf-annot-get a 'page))
-         (edges (pdf-annot-get-display-edges a)))
-    (with-current-buffer pdf-annot-list-document-buffer
-      (pdf-view-goto-page page)
-      (setq txt (mapcar
-                 (lambda (edg)
-                   (pdf-info-gettext
-                    (pdf-view-current-page)
-                    edg
-                    pdf-view-selection-style))
-                 edges))
-      (kill-new (mapconcat 'identity txt " ")))))
-
-;; TODO bind to key in annot-list-map
-;; TODO also maybe hook to pdf-annot-activate-handler-function
-(defun pdf-annot---edit-this-annot ()
-  (interactive)
-  (pdf-annot-edit-contents (pdf-annot-getannot (tabulated-list-get-id)
-                                               pdf-annot-list-document-buffer)))
-
-;; TODO to add pasting highlighted text, look at pdf-annot-edit-contents-noselect
-(defun pdf-annot---edit-this-annot-highlight-text-as-content ()
-  (ignore))
-
-;; override some keys
-(with-eval-after-load 'pdf-annot
+  ;; override some keys
   (el-patch-defvar pdf-annot-list-mode-map
     (let ((km (make-sparse-keymap)))
       (define-key km (kbd "C-c C-f") #'pdf-annot-list-follow-minor-mode)
       (define-key km (kbd "SPC") #'pdf-annot-list-display-annotation-from-id)
       (define-key km (kbd "y") #'pdf-annot---copy-highlight-annotation-text)
       km))
+
   ;; TODO copy annotation text on y
-  (define-key pdf-annot-list-mode-map (kbd "y") 'pdf-annot---copy-highlight-annotation-text))
+  (define-key pdf-annot-list-mode-map (kbd "y") 'pdf-annot---copy-highlight-annotation-text)
 
 
-;; helm source for annotations
-;; TODO momoize, write to sidecar, get checksum to see if something changed
-;; TODO add action to edit highlighted text as annotation content (pdf-annot---edit-this-annot)
-(with-eval-after-load 'pdf-annot
+  ;; helm source for annotations
+  ;; TODO momoize, write to sidecar, get checksum to see if something changed
+  ;; TODO add action to edit highlighted text as annotation content (pdf-annot---edit-this-annot)
   (defun pdf-annot---get-text-from-annot (a)
     (let* ((buf (alist-get 'buffer a))
            (pag (alist-get 'page a))
@@ -151,6 +145,7 @@ have the PDF buffer automatically move along with us."
                                               pdf-view-selection-style))
                           edges))
         (mapconcat 'identity txt " "))))
+
   ;; eval this in pdf-view-mode
   ;; TODO bind to key
   ;; not working
@@ -168,4 +163,3 @@ have the PDF buffer automatically move along with us."
                                                             pdf-annot-list-document-buffer)
                                        #'pdf-annot-compare-annotations)))
           :buffer "*helm pdf-annots*")))
-

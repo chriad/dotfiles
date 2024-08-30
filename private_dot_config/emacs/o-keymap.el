@@ -17,6 +17,7 @@
 
 (spacemacs/declare-prefix "ob" "bookmarks")
 (spacemacs/set-leader-keys "obt" 'bmkp-jump-to-type-other-window)
+(spacemacs/set-leader-keys "obs" 'bmkp-bookmark-file-switch-jump)
 
 (spacemacs/declare-prefix "ow" "which key")
 (spacemacs/set-leader-keys "owf" 'which-key-show-full-major-mode)
