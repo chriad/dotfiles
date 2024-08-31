@@ -131,6 +131,7 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      (qpdf.el :fetcher github :repo "orgtre/qpdf.el")
                                       load-dir
                                       org-roam-ui
                                       zones ;; TODO: try multiple narrowings
@@ -904,11 +905,19 @@ BOOKMARK is a bookmark name or a bookmark record.
 If it is a record then it need not belong to `bookmark-alist'."
         (eq (bookmark-get-handler bookmark) 'nov-bookmark-jump-handler))
 
+      ;; TODO create org-fc bookmark type that will review a bookmarked card (i.e. headline) when triggered. The jump handler should run org-fc. Maybe also intgrate bookmark+ tags with card filtering in org-fc
+      (defun org-fc-bookmark-p (bookmark)
+        (ignore))
+
+
       ;; This provides the `defvar's for all Bookmark+ history variables.
       ;; Use this again, after you define any of your own filter functions
       ;; `bmkp-*-alist-only', for new kinds of bookmarks.
       ;;
       (bmkp-define-history-variables)   ; Macro defined in `bookmark+-mac.el'.
+
+      ;; TODO transient defachievment -> one bookmark of each known type
+
       )
 
 
@@ -985,18 +994,39 @@ If it is a record then it need not belong to `bookmark-alist'."
     (setq define-word-offline-dict-directory "/media/chriad/ext4/SOFTWARE/dictionaries_enwiktionary/ding/")
     (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
 
+    ;;; extends pdf layer declaration
+    ;; TODO move above to use-package
+    (defun my-fix-pdf-selection ()
+      "Replace pdf with one where selection shows transparently."
+      (interactive)
+      (unless (equal (file-name-extension (buffer-file-name)) "pdf")
+        (error "Buffer should visit a pdf file."))
+      (unless (equal major-mode 'pdf-view-mode)
+        (pdf-view-mode))
+      ;; save file in QDF-mode
+      (qpdf-run (list
+                 (concat "--infile="
+                         (buffer-file-name))
+                 "--qdf --object-streams=disable"
+                 "--replace-input"))
+      ;; do replacements
+      (text-mode)
+      (read-only-mode -1)
+      (while (re-search-forward "3 Tr" nil t)
+        (replace-match "7 Tr" nil nil))
+      (save-buffer)
+      (pdf-view-mode))
 
     (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
     ;; automatically enable follow mode for search results
     (add-hook 'pdf-occur-buffer-mode-hook (lambda () (next-error-follow-minor-mode)))
 
     (add-hook 'pdf-annot-list-mode-hook 'pdf-annot-list-follow-minor-mode)
-    ;; extends pdf layer declaration
-    ;; TODO move above to use-package
     ;; (use-package pdf-tools
     ;;   :hook (pdf-annot-list-mode . pdf-annot-list-follow-minor-mode)
     ;;   :hook (pdf-view-mode-hook . '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
     ;;   :hook (pdf-occur-buffer-mode-hook . (lambda () (next-error-follow-minor-mode))))
+    ;;;
 
     (use-package org-roam
       :config
