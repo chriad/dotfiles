@@ -219,7 +219,7 @@
  '(pdf-annot-list-listed-types
    '(free-text highlight ink squiggly strike-out text underline unknown))
  '(pdf-annot-minor-mode-map-prefix [3 1])
- '(pdf-info-epdfinfo-program "/home/chriad/epdfinfo")
+ '(pdf-occur-global-minor-mode t)
  '(pdf-outline-display-labels t)
  '(pdf-tools-enabled-hook
    '((lambda nil

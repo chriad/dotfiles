@@ -981,11 +981,22 @@ If it is a record then it need not belong to `bookmark-alist'."
     ;; (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hooks)
 
 
-    ;; (add-hook 'pdf-annot-list-mode-hook 'pdf-annot-list-follow-minor-mode)
+    ;; not customizable
+    (setq define-word-offline-dict-directory "/media/chriad/ext4/SOFTWARE/dictionaries_enwiktionary/ding/")
+    (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
+
+
+    (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
+    ;; automatically enable follow mode for search results
+    (add-hook 'pdf-occur-buffer-mode-hook (lambda () (next-error-follow-minor-mode)))
+
+    (add-hook 'pdf-annot-list-mode-hook 'pdf-annot-list-follow-minor-mode)
     ;; extends pdf layer declaration
-    (use-package pdf-tools
-      :defer t
-      :hook (pdf-annot-list-mode . pdf-annot-list-follow-minor-mode))
+    ;; TODO move above to use-package
+    ;; (use-package pdf-tools
+    ;;   :hook (pdf-annot-list-mode . pdf-annot-list-follow-minor-mode)
+    ;;   :hook (pdf-view-mode-hook . '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
+    ;;   :hook (pdf-occur-buffer-mode-hook . (lambda () (next-error-follow-minor-mode))))
 
     (use-package org-roam
       :config
