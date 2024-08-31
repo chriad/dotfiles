@@ -134,8 +134,8 @@ This function should only modify configuration layer settings."
                                       ;; (qpdf :fetcher github :repo "orgtre/qpdf.el" :commands qpdf)
                                       (qpdf :location (recipe
                                                           :fetcher github
-                                                          :repo "orgtre/qpdf.el" :commands qpdf))
-                                      load-dir
+                                                          :repo "orgtre/qpdf.el"))
+                                      ;; load-dir
                                       org-roam-ui
                                       zones ;; TODO: try multiple narrowings
                                       ;; (narrow-indirect :fetcher wiki) ;; for bookmark+
@@ -960,9 +960,15 @@ If it is a record then it need not belong to `bookmark-alist'."
     ;;   )
 
 
-    (load "~/.config/emacs/el-patches.el")
+    ;; (load "~/.config/emacs/el-patches.el")
     ;; load patches
-    (load-dirs)
+    ;; (load-dirs-reload)
+    (defun load-directory (dir)
+      (let ((load-it (lambda (f)
+		                   (load-file (concat (file-name-as-directory dir) f)))
+		                 ))
+	      (mapc load-it (directory-files dir nil "\\.el$"))))
+    (load-directory "~/.config/emacs/el-patch-patches/")
 
     (setq pylookup-html-locations '("https://docs.python.org/3"))
     ;; for pylookup
@@ -999,13 +1005,18 @@ If it is a record then it need not belong to `bookmark-alist'."
 
     ;;; extends pdf layer declaration
     ;; TODO move above to use-package
-    (defun my-fix-pdf-selection ()
+
+    ;; (require 'qpdf.el)
+    (defun chriad/fix-pdf-selection ()
       "Replace pdf with one where selection shows transparently."
       (interactive)
       (unless (equal (file-name-extension (buffer-file-name)) "pdf")
         (error "Buffer should visit a pdf file."))
+      (require 'qpdf.el)
       (unless (equal major-mode 'pdf-view-mode)
         (pdf-view-mode))
+      ;; make backup
+      (copy-file (buffer-file-name) (concat (buffer-file-name) ".orig_before_qpdf"))
       ;; save file in QDF-mode
       (qpdf-run (list
                  (concat "--infile="

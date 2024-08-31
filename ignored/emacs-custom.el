@@ -138,9 +138,10 @@
  '(large-file-warning-threshold 100000000)
  '(lispy-completion-method 'helm)
  '(lispy-eval-display-style 'overlay)
- '(load-dirs "~/.config/emacs/el-patch-patches/")
+ '(load-dir-recursive t)
  '(lsp-pyright-diagnostic-mode "workspace")
  '(markdown-hide-markup t)
+ '(menu-bar-mode nil)
  '(org-M-RET-may-split-line '((default)))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-capture-mode-hook

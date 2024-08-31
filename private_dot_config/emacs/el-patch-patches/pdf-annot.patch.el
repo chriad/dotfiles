@@ -119,15 +119,12 @@ have the PDF buffer automatically move along with us."
                                  (pdf-annot-getannot id pdf-annot-list-document-buffer)))))
 
   ;; override some keys
-  (el-patch-defvar pdf-annot-list-mode-map
-    (let ((km (make-sparse-keymap)))
-      (define-key km (kbd "C-c C-f") #'pdf-annot-list-follow-minor-mode)
-      (define-key km (kbd "SPC") #'pdf-annot-list-display-annotation-from-id)
-      (define-key km (kbd "y") #'pdf-annot---copy-highlight-annotation-text)
-      km))
-
-  ;; TODO copy annotation text on y
-  (define-key pdf-annot-list-mode-map (kbd "y") 'pdf-annot---copy-highlight-annotation-text)
+  ;; (el-patch-defvar pdf-annot-list-mode-map
+  ;;   (let ((km (make-sparse-keymap)))
+  ;;     (define-key km (kbd "C-c C-f") #'pdf-annot-list-follow-minor-mode)
+  ;;     (define-key km (kbd "SPC") #'pdf-annot-list-display-annotation-from-id)
+  ;;     (define-key km (kbd "y") #'pdf-annot---copy-highlight-annotation-text)
+  ;;     km))
 
 
   ;; helm source for annotations
@@ -147,13 +144,8 @@ have the PDF buffer automatically move along with us."
         (mapconcat 'identity txt " "))))
 
   ;; eval this in pdf-view-mode
-  ;; TODO bind to key
-  ;; not working
-  ;; (evil-define-key 'normal pdf-annot-minor-mode-map (kbd "x") 'pdf-annot---helm-annots-get)
-  ;; (define-key pdf-annot-minor-mode-map (kbd "C-c C-x") 'pdf-annot---helm-annots-get)
-  ;; (spacemacs/declare-prefix-for-mode 'spacemacs-pdf-view-mode "mo" "custom")
-  ;; (spacemacs/set-leader-keys-for-major-mode 'spacemacs-pdf-view-mode "ol" 'pdf-annot---helm-annots-get)
-  (defun pdf-annot---helm-annots-get ()
+  ;; TODO on RET, goto annotation
+  (defun pdf-annot---browse-annot-texts ()
     (interactive)
     (helm :sources (helm-build-in-buffer-source "test"
                      :data (-map (lambda (x)
@@ -163,3 +155,20 @@ have the PDF buffer automatically move along with us."
                                                             pdf-annot-list-document-buffer)
                                        #'pdf-annot-compare-annotations)))
           :buffer "*helm pdf-annots*")))
+
+
+  ;; TODO copy annotation text on y
+  ;; (define-key pdf-annot-list-mode-map (kbd "y") 'pdf-annot---copy-highlight-annotation-text)
+
+
+;; load after pdf layer?
+  (use-package pdf-tools
+    :defer 2
+    :config
+    (evilified-state-evilify-map pdf-annot-list-mode-map
+      :mode  pdf-annot-list-mode
+      :eval-after-load pdf-annot
+      :bindings
+      "y"                'pdf-annot---copy-highlight-annotation-text
+      "e"                'pdf-annot---edit-this-annot-highlight-text-as-content
+      "h"                'pdf-annot---browse-annot-texts))
