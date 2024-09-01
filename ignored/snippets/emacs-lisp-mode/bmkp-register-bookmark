@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: bmkp-register-bookmark 
+# key: bmkp-register-bookmark
+# --
+
+(defun bmkp-$1-bookmark-alist-only ()
+(bookmark-maybe-load-default-file)
+(bmkp-remove-if-not #'$1-bookmark-p bookmark-alist))
+
+(defun $1-bookmark-p (bookmark)
+(eq (bookmark-get-handler bookmark) '$0))

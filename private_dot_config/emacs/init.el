@@ -897,21 +897,26 @@ before packages are loaded."
       ;; register nov bookmarks
 
       (defun bmkp-nov-bookmark-alist-only ()
-        "`bookmark-alist', filtered to retain only W3M bookmarks. A new list is returned (no side effects)."
         (bookmark-maybe-load-default-file)
         (bmkp-remove-if-not #'nov-bookmark-p bookmark-alist))
 
-
       (defun nov-bookmark-p (bookmark)
-        "Return non-nil if BOOKMARK is a `browse-url' bookmark.
-BOOKMARK is a bookmark name or a bookmark record.
-If it is a record then it need not belong to `bookmark-alist'."
         (eq (bookmark-get-handler bookmark) 'nov-bookmark-jump-handler))
+
+
+      (defun bmkp-helpful-bookmark-alist-only ()
+        (bookmark-maybe-load-default-file)
+        (bmkp-remove-if-not #'helpful-bookmark-p bookmark-alist))
+
+      (defun helpful-bookmark-p (bookmark)
+        (eq (bookmark-get-handler bookmark) 'helpful--bookmark-jump))
+
 
       ;; TODO create org-fc bookmark type that will review a bookmarked card (i.e. headline) when triggered. The jump handler should run org-fc. Maybe also intgrate bookmark+ tags with card filtering in org-fc
       (defun org-fc-bookmark-p (bookmark)
         (ignore))
 
+      ;; TODO do I have to recompile bookmark+-mac.el each time? -> package-recompile RET bookmark+
 
       ;; This provides the `defvar's for all Bookmark+ history variables.
       ;; Use this again, after you define any of your own filter functions
