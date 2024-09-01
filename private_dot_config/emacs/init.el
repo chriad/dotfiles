@@ -814,6 +814,9 @@ before packages are loaded."
     ;; (delight 'achievements-mode nil)
 
 
+    ;; prompt before close
+     (add-hook 'kill-emacs-query-functions
+               'custom-prompt-customize-unsaved-options)
 
 
     (put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")

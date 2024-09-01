@@ -23,7 +23,7 @@
 	"segmentsToChapters": true,
 	"preserveMetadataOnMerge": true,
 	"simpleMode": true,
-	"outSegTemplate": "${FILENAME}-${CUT_FROM}-${CUT_TO}${SEG_SUFFIX}${EXT}",
+	"outSegTemplate": "${SEG_LABEL}--${SEG_NUM}${EXT}",
 	"keyboardSeekAccFactor": 1.03,
 	"keyboardNormalSeekSpeed": 1,
 	"enableTransferTimestamps": true,
@@ -31,7 +31,7 @@
 	"windowBounds": {
 		"x": 0,
 		"y": 0,
-		"width": 1063,
+		"width": 2129,
 		"height": 1727
 	},
 	"enableAutoHtml5ify": true,
