@@ -1039,7 +1039,7 @@ before packages are loaded."
       (save-buffer)
       (pdf-view-mode))
 
-    (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-midnight-minor-mode))
+    (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-themed-minor-mode))
     ;; automatically enable follow mode for search results
     (add-hook 'pdf-occur-buffer-mode-hook (lambda () (next-error-follow-minor-mode)))
 

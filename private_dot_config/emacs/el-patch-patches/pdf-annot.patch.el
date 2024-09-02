@@ -72,6 +72,9 @@
 
   ;; when browsing annotations, copy the corresponding text to clipboard
   ;; also change highlight attributes
+
+  ;; TODO (face-background 'default nil)
+
   (el-patch-defun pdf-annot-show-annotation (a &optional highlight-p window)
     (save-selected-window
       (when window (select-window window 'norecord))
@@ -86,7 +89,7 @@
              (pdf-view-create-image
               (pdf-cache-renderpage-highlight
                page (car size)
-               `((el-patch-swap "white" "black") (el-patch-swap "steel blue" "yellow") (el-patch-swap 0.35 0.7) ,@edges))
+               `((el-patch-swap "white" "#292b2e") (el-patch-swap "steel blue" "yellow") (el-patch-swap 0.35 0.4) ,@edges))
               :map (pdf-view-apply-hotspot-functions
                     window page size)
               :width (car size))))
@@ -116,7 +119,7 @@ have the PDF buffer automatically move along with us."
                                               '(nil (inhibit-same-window . t))))
                                        (pdf-annot-show-annotation a (el-patch-swap t t)))))
                                  pdf-annot-list-document-buffer
-                                 (pdf-annot-getannot id pdf-annot-list-document-buffer)))))
+                                 (pdf-annot-getannot id pdf-annot-list-document-buffer))))))
 
   ;; override some keys
   ;; (el-patch-defvar pdf-annot-list-mode-map
@@ -154,7 +157,7 @@ have the PDF buffer automatically move along with us."
                                                             '(highlight)
                                                             pdf-annot-list-document-buffer)
                                        #'pdf-annot-compare-annotations)))
-          :buffer "*helm pdf-annots*")))
+          :buffer "*helm pdf-annots*"))
 
 
   ;; TODO copy annotation text on y
