@@ -48,6 +48,7 @@ This function should only modify configuration layer settings."
      helm-additional
      elisp-additional
      org-additional
+     bookmark-plus
      ;; >> private layers
      (javascript :variables javascript-backend 'lsp
                  javascript-repl `nodejs)
@@ -138,21 +139,18 @@ This function should only modify configuration layer settings."
                                       ;; load-dir
                                       org-roam-ui
                                       zones ;; TODO: try multiple narrowings
-                                      ;; (narrow-indirect :fetcher wiki) ;; for bookmark+
-                                      (narrow-indirect :fetcher wiki :upgrade nil) ;; for bookmark+
-                                      (linkd :fetcher wiki :upgrade nil) ;; for bookmark+
-                                      (bookmark+ :fetcher wiki
-                                                 :files
-                                                 ("bookmark+.el"
-                                                  "bookmark+-mac.el"
-                                                  "bookmark+-bmu.el"
-                                                  "bookmark+-1.el"
-                                                  "bookmark+-key.el"
-                                                  "bookmark+-lit.el"
-                                                  "bookmark+-doc.el"
-                                                  "bookmark+-chg.el")
-                                                 :upgrade nil)
-                                      (crosshairs :fetcher wiki :upgrade nil)
+                                      ;; (bookmark+ :location (recipe
+                                      ;;                      :fetcher wiki
+                                      ;;                      :files
+                                      ;;                      ("bookmark+.el"
+                                      ;;                       "bookmark+-mac.el"
+                                      ;;                       "bookmark+-bmu.el"
+                                      ;;                       "bookmark+-1.el"
+                                      ;;                       "bookmark+-key.el"
+                                      ;;                       "bookmark+-lit.el"
+                                      ;;                       "bookmark+-doc.el"
+                                      ;;                       "bookmark+-chg.el")))
+                                      ;; (crosshairs :fetcher wiki :upgrade nil)
                                       sway
                                       ;; helm-systemd
                                       anki-mode
@@ -163,9 +161,9 @@ This function should only modify configuration layer settings."
                                       ;; mic-paren ;; customize paren-face-match
                                       ;; helm-dired-history
                                       ;; (guix-emacs :location "~/.guix-profile/share/emacs/site-lisp/guix-emacs.el")
-                                      guix ;; install with guix
-                                      geiser ;; installed with guix
-                                      geiser-guile ;; installed with guix
+                                      ;; guix ;; install with guix
+                                      ;; geiser ;; installed with guix
+                                      ;; geiser-guile ;; installed with guix
                                       magit-popup ;; guix
                                       (director :location (recipe ;; automate is king
                                                            :fetcher github
@@ -258,9 +256,9 @@ This function should only modify configuration layer settings."
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '(
-                                  guix
-                                  geiser
-                                  geiser-guile
+                                  ;; guix
+                                  geiser ;; externally managed by guix
+                                  geiser-guile ;; externally managed by guix
                                   )
 
    ;; A list of packages that will not be installed and loaded.
@@ -273,7 +271,7 @@ This function should only modify configuration layer settings."
    ;; installs only the used packages but won't delete unused ones. `all'
    ;; installs *all* packages supported by Spacemacs and never uninstalls them.
    ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+   dotspacemacs-install-packages 'used-but-keep-unused))
 
 (defun dotspacemacs/init ()
   "Initialization:
@@ -856,128 +854,27 @@ before packages are loaded."
 
 
     ;; creates a buffer *quelpa-build-checkout*
-    (defun check-emacswiki-updates ()
-      (quelpa '(bookmark+ :fetcher wiki
-                          :files
-                          ("bookmark+.el"
-                           "bookmark+-mac.el"
-                           "bookmark+-bmu.el"
-                           "bookmark+-1.el"
-                           "bookmark+-key.el"
-                           "bookmark+-lit.el"
-                           "bookmark+-doc.el"
-                           "bookmark+-chg.el")))
-      (quelpa '(narrow-indirect :fetcher wiki))
-      (quelpa '(fit-frame :fetcher wiki))
-      (quelpa '(linkd :fetcher wiki))
-      (quelpa '(hl-line+ :fetcher wiki))
-      (quelpa '(col-highlight :fetcher wiki))
-      (quelpa '(crosshairs :fetcher wiki))
-
-      )
-
-    (setq paradox-menu-mode-hook '(paradox-refresh-upgradeable-packages check-emacswiki-updates))
-
-    (use-package bookmark+
-      ;; :defer t
-      :config
-      (require 'narrow-indirect)
-      (setq bmkp-dired-history nil)
-      (defun chriad/bmkp-help ()
-        (interactive)
-        (message "Getting Bookmark+ doc from file commentary...")
-        (finder-commentary "bookmark+-doc")
-        (when (condition-case nil (require 'linkd nil t) (error nil)) (linkd-mode 1))
-        (when (condition-case nil (require 'fit-frame nil t) (error nil))
-          (fit-frame)))
-      (defun chriad/bmkp-list-types ()
-        (interactive)
-        ;; TODO print in temporary, fileless buffer
-        (pp (bmkp-types-alist)))
-      (defun helm-documentation-f ()
-        (call-interactively 'helm-documentation))
+    ;; (defun check-emacswiki-updates ()
+    ;;   (quelpa '(bookmark+ :fetcher wiki
+    ;;                       :files
+    ;;                       ("bookmark+.el"
+    ;;                        "bookmark+-mac.el"
+    ;;                        "bookmark+-bmu.el"
+    ;;                        "bookmark+-1.el"
+    ;;                        "bookmark+-key.el"
+    ;;                        "bookmark+-lit.el"
+    ;;                        "bookmark+-doc.el"
+    ;;                        "bookmark+-chg.el")))
+    ;;   (quelpa '(narrow-indirect :fetcher wiki))
+    ;;   (quelpa '(fit-frame :fetcher wiki))
+    ;;   (quelpa '(linkd :fetcher wiki))
+    ;;   (quelpa '(hl-line+ :fetcher wiki))
+    ;;   (quelpa '(col-highlight :fetcher wiki))
+    ;;   (quelpa '(crosshairs :fetcher wiki))
 
 
-      ;; TODO transient defachievment -> one bookmark of each known type
+    ;; (setq paradox-menu-mode-hook '(paradox-refresh-upgradeable-packages check-emacswiki-updates))
 
-      )
-
-    ;; register nov bookmarks
-
-    (defun bmkp-nov-bookmark-alist-only ()
-      (bookmark-maybe-load-default-file)
-      (bmkp-remove-if-not #'nov-bookmark-p bookmark-alist))
-
-    (defun nov-bookmark-p (bookmark)
-      (eq (bookmark-get-handler bookmark) 'nov-bookmark-jump-handler))
-
-    (defun bmkp-helpful-bookmark-alist-only ()
-      (bookmark-maybe-load-default-file)
-      (bmkp-remove-if-not #'helpful-bookmark-p bookmark-alist))
-
-    (defun helpful-bookmark-p (bookmark)
-      (eq (bookmark-get-handler bookmark) 'helpful--bookmark-jump))
-
-    ;; (defun bmkp-helm-ff-session-bookmark-alist-only ()
-    ;;   (bookmark-maybe-load-default-file)
-    ;;   (bmkp-remove-if-not #'helm-ff-session-bookmark-p bookmark-alist))
-
-    ;; (defun helm-ff-session-bookmark-p (bookmark)
-    ;;   (eq (bookmark-get-handler bookmark) 'helm-ff-bookmark-jump))
-
-    ;; (defun bmkp-magit-bookmark-alist-only ()
-    ;;   (bookmark-maybe-load-default-file)
-    ;;   (bmkp-remove-if-not #'magit-bookmark-p bookmark-alist))
-
-    ;; (defun magit-bookmark-p (bookmark)
-    ;;   (eq (bookmark-get-handler bookmark) 'magit--handle-bookmark))
-
-    ;; TODO create org-fc bookmark type that will review a bookmarked card (i.e. headline) when triggered. The jump handler should run org-fc. Maybe also intgrate bookmark+ tags with card filtering in org-fc
-    (defun org-fc-bookmark-p (bookmark)
-      (ignore))
-
-    ;; TODO do I have to recompile bookmark+-mac.el each time? -> package-recompile RET bookmark+
-
-    ;; This provides the `defvar's for all Bookmark+ history variables.
-    ;; Use this again, after you define any of your own filter functions
-    ;; `bmkp-*-alist-only', for new kinds of bookmarks.
-    ;;
-    ;; (bmkp-define-history-variables)   ; Macro defined in `bookmark+-mac.el'.
-
-
-    ;; bookmark to a library known to emacs. Path can change when updating packages, so no file path.
-    (defun lib-bookmark-jump (bookmark)
-      "Create and switch to helpful bookmark BOOKMARK."
-      (let ((pkg (bookmark-prop-get bookmark 'pkg))
-            (position (bookmark-prop-get bookmark 'position)))
-        (find-file (find-library-name pkg))
-        (goto-char position)))
-
-
-    ;; (defun lib-bookmark-jump (bookmark)
-    ;;   "Create and switch to helpful bookmark BOOKMARK."
-    ;;   (let ((pkg (bookmark-prop-get bookmark 'pkg)))
-    ;;     (find-file (find-library-name pkg))))
-
-    (defun lib-bookmark-make-record ()
-      ;; TODO check (package-lint--get-package-prefix)=nil. Then dispatch to normal bookmark-default-record
-      ;; TODO difference between point and position?
-      `(,@(bookmark-make-record-default t nil nil) ;; no-file context=yes point=yes
-        (pkg . ,(package-lint--get-package-prefix))
-        (handler     . lib-bookmark-jump)))
-
-
-
-    (add-hook 'emacs-lisp-mode-hook #'(lambda () (setq-local bookmark-make-record-function #'lib-bookmark-make-record)))
-
-
-    (defun chriad/bmkp-help ()
-      (interactive)
-      (message "Getting Bookmark+ doc from file commentary...")
-      (finder-commentary "bookmark+-doc")
-      (when (condition-case nil (require 'linkd nil t) (error nil)) (linkd-mode 1))
-      (when (condition-case nil (require 'fit-frame nil t) (error nil))
-        (fit-frame)))
 
 
     (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))

@@ -26,8 +26,6 @@
    "/home/chriad/.local/share/chezmoi/ignored/emacs/.emacs-bmk-bmenu-commands.el")
  '(bmkp-bmenu-image-bookmark-icon-file
    "~/.local/share/chezmoi/ignored/emacs/bookmark-plus/BookmarkPlusImageFileDefaultIcon")
- '(bmkp-bmenu-state-file
-   "~/.local/share/chezmoi/ignored/emacs/bookmark-plus/.emacs-bmk-bmenu-state.el")
  '(bmkp-last-as-first-bookmark-file nil)
  '(bmkp-propertize-bookmark-names-flag t)
  '(bookmark-bmenu-file-column 50)
@@ -85,6 +83,7 @@
  '(gist-ask-for-description t)
  '(gist-ask-for-filename t)
  '(global-dash-fontify-mode t)
+ '(global-flycheck-mode t)
  '(global-semantic-decoration-mode nil)
  '(global-semantic-highlight-func-mode t)
  '(global-semantic-idle-scheduler-mode t)
@@ -291,7 +290,17 @@
  '(racket-documentation-search-location 'local)
  '(reb-re-syntax 'rx)
  '(safe-local-variable-values
-   '((org-blank-before-new-entry
+   '((eval and buffer-file-name
+           (not
+            (eq major-mode 'package-recipe-mode))
+           (or
+            (require 'package-recipe-mode nil t)
+            (let
+                ((load-path
+                  (cons "../package-build" load-path)))
+              (require 'package-recipe-mode nil t)))
+           (package-recipe-mode))
+     (org-blank-before-new-entry
       (heading . auto)
       (plain-list-item . auto))
      (org-list-description-max-indent . 5)
