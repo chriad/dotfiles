@@ -237,6 +237,10 @@
  '(paradox-github-token t)
  '(paren-sexp-mode t)
  '(pdf-annot-activate-created-annotations nil)
+ '(pdf-annot-list-display-buffer-action
+   '((display-buffer-reuse-window display-buffer-in-direction)
+     (inhibit-same-window . t)
+     (direction . right)))
  '(pdf-annot-list-follow-minor-mode-hook nil)
  '(pdf-annot-list-format '((page . 3) (type . 10) (label . 24) (date . 24)))
  '(pdf-annot-list-listed-types

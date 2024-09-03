@@ -10,6 +10,16 @@
 
 ;; -----------------
 
+;; TODO use find
+(defun chriad/search-dpt ()
+  (interactive)
+  (helm-find-1 (file-name-as-directory "/media/chriad/ext4/dpt-mirror/dpt")))
+
+             ;;   "Search in current directory with `rg'."
+;;   (interactive)
+;;   (let ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never --files-with-matches -t pdf"))
+;;     (spacemacs/helm-files-do-rg "/media/chriad/ext4/dpt-mirror/dpt")))
+
 ;; note to self: order alphabetically
 (spacemacs/declare-prefix "o" "private keymap")
 (spacemacs/set-leader-keys "oa" 'projectile-add-known-project)
@@ -51,6 +61,8 @@
 (spacemacs/set-leader-keys "omm" 'minions-minor-modes-menu)
 
 (spacemacs/declare-prefix "os" "search")
+(spacemacs/set-leader-keys "osq" 'chriad/search-dpt)
+
 (spacemacs/set-leader-keys "ot" 'terminal-here-launch)
 
 (spacemacs/declare-prefix "oh" "helm")
