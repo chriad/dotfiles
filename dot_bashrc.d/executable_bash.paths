@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+PATH=$PATH:/home/chriad/.fzf/bin
+PATH=$PATH:/var/lib/flatpak/exports/bin
+
+PATH=$PATH:/usr/lib/stardict-tools
+
+PATH=$PATH:/usr/lib/android-sdk/cmdline-tools/latest/bin
+PATH=$PATH:/usr/lib/android-sdk/platform-tools
+
+# why is it not on path?
+XDG_DATA_DIRS=$XDG_DATA_DIRS:/home/chriad/.local/share:/home/chriad/.guix-profile/share
+
+export PATH=$PATH:/var/lib/flatpak/exports/bin
+export PATH="/home/chriad/.cask/bin:$PATH"
