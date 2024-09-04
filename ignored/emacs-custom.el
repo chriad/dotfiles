@@ -246,6 +246,10 @@
    '(free-text highlight ink squiggly strike-out text underline unknown))
  '(pdf-annot-minor-mode-map-prefix [3 1])
  '(pdf-occur-global-minor-mode t)
+ '(pdf-outline-display-buffer-action
+   '(display-buffer-in-direction
+     (inhibit-same-window . t)
+     (direction . right)) nil nil "TODO: change behaviour")
  '(pdf-outline-display-labels t)
  '(pdf-tools-enabled-hook
    '((lambda nil

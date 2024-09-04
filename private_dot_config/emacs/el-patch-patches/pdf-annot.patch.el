@@ -1,4 +1,31 @@
 ;;; helpers
+
+;; (defun pdf-annot-getannots (&optional pages types buffer)
+
+;; (pdf-annot-getannots '(50 . 70) '(highlight))
+
+;; (defun pdf-info-normalize-page-range (pages)
+;;   "Normalize PAGES for sending to the server.
+
+;; PAGES may be a single page number, a cons \(FIRST . LAST\), or
+;; nil, which stands for all pages.
+
+;; map pdf-annot-get id (pdf-annot-getannots '(50 . 70) '(highlight))
+
+
+;; ((buffer . #<buffer name.pdf>)
+;;  (page . 236)
+;;  (edges 0.141502 0.052133 0.206901 0.073379)
+;;  (type . link)
+;;  (id . annot-236-4)
+;;  (flags . 0)
+;;  (color . "#ff0000")
+;;  (contents . "")
+;;  (modified 22147 54079))
+
+(defun pdf-annot-next-jump ()
+  (ignore))
+
 ;; TODO mapconcat check hyphenation first bla- bli -> blabli
 ;; TODO bind to pdf-annot-list keymap
 (defun pdf-annot---copy-highlight-annotation-text ()
