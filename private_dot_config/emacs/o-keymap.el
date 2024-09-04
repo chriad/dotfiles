@@ -1,11 +1,9 @@
 ;;;; spacemacs private ``o'' keymap
 
-(global-set-key (kbd "C-`") 'spacemacs/shell-pop-ansi-term)
-;; (global-set-key (kbd "<f5>") 'helm-org-in-buffer-headings)
+;; (keymap-global-set (kbd "Spc-C-Spc") 'execute-extended-command-for-buffer)
 ;; (global-set-key (kbd "s-]") 'tab-next)
 ;; (global-set-key (kbd "s-[") 'tab-previous)
 ;; (global-set-key (kbd "s-c") 'helm-lisp-completion-at-point)
-;; (global-set-key (kbd "s-j") 'bookmark-jump)
 ;; (keymap-global-set "s-y" 'spacemacs/helm-yas)
 
 ;; -----------------
@@ -15,10 +13,15 @@
   (interactive)
   (helm-find-1 (file-name-as-directory "/media/chriad/ext4/dpt-mirror/dpt")))
 
+(defun chriad/search-elpa ()
+  "Search for code in packages. TODO use symbol at point as default search term"
+  (interactive)
+    (let ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never -t el"))
+      (spacemacs/helm-files-do-rg (concat configuration-layer--elpa-root-directory emacs-version "/" configuration-layer-elpa-subdirectory))))
+
+
              ;;   "Search in current directory with `rg'."
 ;;   (interactive)
-;;   (let ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never --files-with-matches -t pdf"))
-;;     (spacemacs/helm-files-do-rg "/media/chriad/ext4/dpt-mirror/dpt")))
 
 ;; note to self: order alphabetically
 (spacemacs/declare-prefix "o" "private keymap")
@@ -62,6 +65,7 @@
 
 (spacemacs/declare-prefix "os" "search")
 (spacemacs/set-leader-keys "osq" 'chriad/search-dpt)
+(spacemacs/set-leader-keys "ose" 'chriad/search-elpa)
 
 (spacemacs/set-leader-keys "ot" 'terminal-here-launch)
 
