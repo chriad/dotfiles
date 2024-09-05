@@ -31,6 +31,7 @@
 (spacemacs/declare-prefix "ob" "bookmarks")
 (spacemacs/set-leader-keys "obt" 'bmkp-jump-to-type-other-window)
 (spacemacs/set-leader-keys "obs" 'bmkp-bookmark-file-switch-jump)
+(spacemacs/set-leader-keys "obi" 'bmkp-set-info-bookmark-with-node-name)
 
 (spacemacs/declare-prefix "ow" "which key")
 (spacemacs/set-leader-keys "owf" 'which-key-show-full-major-mode)
@@ -50,6 +51,7 @@
 (spacemacs/set-leader-keys "ocg" 'customize-group)
 (spacemacs/set-leader-keys "ocv" 'customize-variable)
 (spacemacs/set-leader-keys "ocb" 'customize-browse)
+(spacemacs/set-leader-keys "ocs" 'customize-set-value)
 
 (spacemacs/declare-prefix "oo" "org")
 (spacemacs/set-leader-keys "ool" 'ace-link-org)

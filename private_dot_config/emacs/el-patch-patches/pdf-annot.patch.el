@@ -1,5 +1,7 @@
 ;;; helpers
 
+;; experiment with chriad-pdf-annots-list
+
 ;; (defun pdf-annot-getannots (&optional pages types buffer)
 
 ;; (pdf-annot-getannots '(50 . 70) '(highlight))
@@ -10,7 +12,8 @@
 ;; PAGES may be a single page number, a cons \(FIRST . LAST\), or
 ;; nil, which stands for all pages.
 
-;; map pdf-annot-get id (pdf-annot-getannots '(50 . 70) '(highlight))
+;; map pdf-annot-get id (pdf-annot-getannots '(50 . 70) '(highlight)) # returns list of alists. Each annot is a element of the list and itself an alist.
+
 
 
 ;; ((buffer . #<buffer name.pdf>)
@@ -186,6 +189,11 @@ have the PDF buffer automatically move along with us."
                                        #'pdf-annot-compare-annotations)))
           :buffer "*helm pdf-annots*"))
 
+;; when in annt buffer, pop up outline in same buffer
+(defun outline-from-annot-buffer ()
+  (interactive)
+  (let ((pdf-outline-display-buffer-action '((display-buffer-reuse-window display-buffer-same-window) . nil)))
+    (pdf-outline pdf-annot-list-document-buffer nil))) 
 
   ;; TODO copy annotation text on y
   ;; (define-key pdf-annot-list-mode-map (kbd "y") 'pdf-annot---copy-highlight-annotation-text)
@@ -200,5 +208,6 @@ have the PDF buffer automatically move along with us."
       :eval-after-load pdf-annot
       :bindings
       "y"                'pdf-annot---copy-highlight-annotation-text
+      "o"                'outline-from-annot-buffer
       "e"                'pdf-annot---edit-this-annot-highlight-text-as-content
       "h"                'pdf-annot---browse-annot-texts))
