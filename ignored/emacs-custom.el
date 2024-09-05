@@ -74,6 +74,7 @@
  '(evil-insert-state-modes
    '(eaf-edit-mode comint-mode erc-mode eshell-mode geiser-repl-mode gud-mode inferior-apl-mode inferior-caml-mode inferior-emacs-lisp-mode inferior-j-mode inferior-python-mode inferior-scheme-mode inferior-sml-mode internal-ange-ftp-mode prolog-inferior-mode reb-mode shell-mode slime-repl-mode term-mode wdired-mode))
  '(evil-move-cursor-back nil)
+ '(evil-org-use-additional-insert t)
  '(evil-undo-system 'undo-tree)
  '(evil-want-Y-yank-to-eol nil)
  '(fortune-dir "/home/chriad/.local/share/chezmoi/ignored/emacs/fortune")
@@ -146,6 +147,7 @@
      ("FIXME" . "#dc752f")
      ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
+ '(ielm-mode-hook '(eldoc-mode) nil nil "before reset: elisp-def-mode | spacemacs... | company-mode")
  '(ignored-local-variable-values
    '((magit-todos-exclude-globs "elpa/")
      (org-confirm-babel-evaluate)))
@@ -251,13 +253,8 @@
      (inhibit-same-window . t)
      (direction . right)) nil nil "TODO: change behaviour")
  '(pdf-outline-display-labels t)
- '(pdf-tools-enabled-hook
-   '((lambda nil
-       (define-key pdf-annot-list-mode-map
-                   (kbd "o")
-                   #'(lambda nil
-                       (interactive)
-                       (pdf-outline pdf-annot-list-document-buffer nil))))))
+ '(pdf-tools-enabled-modes
+   '(pdf-history-minor-mode pdf-isearch-minor-mode pdf-links-minor-mode pdf-misc-minor-mode pdf-outline-minor-mode pdf-misc-size-indication-minor-mode pdf-misc-menu-bar-minor-mode pdf-annot-minor-mode pdf-sync-minor-mode pdf-misc-context-menu-minor-mode pdf-cache-prefetch-minor-mode pdf-occur-global-minor-mode pdf-view-themed-minor-mode pdf-view-restore-mode))
  '(pdf-view-display-size 'fit-page)
  '(pdf-view-midnight-colors '("white" . "black"))
  '(pdfgrep-options " -H -n -r ")
@@ -269,7 +266,14 @@
  '(psession-autosave-mode t)
  '(psession-mode t)
  '(psession-object-to-save-alist
-   '((read-expression-history . "read-expression-history.el")
+   '((pdf-occur-history . "pdf-occur-history.el")
+     (org-roam-node-history . "org-roam-node-history.el")
+     (bmkp-helm-ff-session-bookmark-history . "bmkp-helm-ff-session-bookmark-history.el")
+     (bmkp-helpful-bookmark-history . "bmkp-helpful-bookmark-history.el")
+     (magit-git-command-history . "magit-git-command-history.el")
+     (evil-ex-history . "evil-ex-history.el")
+     (bookmark-history . "bookmark-history.el")
+     (read-expression-history . "read-expression-history.el")
      (helm-M-x-input-history . "helm-M-x-input-history.el")
      (helm-ag--helm-history . "helm-ag--helm-history.el")
      (minibuffer-history . "minibuffer-history.el")
@@ -289,7 +293,8 @@
      (register-alist . "register-alist.el")
      (psession--winconf-alist . "psession-winconf-alist.el")
      (psession--selected-frame-parameters . "psession-selected-frame-parameters.el")
-     (key-quiz--custom-keys-alist . "key-quiz--custom-keys-alist.el")))
+     (key-quiz--custom-keys-alist . "key-quiz--custom-keys-alist.el")
+     (chriad-pdf-annots-list . "chriad-pdf-annots-list.el")))
  '(psession-savehist-mode t)
  '(racket-browse-url-function 'browse-url-firefox)
  '(racket-documentation-search-location 'local)
@@ -333,6 +338,7 @@
  '(tool-bar-mode nil)
  '(tramp-adb-connect-if-not-connected t)
  '(treemacs-icons-dired-mode t)
+ '(undo-fu-session-global-mode t)
  '(undo-tree-auto-save-history nil)
  '(url-handler-mode t nil nil "e.g. open http url as file in buffer")
  '(version-control t)
