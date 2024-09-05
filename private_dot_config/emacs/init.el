@@ -206,7 +206,7 @@ This function should only modify configuration layer settings."
 
                                       lisp-extra-font-lock
                                       highlight-indent-guides
-                                      elisp-def
+                                      ;; elisp-def ;; part of elisp layer
                                       key-quiz
                                       ;; sr-speedbar
                                       lispy
@@ -740,7 +740,7 @@ It should only modify the values of Spacemacs settings."
    ;; Run `spacemacs/prettify-org-buffer' when
    ;; visiting README.org files of Spacemacs.
    ;; (default nil)
-   dotspacemacs-pretty-docs nil
+   dotspacemacs-pretty-docs t
 
    ;; If nil the home buffer shows the full path of agenda items
    ;; and todos. If non-nil only the file name is shown.
@@ -767,20 +767,18 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
 
   ;; The default is 800 kilobytes.  Measured in bytes.
-  (setq gc-cons-threshold (* 50 1000 1000))
+  ;; (setq gc-cons-threshold (* 50 1000 1000))
 
   ;; (defvar key-quiz--custom-keys-alist '(("C-h k" . "describe-key")))
   ;; (set-face-attribute 'default nil :height 120)
   ;; Profile emacs startup
-  (add-hook 'emacs-startup-hook
-            (lambda ()
-              (message "*** Emacs loaded in %s with %d garbage collections."
-                       (format "%.2f seconds"
-                               (float-time
-                                (time-subtract after-init-time before-init-time)))
-                       gcs-done)))
-
-
+  ;; (add-hook 'emacs-startup-hook
+  ;;           (lambda ()
+  ;;             (message "*** Emacs loaded in %s with %d garbage collections."
+  ;;                      (format "%.2f seconds"
+  ;;                              (float-time
+  ;;                               (time-subtract after-init-time before-init-time)))
+  ;;                      gcs-done)))
   )
 
 (defun dotspacemacs/user-load ()
@@ -797,6 +795,30 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+
+  ;; (save-excursion
+  ;;   (search-backward-regexp "(defun")
+  ;;   (forward-list)
+  ;;   (call-interactively 'eval-last-sexp))
+
+
+  ;; (spacemacs|diminish achievements-mode " 🏆" " [trophy]")
+  ;; (spacemacs|add-toggle nameless
+  ;;   :status nameless-mode
+  ;;   :on (nameless-mode)
+  ;;   :off (nameless-mode -1)
+
+
+ ;; (defun log-edebug-instrumentees-advice (orig &rest args)
+ ;;     "DOCSTRING"
+ ;;     (let ((form (save-excursion
+ ;;                   (search-backward-regexp "(defun")
+ ;;                   (forward-list)
+ ;;                   (call-interactively 'eval-last-sexp))))
+ ;;  (if orig (message "%s" form) nil)))
+
+ ;; (add-function :before 'eval-defun #'log-edebug-instrumentees-advice)
 
   (with-eval-after-load 'helm-bookmark
     ;; integrate bookmark+ with helm-bookmarks
@@ -988,9 +1010,10 @@ before packages are loaded."
       (save-buffer)
       (pdf-view-mode))
 
-    (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-themed-minor-mode))
+    ;; moved to customize
+    ;; (setq pdf-view-mode-hook '(pdf-view-restore-mode pdf-view-themed-minor-mode))
     ;; automatically enable follow mode for search results
-    (add-hook 'pdf-occur-buffer-mode-hook (lambda () (next-error-follow-minor-mode)))
+    (add-hook 'pdf-occur-buffer-mode-hook (lambda () (next-error-follow-minor-mode))) ;; follow occur hits
 
     (add-hook 'pdf-annot-list-mode-hook 'pdf-annot-list-follow-minor-mode)
     ;; (use-package pdf-tools
