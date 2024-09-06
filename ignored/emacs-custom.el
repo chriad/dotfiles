@@ -147,7 +147,7 @@
      ("FIXME" . "#dc752f")
      ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
- '(ielm-mode-hook '(eldoc-mode) nil nil "before reset: elisp-def-mode | spacemacs... | company-mode")
+ '(ielm-mode-hook '(eldoc-mode) t nil "before reset: elisp-def-mode | spacemacs... | company-mode")
  '(ignored-local-variable-values
    '((magit-todos-exclude-globs "elpa/")
      (org-confirm-babel-evaluate)))
@@ -266,7 +266,8 @@
  '(psession-autosave-mode t)
  '(psession-mode t)
  '(psession-object-to-save-alist
-   '((pdf-occur-history . "pdf-occur-history.el")
+   '((chriad-pdf-annots . "chriad-pdf-annots.el")
+     (pdf-occur-history . "pdf-occur-history.el")
      (org-roam-node-history . "org-roam-node-history.el")
      (bmkp-helm-ff-session-bookmark-history . "bmkp-helm-ff-session-bookmark-history.el")
      (bmkp-helpful-bookmark-history . "bmkp-helpful-bookmark-history.el")

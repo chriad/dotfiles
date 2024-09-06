@@ -245,9 +245,9 @@ This function should only modify configuration layer settings."
                                       keyfreq
                                       epkg
 
-                                      good-scroll
-                                      on-screen
-                                      scrollkeeper
+                                      ;; good-scroll
+                                      ;; on-screen
+                                      ;; scrollkeeper
 
                                       edit-indirect
                                       mpv
@@ -1248,7 +1248,7 @@ before packages are loaded."
 
 
 
-    (good-scroll-mode 1)
+    ;; (good-scroll-mode 1)
 
     (global-prettify-symbols-mode)
 
