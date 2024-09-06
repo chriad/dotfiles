@@ -67,8 +67,10 @@ This function should only modify configuration layer settings."
               calibredb-library-alist '(("/media/chriad/ssd-45/reflowable"
                                          "/media/chriad/ssd-45/fixed-layout")))
      csv
-     djvu
-     html
+     ;; web
+     web-beautify
+     (html :variables web-fmt-tool 'web-beautify)
+
      ;; (scheme :variables
      ;;         scheme-implementations '(chicken))
      ;; (ranger :variables ranger-show-preview t)
@@ -95,8 +97,10 @@ This function should only modify configuration layer settings."
      ;;           wakatime-cli-path "wakatime"
      ;;           wakatime-python-bin nil)
      git
+     ;; docs
      pdf
-     ;; eaf
+     djvu
+
      helm
      (spacemacs-evil :variables
                      spacemacs-evil-collection-allowed-list
@@ -107,9 +111,8 @@ This function should only modify configuration layer settings."
      (markdown :variables markdown-live-preview-engine 'vmd)
      multiple-cursors
      (org :variables
-          org-enable-org-journal-support t
+          ;; org-enable-org-journal-support t
           org-enable-roam-support t
-          org-enable-roam-server t
           org-enable-github-support t)
      (shell :variables
             shell-default-height 30

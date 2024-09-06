@@ -13,11 +13,15 @@
   (interactive)
   (helm-find-1 (file-name-as-directory "/media/chriad/ext4/dpt-mirror/dpt")))
 
+
+;; TODO must also search package-directory-list for guix
+;; TODO use symbol at point as default search term
 (defun chriad/search-elpa ()
-  "Search for code in packages. TODO use symbol at point as default search term"
+  "Search for code in packages. "
   (interactive)
     (let ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never -t el"))
-      (spacemacs/helm-files-do-rg (concat configuration-layer--elpa-root-directory emacs-version "/" configuration-layer-elpa-subdirectory))))
+      ;; (spacemacs/helm-files-do-rg (concat configuration-layer--elpa-root-directory emacs-version "/" configuration-layer-elpa-subdirectory)
+      (spacemacs/helm-files-do-rg package-user-dir)))
 
 
              ;;   "Search in current directory with `rg'."
@@ -50,8 +54,10 @@
 (spacemacs/declare-prefix "oc" "customize")
 (spacemacs/set-leader-keys "ocg" 'customize-group)
 (spacemacs/set-leader-keys "ocv" 'customize-variable)
-(spacemacs/set-leader-keys "ocb" 'customize-browse)
-(spacemacs/set-leader-keys "ocs" 'customize-set-value)
+(spacemacs/set-leader-keys "ocs" 'customize-set-value) ;; set 1
+(spacemacs/set-leader-keys "oco" 'customize-option-other-window) ;; show 1
+(spacemacs/set-leader-keys "ocb" 'customize-browse) ;; show n
+(spacemacs/set-leader-keys "oca" 'customize-apropos) ;; show n
 
 (spacemacs/declare-prefix "oo" "org")
 (spacemacs/set-leader-keys "ool" 'ace-link-org)
