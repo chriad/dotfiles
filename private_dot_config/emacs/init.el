@@ -107,7 +107,7 @@ This function should only modify configuration layer settings."
      (markdown :variables markdown-live-preview-engine 'vmd)
      multiple-cursors
      (org :variables
-          ;; org-enable-org-journal-support t
+          org-enable-org-journal-support t
           org-enable-roam-support t
           org-enable-roam-server t
           org-enable-github-support t)
@@ -134,8 +134,8 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages '(
                                       ;; (qpdf :fetcher github :repo "orgtre/qpdf.el" :commands qpdf)
                                       (qpdf :location (recipe
-                                                          :fetcher github
-                                                          :repo "orgtre/qpdf.el"))
+                                                       :fetcher github
+                                                       :repo "orgtre/qpdf.el"))
                                       ;; load-dir
                                       org-roam-ui
                                       zones ;; TODO: try multiple narrowings
@@ -271,7 +271,7 @@ This function should only modify configuration layer settings."
    ;; installs only the used packages but won't delete unused ones. `all'
    ;; installs *all* packages supported by Spacemacs and never uninstalls them.
    ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-but-keep-unused))
+   dotspacemacs-install-packages 'used-but-keep-unused)) ;; this seems necessary for geiser, geiser-guile
 
 (defun dotspacemacs/init ()
   "Initialization:
@@ -606,7 +606,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Show the scroll bar while scrolling. The auto hide time can be configured
    ;; by setting this variable to a number. (default t)
-   dotspacemacs-scroll-bar-while-scrolling t
+   dotspacemacs-scroll-bar-while-scrolling nil
 
    ;; Control line numbers activation.
    ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
@@ -766,6 +766,7 @@ It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
 
+  (open-dribble-file "~/.config/emacs/dribble")
   ;; The default is 800 kilobytes.  Measured in bytes.
   ;; (setq gc-cons-threshold (* 50 1000 1000))
 
@@ -796,6 +797,39 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+(defun lib-bookmark-jump (bookmark)
+  "Create and switch to helpful bookmark BOOKMARK."
+  (let* ((pkg (bookmark-prop-get bookmark 'pkg))
+         (position (bookmark-prop-get bookmark 'position))
+         (oldpath (bookmark-prop-get bookmark 'libpath))
+         (newpath  (find-library-name pkg)))
+    ;; check if package has been updated since last visit
+    ;; add new path to list 'revisions to track change
+    (unless (equal oldpath newpath) (message "Package update detected"))
+    (find-file newpath)
+    (goto-char position)))
+
+(defun lib-bookmark-make-record ()
+  (require 'package-lint)
+  ;; TODO check (package-lint--get-package-prefix)=nil. Then dispatch to normal bookmark-default-record
+  ;; TODO difference between point and position?
+  ;; TODO if nil assume builtin?
+  ;; epl-find-built-in-package
+  ;; epl-find-installed-package
+  ;; `epl-built-in-packages', `epl-installed-packages', `
+
+  `(,@(bookmark-make-record-default t nil nil) ;; no-file context=yes point=yes
+    (pkg       . ,(package-lint--get-package-prefix))
+    (libpath   . ,(buffer-file-name))
+    (handler   . lib-bookmark-jump)))
+
+(defun el-pkg-p ()
+  (require 'package-lint)
+  (if (package-lint--get-package-prefix) t nil))
+
+(add-hook 'emacs-lisp-mode-hook #'(lambda () (if (el-pkg-p)
+                                            (setq-local bookmark-make-record-function #'lib-bookmark-make-record))))
+
 
   ;; (save-excursion
   ;;   (search-backward-regexp "(defun")
@@ -810,15 +844,15 @@ before packages are loaded."
   ;;   :off (nameless-mode -1)
 
 
- ;; (defun log-edebug-instrumentees-advice (orig &rest args)
- ;;     "DOCSTRING"
- ;;     (let ((form (save-excursion
- ;;                   (search-backward-regexp "(defun")
- ;;                   (forward-list)
- ;;                   (call-interactively 'eval-last-sexp))))
- ;;  (if orig (message "%s" form) nil)))
+  ;; (defun log-edebug-instrumentees-advice (orig &rest args)
+  ;;     "DOCSTRING"
+  ;;     (let ((form (save-excursion
+  ;;                   (search-backward-regexp "(defun")
+  ;;                   (forward-list)
+  ;;                   (call-interactively 'eval-last-sexp))))
+  ;;  (if orig (message "%s" form) nil)))
 
- ;; (add-function :before 'eval-defun #'log-edebug-instrumentees-advice)
+  ;; (add-function :before 'eval-defun #'log-edebug-instrumentees-advice)
 
   (with-eval-after-load 'helm-bookmark
     ;; integrate bookmark+ with helm-bookmarks
@@ -847,8 +881,8 @@ before packages are loaded."
 
 
     ;; prompt before close
-     (add-hook 'kill-emacs-query-functions
-               'custom-prompt-customize-unsaved-options)
+    (add-hook 'kill-emacs-query-functions
+              'custom-prompt-customize-unsaved-options)
 
 
     (put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")
@@ -944,9 +978,9 @@ before packages are loaded."
     ;; (load-dirs-reload)
     (defun load-directory (dir)
       (let ((load-it (lambda (f)
-		                   (load-file (concat (file-name-as-directory dir) f)))
-		                 ))
-	      (mapc load-it (directory-files dir nil "\\.el$"))))
+                       (load-file (concat (file-name-as-directory dir) f)))
+                     ))
+        (mapc load-it (directory-files dir nil "\\.el$"))))
     (load-directory "~/.config/emacs/el-patch-patches/")
 
     (setq pylookup-html-locations '("https://docs.python.org/3"))
@@ -1023,6 +1057,7 @@ before packages are loaded."
     ;;;
 
     (use-package org-roam
+      :defer t
       :config
       (setq org-roam-directory "/home/chriad/roam/")
       (setq org-roam-node-display-template "${title:*} ${tags:15}")
@@ -1091,15 +1126,11 @@ before packages are loaded."
       ("C-c n o" . org-id-get-create)
       ("C-c n o" . org-id-get-create))
 
-    ;; (require 'org-roam-protocol)
-
-    ;; (require 'dap-python)
-
-    (defun org-capture-mode-hook--org-fc-cloze-code-hook ()
-      (if (equal (org-capture-get :key) "lcs")
-          (progn
-            (org-babel-next-src-block)
-            (org-edit-special))))
+    ;; (defun org-capture-mode-hook--org-fc-cloze-code-hook ()
+    ;;   (if (equal (org-capture-get :key) "lcs")
+    ;;       (progn
+    ;;         (org-babel-next-src-block)
+    ;;         (org-edit-special))))
 
     (use-package org-fc
       :defer t
@@ -1182,7 +1213,8 @@ before packages are loaded."
 
     ;; (evil-set-initial-state 'org-capture-mode 'insert)
 
-    (add-hook 'org-mode-hook 'org-indent-mode)
+    ;; customize
+    ;; (add-hook 'org-mode-hook 'org-indent-mode)
 
     ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/dired-plus/dired+.el")
     ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/pp-plus/pp+.el")
@@ -1252,9 +1284,10 @@ before packages are loaded."
 
     (global-prettify-symbols-mode)
 
-    (add-hook 'dired-mode-hook
-              (lambda ()
-                (dired-hide-details-mode)))
+    ;; moved to customize
+    ;; (add-hook 'dired-mode-hook
+    ;;           (lambda ()
+    ;;             (dired-hide-details-mode)))
 
     ;; (require 'orca)
 
@@ -1267,7 +1300,14 @@ before packages are loaded."
 
     ;; from debian package hyperspec
     ;; hyperspec.el that defines ``common-lisp-hyperspec-root'' is part of package slime
-    (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
+
+
+
+    (defcustom common-lisp-hyperspec-root "/usr/share/doc/hyperspec/"
+      "Normal hook run when entering Text mode and many related modes."
+      :type '(string)
+      :group 'lisp)
+
     (setq common-lisp-hyperspec-symbol-table
           (concat common-lisp-hyperspec-root "Data/Map_Sym.txt"))
 
@@ -1287,39 +1327,44 @@ before packages are loaded."
 
 
 
-    (setq spaceline-org-clock-p t)
+    ;; (setq spaceline-org-clock-p t)
     ;; TODO move to org-additional
-    (setq org-mru-clock-keep-formatting t)
+    ;; (setq org-mru-clock-keep-formatting t)
 
-    (add-hook 'org-mode-hook
-              (lambda ()
-                (setq prettify-symbols-alist
-                      '(("lambda" . ?λ)
-                        ("defun" . ?⨐)
-                        ("->"     . ?⟶)
-                        (":="     . ?≔)
-                        ("=>"     . ?⟹)
-                        ("#t"     . ?⟙)
-                        ("!="     . ?≠)
-                        ("#f"     . ?⟘)))))
+    ;; moved to customize
+    ;; (add-hook 'org-mode-hook
+    ;;           (lambda ()
+    ;;             (setq prettify-symbols-alist
+    ;;                   '(("lambda" . ?λ)
+    ;;                     ("defun" . ?⨐)
+    ;;                     ("->"     . ?⟶)
+    ;;                     (":="     . ?≔)
+    ;;                     ("=>"     . ?⟹)
+    ;;                     ("#t"     . ?⟙)
+    ;;                     ("!="     . ?≠)
+    ;;                     ("#f"     . ?⟘)))))
 
     (use-package symex
+      :defer t
       :config
       (symex-initialize)
       (global-set-key (kbd "s-;") 'symex-mode-interface)
       :custom (symex-modal-backend 'hydra))
 
 
-    (require 'org-page)
-    (setq op/repository-directory "~/blog/")
-    (setq op/site-domain "http://chriad.github.io/")
-    (setq op/personal-github-link "https://github.com/chriad")
-    (setq op/site-main-title "My Blog")
-    (setq op/site-sub-title "Spacemacs")
+    (with-eval-after-load 'org
 
-    (require 'evil-surround)
-    (add-hook 'org-mode-hook (lambda ()
-                               (push '(?{ . ("{{" . "}}")) evil-surround-pairs-alist)))
+      (require 'org-page)
+      (setq op/repository-directory "~/blog/")
+      (setq op/site-domain "http://chriad.github.io/")
+      (setq op/personal-github-link "https://github.com/chriad")
+      (setq op/site-main-title "My Blog")
+      (setq op/site-sub-title "Spacemacs")
+
+      (require 'evil-surround)
+      (add-hook 'org-mode-hook (lambda ()
+                                 (push '(?{ . ("{{" . "}}")) evil-surround-pairs-alist)))
+      )
 
     (setq custom-file "/home/chriad/.config/emacs/emacs-custom.el")
     (load custom-file)))

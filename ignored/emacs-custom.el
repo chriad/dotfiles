@@ -53,6 +53,36 @@
  '(dired-auto-revert-buffer 'dired-directory-changed-p)
  '(dired-dwim-target t)
  '(dired-listing-switches "-alh")
+ '(dired-mode-hook
+   '(pdf-occur-dired-minor-mode
+     (closure
+         (t)
+         nil
+       (dired-hide-details-mode))
+     #[0 "\302\10\303\"\211\203\16\0\211\304=\203\24\0\305\10\303\306#\210\302\10\307\"\262\1\211\203$\0\211\304=\203*\0\305\10\307\310#\210\210\10\311\312\313\314\301!\203_\0\11\262\4\2AA\262\3\1AA\262\2\211AA\262\1\305\4\315\316\4\"\317#\210\305\4\315\316\5\"\320#\210\305\4\321\322#\207\305\4\315\316\6\6\"\323#\210\305\4\315\316\4\"\324#\210\305\4\315\316\5\"\325#\210\305\4\326\327#\207"
+         [dired-mode-map diredp-bookmark-menu lookup-key "J" undefined define-key bmkp-dired-jump "\12" bmkp-dired-this-dir-jump
+                         (menu-bar subdir separator-bmkp)
+                         (menu-bar subdir bmkp-dired-jump)
+                         (menu-bar subdir bmkp-dired-this-dir-jump)
+                         boundp apply vector
+                         (menu-item "Jump to a Dired Bookmark For This Dir" bmkp-dired-this-dir-jump :help "Jump to a bookmarked Dired buffer for this directory")
+                         (menu-item "Jump to a Dired Bookmark" bmkp-dired-jump :help "Jump to a bookmarked Dired buffer")
+                         [bookmarks-here]
+                         (menu-item "Here" bmkp-here-menu :enable
+                                    (and bmkp-add-bookmarks-here-menu-flag
+                                         (bmkp-exists-this-file/buffer-bookmarks-p)))
+                         ("--")
+                         (menu-item "Jump to a Dired Bookmark For This Dir" bmkp-dired-this-dir-jump :help "Jump to a bookmarked Dired buffer for this directory")
+                         (menu-item "Jump to a Dired Bookmark" bmkp-dired-jump :help "Jump to a bookmarked Dired buffer")
+                         [bookmarks-here]
+                         (menu-item "Here" bmkp-here-menu :enable
+                                    (and bmkp-add-bookmarks-here-menu-flag
+                                         (bmkp-exists-this-file/buffer-bookmarks-p)))]
+         9]
+     #[0 "\301\300!\210\302\211\20\207"
+         [bookmark-make-record-function make-local-variable bmkp-make-dired-record]
+         2]
+     dired-extra-startup spacemacs//transient-hook-\(lambda\ nil\ \(let\ \(\(dired-quick-sort-suppress-setup-warning\ \'message\)\)\ \(dired-quick-sort-setup\)\)\)))
  '(dired-recursive-deletes 'always)
  '(eaf-config-location "/media/chriad/nebula/spacemacs-config-files/fork/eaf/")
  '(eaf-find-file-ext-blacklist '("epub"))
@@ -60,7 +90,15 @@
  '(eaf-org-override-pdf-links-store t)
  '(eaf-pdf-extension-list '("pdf" "xps" "oxps" "cbz" "fb2" "fbz"))
  '(emacs-lisp-mode-hook
-   '(eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode elisp-def-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode))
+   '(eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode elisp-def-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode
+                (closure
+                    (t)
+                    nil
+                  (if
+                      (el-pkg-p)
+                      (set
+                       (make-local-variable 'bookmark-make-record-function)
+                       #'lib-bookmark-make-record)))))
  '(enable-local-variables t)
  '(enable-recursive-minibuffers nil nil nil "TODO")
  '(epa-file-cache-passphrase-for-symmetric-encryption t)
@@ -74,7 +112,7 @@
  '(evil-insert-state-modes
    '(eaf-edit-mode comint-mode erc-mode eshell-mode geiser-repl-mode gud-mode inferior-apl-mode inferior-caml-mode inferior-emacs-lisp-mode inferior-j-mode inferior-python-mode inferior-scheme-mode inferior-sml-mode internal-ange-ftp-mode prolog-inferior-mode reb-mode shell-mode slime-repl-mode term-mode wdired-mode))
  '(evil-move-cursor-back nil)
- '(evil-org-use-additional-insert t)
+ '(evil-org-use-additional-insert t t)
  '(evil-undo-system 'undo-tree)
  '(evil-want-Y-yank-to-eol nil)
  '(fortune-dir "/home/chriad/.local/share/chezmoi/ignored/emacs/fortune")
@@ -126,8 +164,8 @@
      ("bookmark+: Find file" . bmkp-find-file)
      ("bookmark+: Add tag" . ignore)
      ("bookmark+: Edit bookmark " . bmkp-edit-bookmark-record)))
- '(helm-yas-display-key-on-candidate t)
- '(helm-yas-space-match-any-greedy t)
+ '(helm-yas-display-key-on-candidate t t)
+ '(helm-yas-space-match-any-greedy t t)
  '(history-delete-duplicates t)
  '(history-length 1000)
  '(hl-sexp-background-colors '("white smoke" "white"))
@@ -185,6 +223,41 @@
  '(org-journal-enable-agenda-integration t)
  '(org-journal-file-format "%Y-%m-%d.org")
  '(org-journal-time-prefix "- ")
+ '(org-mode-hook
+   '(org-tempo-setup org-ref-org-menu
+                     (closure
+                         (t)
+                         nil
+                       (setq evil-surround-pairs-alist
+                             (cons
+                              '(123 "{{" . "}}")
+                              evil-surround-pairs-alist)))
+                     #[0 "\300\301\302\303\304$\207"
+                         [add-hook change-major-mode-hook org-fold-show-all append local]
+                         5]
+                     #[0 "\300\301\302\303\304$\207"
+                         [add-hook change-major-mode-hook org-babel-show-result-all append local]
+                         5]
+                     org-babel-result-hide-spec org-babel-hide-all-hashes
+                     #[0 "\301\211\20\207"
+                         [imenu-create-index-function org-imenu-get-tree]
+                         2]
+                     (closure
+                         (t)
+                         nil
+                       (setq prettify-symbols-alist
+                             '(("lambda" . 955)
+                               ("defun" . 10768)
+                               ("->" . 10230)
+                               (":=" . 8788)
+                               ("=>" . 10233)
+                               ("#t" . 10201)
+                               ("!=" . 8800)
+                               ("#f" . 10200))))
+                     org-indent-mode org-pdftools-setup-link spacemacs/org-setup-evil-surround spacemacs/load-yasnippet toc-org-enable org-superstar-mode
+                     (lambda nil
+                       (require 'org-ref))
+                     org-download-enable dotspacemacs//prettify-spacemacs-docs spacemacs//evil-org-mode org-eldoc-load spacemacs//init-company-org-mode company-mode))
  '(org-modules
    '(ol-bbdb ol-bibtex org-ctags ol-docview ol-doi ol-eww org-habit ol-info org-protocol org-tempo ol-w3m ol-bookmark ol-git-link ol-man))
  '(org-pdftools-free-pointer-color "#FF8C00")
