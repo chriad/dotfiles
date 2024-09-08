@@ -131,7 +131,6 @@
  '(global-visual-line-mode t)
  '(helm-M-x-show-short-doc t)
  '(helm-apropos-fuzzy-match t)
- '(helm-apropos-show-short-doc t)
  '(helm-bookmark-default-filtered-sources
    '(helm-source-bookmark-org helm-source-bookmark-files&dirs helm-source-bookmark-helm-find-files helm-source-bookmark-info helm-source-bookmark-gnus helm-source-bookmark-mu4e helm-source-bookmark-man helm-source-bookmark-images helm-source-bookmark-w3m helm-source-bookmark-uncategorized helm-source-bookmark-set helm-source-bookmark-dired))
  '(helm-bookmark-show-location t)
