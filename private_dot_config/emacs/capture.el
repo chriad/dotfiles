@@ -1,5 +1,6 @@
 ;;; capture.el --- My personal capture templates.
 
+;; helper for f capture
 (defun chriad/fortune-append (&optional interactive file)
   "Helper function for capture template `f'
 
@@ -28,7 +29,6 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
     ;;       (fortune-compile file)))
     ))
 
-;; TODO does not work
 ;; helper for "h" capture template
 (defun chriad/helm-in-org-buffer (filename &optional preselect)
   "Display and filter headlines in an org file with `helm'.
@@ -76,23 +76,26 @@ with the `org-roam-find-file' interface"
         ;;  (function (lambda () (org-roam-node-find)))
         ;;  "%i" :unnarrowed t)
 
-        ("t" "Todo" entry (file+headline "~/roam/inbox.org" "Tasks")
-         "* TODO %?\n  %i\n  %a")
+        ("t" "Todo" entry
+         (function (lambda () (chriad/helm-in-org-buffer (chriad/org-roam-find-file-name))))
+         "* TODO %?\n")
 
         ;; TODO add visited file %f for author
         ("f" "fortune from url" plain
          #'chriad/fortune-append
          "%i\n\n          -- %:link%(eval fortune-end-sep)" :immediate-finish t)
 
-        ;; ("x" "firefox Org Capture Selected template" entry (file+headline "/home/chriad/roam/Inbox.org" "firefox")
-        ;;  "* %?%i\n%u\n%a\n")
-
+        ;;; Firefox `Org Capture` plugin
+        ;; c-s-l in firefox without region captures here
         ("y" "firefox Org Capture Unselected template" entry (file+headline "/home/chriad/roam/Inbox.org" "firefox links")
          "* %?\n%u\n%a\n")
 
+        ;; c-s-l with region in firefox captures region here
         ("x" "notes" plain (file "/home/chriad/Documents/notes.org")
          "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
 
+
+        ;;; org-fc related captures
         ("l" "org-fc")
         ("lx" "front-back _ _" entry (file+headline "/home/chriad/Documents/org_fc.org" "org-fc")
          "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
@@ -126,8 +129,7 @@ with the `org-roam-find-file' interface"
         ("lcd" "deletion" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
          :before-finalize (lambda () (org-fc-type-cloze-init 'deletion)))
 
-
-
+        ;;; m captures
         ("m" "maps")
         ("mf" "_ _"
          table-line
@@ -136,9 +138,8 @@ with the `org-roam-find-file' interface"
          :table-line-pos "I+1"
          :immediate-finish t)
 
-        ;; ("mk" "key quiz"
-        ;;  )
-
+        ;; ("mk" "key quiz")
+      
         ("ms" "_ r"
          table-line
          (file "~/Documents/vocabulary-map.org")
@@ -153,7 +154,7 @@ with the `org-roam-find-file' interface"
          :table-line-pos "I+1"
          :immediate-finish t)
 
-
+        ;;; c captures
         ("c" "~/Documents/_")
 
         ;; TODO dynamically resolve captured mode: %(symbol-name (symbol-value 'major-mode))
@@ -195,12 +196,8 @@ with the `org-roam-find-file' interface"
          :table-line-pos "I+1"
          :immediate-finish t)
 
-        ("cq" "Questions"
-         plain
-         (file "~/Documents/q-and-a.txt")
-         "%^{Question}?"
-         :immediate-finish t)
-        ))
+        ("cq" "Questions" plain (file "~/Documents/q-and-a.txt") "%^{Question}?" :immediate-finish t)))
+
 
 ;; emacsclient --eval "(abs--quick-capture)" --alternate-editor= --create-frame
 (defun abs--quick-capture ()
@@ -218,5 +215,4 @@ with the `org-roam-find-file' interface"
   ;; set frame title
   (set-frame-name "emacs org capture")
   (add-hook 'org-capture-after-finalize-hook 'abs--delete-frame-after-capture)
-  (abs--org-capture-place-template-dont-delete-windows 'org-capture nil)
-  )
+  (abs--org-capture-place-template-dont-delete-windows 'org-capture nil))

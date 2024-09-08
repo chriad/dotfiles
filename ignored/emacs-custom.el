@@ -202,9 +202,9 @@
  '(markdown-hide-markup t)
  '(menu-bar-mode nil)
  '(org-M-RET-may-split-line '((default)))
+ '(org-agenda-files '("/home/chriad/roam/"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
- '(org-capture-mode-hook
-   '(spacemacs//org-capture-start org-capture-mode-hook--org-fc-cloze-code-hook))
+ '(org-capture-mode-hook '(spacemacs//org-capture-start) nil nil "TODO: org-fc hooks")
  '(org-cite-global-bibliography '("/home/chriad/.config/bibliographies/fixed-layout.bib"))
  '(org-clock-idle-time 10)
  '(org-clock-persist t)
