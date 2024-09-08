@@ -143,7 +143,7 @@
  '(helm-descbinds-window-style 'split)
  '(helm-echo-input-in-header-line t)
  '(helm-ff-allow-non-existing-file-at-point t)
- '(helm-file-preview-mode t nil (helm-file-preview))
+ '(helm-file-preview-mode nil nil (helm-file-preview) "This interferes with c-x 8")
  '(helm-firefox-default-directory "/home/chriad/snap/firefox/common/.mozilla/firefox/")
  '(helm-lisp-fuzzy-completion t)
  '(helm-move-to-line-cycle-in-source nil)
