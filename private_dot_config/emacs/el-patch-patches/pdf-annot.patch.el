@@ -174,19 +174,25 @@ have the PDF buffer automatically move along with us."
                                               edg
                                               pdf-view-selection-style))
                           edges))
-        (mapconcat 'identity txt " "))))
+        ;; `(,@(mapconcat 'identity txt " ") . ,@(pdf-annot-get-id (a)))
+        (mapconcat 'identity txt " ")
+        )
+      )
+    )
 
   ;; eval this in pdf-view-mode
   ;; TODO on RET, goto annotation
+;; (pdf-annot-list-display-annotation-from-id (tabulated-list-get-id))
   (defun pdf-annot---browse-annot-texts ()
     (interactive)
+    (setq annots (sort (pdf-annot-getannots nil
+                                            '(highlight)
+                                            pdf-annot-list-document-buffer)
+                       #'pdf-annot-compare-annotations))
     (helm :sources (helm-build-in-buffer-source "test"
+                     :action '(("ignore" . ignore))
                      :data (-map (lambda (x)
-                                   (pdf-annot---get-text-from-annot x))
-                                 (sort (pdf-annot-getannots nil
-                                                            '(highlight)
-                                                            pdf-annot-list-document-buffer)
-                                       #'pdf-annot-compare-annotations)))
+                                   (pdf-annot---get-text-from-annot x)) annots))
           :buffer "*helm pdf-annots*"))
 
 ;; when in annt buffer, pop up outline in same buffer
