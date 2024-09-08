@@ -1,6 +1,14 @@
 ;;;; spacemacs private ``o'' keymap
 
+;;; use c-h c (describe-key-briefly) to see the key name
 ;; (keymap-global-set (kbd "Spc-C-Spc") 'execute-extended-command-for-buffer)
+(keymap-global-set "C-x <home>" 'execute-extended-command-for-buffer)
+(keymap-global-set "<kp-enter>" 'ignore)
+(keymap-global-set "<kp-delete>" 'ignore)
+(keymap-global-set "C-<f8>" 'ignore)
+
+
+;; s interferes with sway
 ;; (global-set-key (kbd "s-]") 'tab-next)
 ;; (global-set-key (kbd "s-[") 'tab-previous)
 ;; (global-set-key (kbd "s-c") 'helm-lisp-completion-at-point)
@@ -8,11 +16,12 @@
 
 ;; -----------------
 
-;; TODO use find
+;; TODO This is not optimal, I cannot narrow files
 (defun chriad/search-dpt ()
   (interactive)
-  (require 'helm-find)
-  (helm-find-1 (file-name-as-directory "/media/chriad/ext4/dpt-mirror/dpt")))
+  (require 'helm-fd)
+  (let ((helm-fd-switches '("--no-ignore" "--hidden" "--type" "f" "-e" "pdf" "--color" "always")))
+    (helm-fd-1 (file-name-as-directory "/media/chriad/ext4/dpt-mirror/dpt"))))
 
 
 ;; TODO must also search package-directory-list for guix
@@ -83,6 +92,7 @@
 (spacemacs/declare-prefix  "od" "describe")
 (spacemacs/set-leader-keys "odb" 'describe-bindings)
 (spacemacs/set-leader-keys "odm" 'describe-minor-mode-from-indicator)
+(spacemacs/set-leader-keys "odp" 'describe-personal-keybindings)
 
 ;; D
 (spacemacs/declare-prefix  "oD" "debug")
@@ -208,18 +218,14 @@
 ;; nonstandard keys
 
 
-
-
-;; define-key
 (define-key lisp-interaction-mode-map (kbd "C-e") 'pp-eval-last-sexp)
-;; open toc also from annots buffer
-;; (eval-after-load "pdf-annot"
-;;   (define-key pdf-annot-list-mode-map (kbd "o") #'(lambda () (interactive) (pdf-outline pdf-annot-list-document-buffer t)))
-;;   )
-(defun add-f-to-keyquiz ()
-  ;; TODO disambiguate map
-  ;; (("helm-command-map" "h h") ("ctl-x-map" "c h h") ("global-map" "C-x c h h"))
-  (interactive)
-  (add-to-list 'key-quiz--custom-keys-alist (cons (car (cdr (car (helpful--keymaps-containing helpful--sym)))) (symbol-name helpful--sym))))
 
-(evil-define-key 'normal helpful-mode-map (kbd "s") 'add-f-to-keyquiz)
+
+
+;; (defun add-f-to-keyquiz ()
+;;   ;; TODO disambiguate map
+;;   ;; (("helm-command-map" "h h") ("ctl-x-map" "c h h") ("global-map" "C-x c h h"))
+;;   (interactive)
+;;   (add-to-list 'key-quiz--custom-keys-alist (cons (car (cdr (car (helpful--keymaps-containing helpful--sym)))) (symbol-name helpful--sym))))
+
+;; (evil-define-key 'normal helpful-mode-map (kbd "s") 'add-f-to-keyquiz)

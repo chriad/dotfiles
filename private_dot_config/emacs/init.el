@@ -34,95 +34,110 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(toml
-     (python :variables python-backend 'lsp python-lsp-server 'pyright)
-     ;; rust
-     curiophenalia
-     ocaml
+   '(
+     ;;;; Programming
+     ;;; DSL
+     ;;  Markup & config
      asciidoc
+     (json :variables json-backend 'lsp)
+     bibtex
+     csv
+     (html :variables web-fmt-tool 'web-beautify)
+     yaml
+     ;; Lisp
+     ; racket
+     ; (scheme :variables scheme-implementations '(chicken))
+     emacs-lisp
+     common-lisp
+     ;;; general-purpose
+     ;; TOML
+     toml
+     ;; Multi paradigm
+     (python :variables python-backend 'lsp python-lsp-server 'pyright)
+     ; rust
+     ocaml
      lua
+     (javascript :variables javascript-backend 'lsp javascript-repl `nodejs)
+     ; sml
+
+     ;;;; Tools
      systemd
-     ;; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
-     ;; << private layers
+     pass
+     web-beautify
+     (shell :variables
+            shell-default-height 30
+            shell-default-position 'bottom)
+     lsp
+     dap
+
+     ;;;; private layers
      chezmoi
+     curiophenalia
      helm-additional
      elisp-additional
      org-additional
      bookmark-plus
-     ;; >> private layers
-     (javascript :variables javascript-backend 'lsp
-                 javascript-repl `nodejs)
-     (json :variables json-backend 'lsp)
-     pass
-     bibtex
+
+     ;;;; Misc
      (spacemacs-layouts :variables
                         spacemacs-layouts-restrict-spc-tab t
                         persp-autokill-buffer-on-remove 'kill-weak)
-     ;; sml
 
-     ;; toc
+     ;;;; third-party
+     ; toc
      (calibre :variables
               calibredb-root-dir "/media/chriad/ssd-45/reflowable"
               calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
               calibredb-library-alist '(("/media/chriad/ssd-45/reflowable"
                                          "/media/chriad/ssd-45/fixed-layout")))
-     csv
-     ;; web
-     web-beautify
-     (html :variables web-fmt-tool 'web-beautify)
 
-     ;; (scheme :variables
-     ;;         scheme-implementations '(chicken))
-     ;; (ranger :variables ranger-show-preview t)
-     yaml
-     helpful
-     ;; deft
-     (dash :variables
-           dash-docs-docset-newpath "~/.local/share/Zeal/Zeal/docsets")
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
-     ;; `M-m f e R' (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
+     ;;;; Completion
+     ;;; Auto-completion
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-help-tooltip 'manual)
-     ;; emoji
-     ;; better-defaults ;; emacs style
-     common-lisp
-     ;; (ipython-notebook :variables ein-backend 'jupyter)
-     emacs-lisp
-     ;; (wakatime :variables
-     ;;           wakatime-cli-path "wakatime"
-     ;;           wakatime-python-bin nil)
-     git
-     ;; docs
+
+     ;;; Helm
+     helm
+     ;;;; readers
      pdf
      djvu
+     ; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
+     ;;;; Source control
+     git
 
-     helm
+     ;;;; TODO classify
+     ; emoji
+     ; (ipython-notebook :variables ein-backend 'jupyter)
+
+     ; (ranger :variables ranger-show-preview t)
+     helpful
+     ; deft
+     (dash :variables ;; offline doc browser
+           dash-docs-docset-newpath "~/.local/share/Zeal/Zeal/docsets")
      (spacemacs-evil :variables
                      spacemacs-evil-collection-allowed-list
                      '(ediff dired))
      command-log
-     lsp
-     dap
      (markdown :variables markdown-live-preview-engine 'vmd)
      multiple-cursors
      (org :variables
-          ;; org-enable-org-journal-support t
+          ; org-enable-org-journal-support t
           org-enable-roam-support t
           org-enable-github-support t)
-     (shell :variables
-            shell-default-height 30
-            shell-default-position 'bottom)
-     ;; spell-checking
-     ;; syntax-checking
+
+     ;;;; Checkers
+     spell-checking
+     ; syntax-checking
+
+     ;;;; File Trees
      neotree
-     ;; treemacs
-     ;; racket
+     ; treemacs
+
+     ;;;; emacs
      semantic
+     ; better-defaults ;; emacs style
      )
 
 
