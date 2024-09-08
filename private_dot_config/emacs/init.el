@@ -815,39 +815,26 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+
 (defun lib-bookmark-jump (bookmark)
-  "Create and switch to helpful bookmark BOOKMARK."
   (let* ((pkg (bookmark-prop-get bookmark 'pkg))
          (position (bookmark-prop-get bookmark 'position))
          (oldpath (bookmark-prop-get bookmark 'libpath))
-         (newpath  (find-library-name pkg)))
-    ;; check if package has been updated since last visit
-    ;; add new path to list 'revisions to track change
+         (newpath  (find-library pkg)))
     (unless (equal oldpath newpath) (message "Package update detected"))
     (find-file newpath)
     (goto-char position)))
 
+
 (defun lib-bookmark-make-record ()
-  (require 'package-lint)
-  ;; TODO check (package-lint--get-package-prefix)=nil. Then dispatch to normal bookmark-default-record
-  ;; TODO difference between point and position?
-  ;; TODO if nil assume builtin?
-  ;; epl-find-built-in-package
-  ;; epl-find-installed-package
-  ;; `epl-built-in-packages', `epl-installed-packages', `
-
+  (if (find-library (file-name-nondirectory (buffer-file-name)))
   `(,@(bookmark-make-record-default t nil nil) ;; no-file context=yes point=yes
-    (pkg       . ,(package-lint--get-package-prefix))
+    (pkg       . ,(file-name-nondirectory (buffer-file-name)))
     (libpath   . ,(buffer-file-name))
-    (handler   . lib-bookmark-jump)))
+    (handler   . lib-bookmark-jump))
+  `(,@(bookmark-make-record-default))))
 
-(defun el-pkg-p ()
-  (require 'package-lint)
-  (if (package-lint--get-package-prefix) t nil))
-
-(add-hook 'emacs-lisp-mode-hook #'(lambda () (if (el-pkg-p)
-                                            (setq-local bookmark-make-record-function #'lib-bookmark-make-record))))
-
+(add-hook 'emacs-lisp-mode-hook #'(lambda () (setq-local bookmark-make-record-function #'lib-bookmark-make-record)))
 
   ;; (save-excursion
   ;;   (search-backward-regexp "(defun")
