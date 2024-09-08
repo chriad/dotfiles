@@ -918,22 +918,20 @@ before packages are loaded."
     (setq psession-elisp-objects-default-directory (no-littering-expand-var-file-name "elisp-objects/"))
     (load (expand-file-name "key-quiz--custom-keys-alist.elc" psession-elisp-objects-default-directory))
 
-
-
-    (defun insert-org-mode-link-from-helm-result (candidate)
-      (interactive)
-      (with-helm-current-buffer
-        (insert (format "[[file:%s][%s]]"
-                        (plist-get candidate :file)
-                        ;; Extract the title from the file name
-                        (subst-char-in-string
-                         ?_ ?\s
-                         (first
-                          (split-string
-                           (first
-                            (last
-                             (split-string (plist-get candidate :file) "\\-")))
-                           "\\.")))))))
+    ;; (defun insert-org-mode-link-from-helm-result (candidate)
+    ;;   (interactive)
+    ;;   (with-helm-current-buffer
+    ;;     (insert (format "[[file:%s][%s]]"
+    ;;                     (plist-get candidate :file)
+    ;;                     ;; Extract the title from the file name
+    ;;                     (subst-char-in-string
+    ;;                      ?_ ?\s
+    ;;                      (first
+    ;;                       (split-string
+    ;;                        (first
+    ;;                         (last
+    ;;                          (split-string (plist-get candidate :file) "\\-")))
+    ;;                        "\\.")))))))
 
     ;; (helm-add-action-to-source "Insert org-mode link"
     ;;                            'insert-org-mode-link-from-helm-result
@@ -1111,7 +1109,7 @@ before packages are loaded."
             )
       (setq org-roam-capture-templates
             '(
-              ("d" "default" plain "%?"
+              ("d" "default" entry "* _\n%?"
                :target (file+head "${slug}.org"
                                   "#+title: ${title}")
                :unnarrowed t)
