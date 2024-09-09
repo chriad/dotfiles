@@ -97,9 +97,11 @@
 ;; D
 (spacemacs/declare-prefix  "oD" "debug")
 (spacemacs/declare-prefix  "oDd" "Debug")
-(spacemacs/declare-prefix  "oDe" "edebug")
 (spacemacs/set-leader-keys "oDdc" 'cancel-debug-on-entry)
 (spacemacs/set-leader-keys "oDde" 'debug-on-entry)
+(spacemacs/declare-prefix  "oDe" "edebug")
+(spacemacs/set-leader-keys "oDee" 'edebug-on-entry)
+(spacemacs/set-leader-keys "oDec" 'cancel-edebug-on-entry)
 
 ;; f
 (spacemacs/declare-prefix  "of" "files")

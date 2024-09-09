@@ -87,9 +87,7 @@ This function should only modify configuration layer settings."
      ; toc
      (calibre :variables
               calibredb-root-dir "/media/chriad/ssd-45/reflowable"
-              calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
-              calibredb-library-alist '(("/media/chriad/ssd-45/reflowable"
-                                         "/media/chriad/ssd-45/fixed-layout")))
+              calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
 
      ;;;; Completion
      ;;; Auto-completion
@@ -128,7 +126,7 @@ This function should only modify configuration layer settings."
           org-enable-github-support t)
 
      ;;;; Checkers
-     spell-checking
+     ;; spell-checking
      ; syntax-checking
 
      ;;;; File Trees
