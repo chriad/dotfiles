@@ -148,27 +148,13 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
-                                      ;; (qpdf :fetcher github :repo "orgtre/qpdf.el" :commands qpdf)
                                       (qpdf :location (recipe
                                                        :fetcher github
                                                        :repo "orgtre/qpdf.el"))
-                                      ;; load-dir
                                       org-roam-ui
                                       try
                                       fzf
                                       zones ;; TODO: try multiple narrowings
-                                      ;; (bookmark+ :location (recipe
-                                      ;;                      :fetcher wiki
-                                      ;;                      :files
-                                      ;;                      ("bookmark+.el"
-                                      ;;                       "bookmark+-mac.el"
-                                      ;;                       "bookmark+-bmu.el"
-                                      ;;                       "bookmark+-1.el"
-                                      ;;                       "bookmark+-key.el"
-                                      ;;                       "bookmark+-lit.el"
-                                      ;;                       "bookmark+-doc.el"
-                                      ;;                       "bookmark+-chg.el")))
-                                      ;; (crosshairs :fetcher wiki :upgrade nil)
                                       sway
                                       ;; helm-systemd
                                       anki-mode
@@ -201,7 +187,6 @@ This function should only modify configuration layer settings."
                                       run-command
                                       symex
                                       ;; niceify-info ;; breaks helm-info
-                                      ;; helm-recoll
                                       dyncloze
                                       no-littering ;; useful
                                       ;; ascii-table
@@ -214,8 +199,6 @@ This function should only modify configuration layer settings."
                                       org-gtd
                                       ;; org-edna
                                       orca
-                                      org-link-beautify
-                                      org-tidy
                                       org-ml
                                       org-web-tools
                                       ;; org-noter
@@ -829,7 +812,8 @@ before packages are loaded."
           fzf/position-bottom t
           fzf/window-height 15))
 
-(defun lib-bookmark-jump (bookmark)
+  (with-eval-after-load 'bookmark+
+    (defun lib-bookmark-jump (bookmark)
   (let* ((pkg (bookmark-prop-get bookmark 'pkg))
          (position (bookmark-prop-get bookmark 'position))
          (oldpath (bookmark-prop-get bookmark 'libpath))
@@ -847,12 +831,7 @@ before packages are loaded."
     (handler   . lib-bookmark-jump))
   `(,@(bookmark-make-record-default))))
 
-(add-hook 'emacs-lisp-mode-hook #'(lambda () (setq-local bookmark-make-record-function #'lib-bookmark-make-record)))
-
-  ;; (save-excursion
-  ;;   (search-backward-regexp "(defun")
-  ;;   (forward-list)
-  ;;   (call-interactively 'eval-last-sexp))
+(add-hook 'emacs-lisp-mode-hook #'(lambda () (setq-local bookmark-make-record-function #'lib-bookmark-make-record))))
 
 
   ;; (spacemacs|diminish achievements-mode " 🏆" " [trophy]")
@@ -957,13 +936,6 @@ before packages are loaded."
     ;; (sway-undertaker-mode) ;; If you want to use :dedicate, read below.
     ;; (sway-x-focus-through-sway-mode) ;; Temporary workaround for Sway bug 6216
 
-    ;; (use-package org-tidy
-    ;;   :ensure t
-    ;;   :hook
-    ;;   (org-mode . org-tidy-mode)
-    ;;   )
-
-
     ;; load patches
     (defun load-directory (dir)
       (let ((load-it (lambda (f)
@@ -1004,6 +976,21 @@ before packages are loaded."
     ;; not customizable
     (setq define-word-offline-dict-directory "/media/chriad/ext4/SOFTWARE/dictionaries_enwiktionary/ding/")
     (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
+
+
+    ;; TODO it should not be necessary to bind keys explicity like here, but it doesn't work otherwise
+    ;; (with-eval-after-load 'edebug-x
+    ;;   (define-derived-mode
+    ;;     edebug-x-instrumented-function-list-mode tabulated-list-mode "Edebug Instrumented functions"
+    ;;     "Major mode for listing instrumented functions"
+    ;;     (setq tabulated-list-entries 'edebug-x-list-instrumented-functions)
+    ;;     (setq tabulated-list-format
+    ;;           [("Instrumented Functions" 50 nil)
+    ;;            ("File" 150 nil)])
+
+    ;;     (set-keymap-parent edebug-x-instrumented-function-list-mode-map tablist-mode-map)
+    ;;     (use-local-map edebug-x-instrumented-function-list-mode-map)
+    ;;     (tabulated-list-init-header)))
 
     ;;; extends pdf layer declaration
     ;; TODO move above to use-package
