@@ -154,6 +154,8 @@ This function should only modify configuration layer settings."
                                                        :repo "orgtre/qpdf.el"))
                                       ;; load-dir
                                       org-roam-ui
+                                      try
+                                      fzf
                                       zones ;; TODO: try multiple narrowings
                                       ;; (bookmark+ :location (recipe
                                       ;;                      :fetcher wiki
@@ -812,7 +814,20 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-
+  (use-package fzf
+    :bind
+    ;; Don't forget to set keybinds!
+    :config
+    (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
+          fzf/executable "fzf"
+          fzf/git-grep-args "-i --line-number %s"
+          ;; command used for `fzf-grep-*` functions
+          ;; example usage for ripgrep:
+          ;; fzf/grep-command "rg --no-heading -nH"
+          fzf/grep-command "grep -nrH"
+          ;; If nil, the fzf buffer will appear at the top of the window
+          fzf/position-bottom t
+          fzf/window-height 15))
 
 (defun lib-bookmark-jump (bookmark)
   (let* ((pkg (bookmark-prop-get bookmark 'pkg))
@@ -922,31 +937,6 @@ before packages are loaded."
     ;;                            'insert-org-mode-link-from-helm-result
     ;;                            helm-rg-process-source)
 
-
-    ;; creates a buffer *quelpa-build-checkout*
-    ;; (defun check-emacswiki-updates ()
-    ;;   (quelpa '(bookmark+ :fetcher wiki
-    ;;                       :files
-    ;;                       ("bookmark+.el"
-    ;;                        "bookmark+-mac.el"
-    ;;                        "bookmark+-bmu.el"
-    ;;                        "bookmark+-1.el"
-    ;;                        "bookmark+-key.el"
-    ;;                        "bookmark+-lit.el"
-    ;;                        "bookmark+-doc.el"
-    ;;                        "bookmark+-chg.el")))
-    ;;   (quelpa '(narrow-indirect :fetcher wiki))
-    ;;   (quelpa '(fit-frame :fetcher wiki))
-    ;;   (quelpa '(linkd :fetcher wiki))
-    ;;   (quelpa '(hl-line+ :fetcher wiki))
-    ;;   (quelpa '(col-highlight :fetcher wiki))
-    ;;   (quelpa '(crosshairs :fetcher wiki))
-
-
-    ;; (setq paradox-menu-mode-hook '(paradox-refresh-upgradeable-packages check-emacswiki-updates))
-
-
-
     (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))
 
     ;; (add-to-list 'org-ref-default-bibliography calibredb-ref-default-bibliography)
@@ -974,9 +964,7 @@ before packages are loaded."
     ;;   )
 
 
-    ;; (load "~/.config/emacs/el-patches.el")
     ;; load patches
-    ;; (load-dirs-reload)
     (defun load-directory (dir)
       (let ((load-it (lambda (f)
                        (load-file (concat (file-name-as-directory dir) f)))

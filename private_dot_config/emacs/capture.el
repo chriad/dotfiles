@@ -29,6 +29,8 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
     ;;       (fortune-compile file)))
     ))
 
+(defun chriad/fortune-from-epub () (ignore))
+
 ;; helper for "h" capture template
 (defun chriad/helm-in-org-buffer (filename &optional preselect)
   "Display and filter headlines in an org file with `helm'.

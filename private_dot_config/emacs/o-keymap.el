@@ -3,25 +3,17 @@
 ;;; use c-h c (describe-key-briefly) to see the key name
 ;; (keymap-global-set (kbd "Spc-C-Spc") 'execute-extended-command-for-buffer)
 (keymap-global-set "C-x <home>" 'execute-extended-command-for-buffer)
+(keymap-global-set "C-x 8 _" '(lambda () (insert-char ?\​))) ;; zero width space for org-mode markup escape
 (keymap-global-set "<kp-enter>" 'ignore)
 (keymap-global-set "<kp-delete>" 'ignore)
 (keymap-global-set "C-<f8>" 'ignore)
-
-
-;; s interferes with sway
-;; (global-set-key (kbd "s-]") 'tab-next)
-;; (global-set-key (kbd "s-[") 'tab-previous)
-;; (global-set-key (kbd "s-c") 'helm-lisp-completion-at-point)
-;; (keymap-global-set "s-y" 'spacemacs/helm-yas)
+(keymap-global-set "s-]" 'ignore)
 
 ;; -----------------
 
-;; TODO This is not optimal, I cannot narrow files
 (defun chriad/search-dpt ()
   (interactive)
-  (require 'helm-fd)
-  (let ((helm-fd-switches '("--no-ignore" "--hidden" "--type" "f" "-e" "pdf" "--color" "always")))
-    (helm-fd-1 (file-name-as-directory "/media/chriad/ext4/dpt-mirror/dpt"))))
+  (fzf-find-file-in-dir (getenv "QUADERNO_SYNC_PATH")))
 
 
 ;; TODO must also search package-directory-list for guix
@@ -30,13 +22,15 @@
   "Search for code in packages. "
   (interactive)
     (let ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never -t el"))
-      ;; (spacemacs/helm-files-do-rg (concat configuration-layer--elpa-root-directory emacs-version "/" configuration-layer-elpa-subdirectory)
       (spacemacs/helm-files-do-rg package-user-dir)))
 
 (defun chriad/search-dotfiles ()
-  "Search for code in packages. "
   (interactive)
       (spacemacs/helm-files-do-rg "~/gh-dotfiles"))
+
+(defun chriad/search-roam ()
+  (interactive)
+      (spacemacs/helm-files-do-rg org-roam-directory))
 
 (defun chriad/find-custom-aliases ()
   (interactive)
@@ -63,6 +57,7 @@
   "Edit the `dotfile', in the current window."
   (interactive)
   (chezmoi-find (dotspacemacs/location)))
+
 
 ;;; global personal bindings
 
@@ -130,6 +125,7 @@
 (spacemacs/set-leader-keys "osq" 'chriad/search-dpt)
 (spacemacs/set-leader-keys "ose" 'chriad/search-elpa)
 (spacemacs/set-leader-keys "osd" 'chriad/search-dotfiles)
+(spacemacs/set-leader-keys "osr" 'chriad/search-roam)
 
 (spacemacs/set-leader-keys "ot" 'terminal-here-launch)
 
