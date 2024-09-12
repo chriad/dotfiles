@@ -29,6 +29,7 @@ If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
     ;;       (fortune-compile file)))
     ))
 
+;; TODO (alist-get 'creator nov-metadata) -> get author
 (defun chriad/fortune-from-epub () (ignore))
 
 ;; helper for "h" capture template
@@ -54,9 +55,8 @@ with the `org-roam-find-file' interface"
 ;; TODO use this
 ;; (setq org-capture-templates-contexts
 ;;       '(("c" ((in-mode . "message-mode")))
-;;           ("d" (my-context-function
-;;                   (in-mode . "org-mode")))))
-
+;;         ("d" (my-context-function (in-mode . "org-mode")))
+;; ))
 
 (setq org-capture-templates
       '(

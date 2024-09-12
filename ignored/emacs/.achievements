@@ -26,11 +26,7 @@
    #s(emacs-achievement "Show me the way" "You learned new things by using `help-with-tutorial'." t nil nil 5 0 nil)
    #s(emacs-achievement "RTFM" "You learned new things by using `info-emacs-manual'." t nil nil 5 0 nil)
    #s(emacs-achievement "Log Auditor" "You learned new things by using `view-echo-area-messages'." t nil nil 5 0 nil)
-   #s(emacs-achievement "FAQ" "You learned new things by using `view-emacs-FAQ'."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run 'view-emacs-FAQ)))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "FAQ" "You learned new things by using `view-emacs-FAQ'." t nil nil 5 0 nil)
    #s(emacs-achievement "What's new?" "You learned new things by using `view-emacs-news'." t nil nil 5 0 nil)
    #s(emacs-achievement "Am I the only one?" "You learned new things by using `view-emacs-problems'."
                         (lambda nil
@@ -104,11 +100,7 @@
                           (and init-file-had-error))
                         nil nil 5 0 nil)
    #s(emacs-achievement "Traditionalist" "You use .emacs instead of .emacs.d/init.el." t nil nil 5 0 nil)
-   #s(emacs-achievement "Modernist" "You use .emacs.d/init.el instead of .emacs."
-                        (lambda nil
-                          (and
-                           (string-match "/init\\.el\\'" user-init-file)))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "Modernist" "You use .emacs.d/init.el instead of .emacs." t nil nil 5 0 nil)
    #s(emacs-achievement "Post Modernist" "You don't use .emacs.d/init.el or .emacs."
                         (lambda nil
                           (and
@@ -571,13 +563,7 @@
                           (and
                            (achievements-command-was-run 'keyfreq-show)))
                         nil nil 5 0 nil)
-   #s(emacs-achievement "Playing it Safe" "Your .emacs is under version control."
-                        (lambda nil
-                          (and
-                           (and
-                            (require 'vc nil t)
-                            (vc-backend user-init-file))))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "Playing it Safe" "Your .emacs is under version control." t nil nil 5 0 nil)
    #s(emacs-achievement "Arbitrator" "You have used smerge-mode to resolve conflicts."
                         (lambda nil
                           (and

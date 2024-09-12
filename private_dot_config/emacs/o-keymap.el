@@ -9,11 +9,17 @@
 (keymap-global-set "C-<f8>" 'ignore)
 (keymap-global-set "s-]" 'ignore)
 
+;;; remapping
+
+;; TODO does not interop with pp+
+(global-set-key [remap eval-expression] 'pp-eval-expression)
+
 ;; -----------------
 
 (defun chriad/search-dpt ()
   (interactive)
-  (fzf-find-file-in-dir (getenv "QUADERNO_SYNC_PATH")))
+  ;; (fzf-find-file-in-dir (getenv "QUADERNO_SYNC_PATH"))
+  (fzf-find-file-in-dir "/media/chriad/ext4/dpt-mirror/dpt"))
 
 
 ;; TODO must also search package-directory-list for guix
@@ -95,6 +101,7 @@
 (spacemacs/set-leader-keys "oDdc" 'cancel-debug-on-entry)
 (spacemacs/set-leader-keys "oDde" 'debug-on-entry)
 (spacemacs/declare-prefix  "oDe" "edebug")
+(spacemacs/set-leader-keys "oDei" 'edebug-inline-result-mode) ;; toggle
 (spacemacs/set-leader-keys "oDee" 'edebug-on-entry)
 (spacemacs/set-leader-keys "oDec" 'cancel-edebug-on-entry)
 
@@ -160,12 +167,16 @@
 (spacemacs/set-leader-keys "onb" 'spacemacs/switch-to-buffer-other-frame)
 
 ;; p
-(spacemacs/declare-prefix  "op" "play")
+(spacemacs/declare-prefix  "op" "play") ;; games
 (spacemacs/declare-prefix  "opa" "achievements")
 (spacemacs/set-leader-keys "opal" 'achievements-list-achievements)
 
-(spacemacs/set-leader-keys "opf" 'fortune-from-region)
 (spacemacs/set-leader-keys "opc" 'world-clock)
+
+(spacemacs/declare-prefix  "opf" "fortune")
+(spacemacs/set-leader-keys "opfm" 'fortune-message)
+(spacemacs/set-leader-keys "opfr" 'fortune-from-region)
+
 (spacemacs/set-leader-keys "opw" 'spacemacs/count-words-analysis)
 
 ;; (spacemacs/set-leader-keys "ot" 'tab-bar-new-tab)
