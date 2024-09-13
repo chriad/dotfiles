@@ -391,7 +391,8 @@ It should only modify the values of Spacemacs settings."
    ;; number is the project limit and the second the limit on the recent files
    ;; within a project.
    dotspacemacs-startup-lists '((recents . 5)
-                                (projects . 7))
+                                (projects . 7)
+                                (bookmarks . 5))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -654,7 +655,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, start an Emacs server if one is not already running.
    ;; (default nil)
-   dotspacemacs-enable-server t
+   dotspacemacs-enable-server nil ;; use systemd
 
    ;; Set the emacs server socket location.
    ;; If nil, uses whatever the Emacs default is, otherwise a directory path
@@ -770,8 +771,8 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (open-dribble-file "~/.config/emacs/dribble")
   ;; The default is 800 kilobytes.  Measured in bytes.
   ;; (setq gc-cons-threshold (* 50 1000 1000))
+  
 
-  ;; (defvar key-quiz--custom-keys-alist '(("C-h k" . "describe-key")))
   ;; (set-face-attribute 'default nil :height 120)
   ;; Profile emacs startup
   ;; (add-hook 'emacs-startup-hook
@@ -797,6 +798,10 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+
+  ;; (defvar key-quiz--custom-keys-alist '(("C-h k" . "describe-key")))
+
   (use-package fzf
     :bind
     ;; Don't forget to set keybinds!
@@ -811,27 +816,6 @@ before packages are loaded."
           ;; If nil, the fzf buffer will appear at the top of the window
           fzf/position-bottom t
           fzf/window-height 15))
-
-  (with-eval-after-load 'bookmark+
-    (defun lib-bookmark-jump (bookmark)
-  (let* ((pkg (bookmark-prop-get bookmark 'pkg))
-         (position (bookmark-prop-get bookmark 'position))
-         (oldpath (bookmark-prop-get bookmark 'libpath))
-         (newpath  (find-library pkg)))
-    (unless (equal oldpath newpath) (message "Package update detected"))
-    (find-file newpath)
-    (goto-char position)))
-
-
-(defun lib-bookmark-make-record ()
-  (if (find-library (file-name-nondirectory (buffer-file-name)))
-  `(,@(bookmark-make-record-default t nil nil) ;; no-file context=yes point=yes
-    (pkg       . ,(file-name-nondirectory (buffer-file-name)))
-    (libpath   . ,(buffer-file-name))
-    (handler   . lib-bookmark-jump))
-  `(,@(bookmark-make-record-default))))
-
-(add-hook 'emacs-lisp-mode-hook #'(lambda () (setq-local bookmark-make-record-function #'lib-bookmark-make-record))))
 
 
   ;; TODO
@@ -854,20 +838,6 @@ before packages are loaded."
   ;;  (if orig (message "%s" form) nil)))
 
   ;; (add-function :before 'eval-defun #'log-edebug-instrumentees-advice)
-
-
-  ;; TODO move this to bookmark-plus layer, install helm-bookmarks there and declare shadow relationship with helm layer which also installs helm-bookmarks
-  (with-eval-after-load 'helm-bookmark
-    ;; integrate bookmark+ with helm-bookmarks
-    (defun helm-bookmark-dired-setup-alist ()
-      "Specialized filter function for Org file bookmarks."
-      (helm-bookmark-filter-setup-alist 'bmkp-dired-bookmark-p))
-
-    (defun helm-source-bookmark-dired-builder ()
-      (helm-bookmark-build-source "Dired" #'helm-bookmark-dired-setup-alist))
-
-    (defvar helm-source-bookmark-dired (helm-source-bookmark-dired-builder)))
-
 
 
   ;; TODO
