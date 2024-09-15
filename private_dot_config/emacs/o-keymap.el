@@ -16,11 +16,22 @@
 
 ;; -----------------
 
+(defcustom chriad-search-plist nil "Pairs of search function suffixes and their locations"
+  :type '(alist :key-type string :value-type string))
+
+(defmacro chriad/build-search-functions ()
+  (ignore))
+
 (defun chriad/search-dpt ()
   (interactive)
   ;; (fzf-find-file-in-dir (getenv "QUADERNO_SYNC_PATH"))
   (fzf-find-file-in-dir "/media/chriad/ext4/dpt-mirror/dpt"))
 
+
+(defun chriad/search-dotfilers ()
+  ;; jump to a dir of some person
+  (interactive)
+  (helm-find-files-1 "~/gh-dotfiles/"))
 
 ;; TODO must also search package-directory-list for guix
 ;; TODO use symbol at point as default search term
@@ -30,9 +41,13 @@
     (let ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never -t el"))
       (spacemacs/helm-files-do-rg package-user-dir)))
 
+(defun chriad/search-systemd-units ()
+  (interactive)
+      (spacemacs/helm-files-do-rg "/usr/lib/systemd/user"))
+
 (defun chriad/search-dotfiles ()
   (interactive)
-      (spacemacs/helm-files-do-rg "~/gh-dotfiles"))
+      (spacemacs/helm-files-do-rg ""))
 
 (defun chriad/search-roam ()
   (interactive)
@@ -96,14 +111,16 @@
 (spacemacs/set-leader-keys "odp" 'describe-personal-keybindings)
 
 ;; D
+(defalias 'debug-cancel-on-entry 'cancel-debug-on-entry)
 (spacemacs/declare-prefix  "oD" "debug")
 (spacemacs/declare-prefix  "oDd" "Debug")
-(spacemacs/set-leader-keys "oDdc" 'cancel-debug-on-entry)
+(spacemacs/set-leader-keys "oDdc" 'debug-cancel-on-entry)
 (spacemacs/set-leader-keys "oDde" 'debug-on-entry)
+(spacemacs/set-leader-keys "oDdq" 'toggle-debug-on-quit) ;; didn't get that error message just before emacs shutdown?
 (spacemacs/declare-prefix  "oDe" "edebug")
 (spacemacs/set-leader-keys "oDei" 'edebug-inline-result-mode) ;; toggle
 (spacemacs/set-leader-keys "oDee" 'edebug-on-entry)
-(spacemacs/set-leader-keys "oDec" 'cancel-edebug-on-entry)
+(spacemacs/set-leader-keys "oDec" 'edebug-cancel-on-entry)
 
 ;; f
 (spacemacs/declare-prefix  "of" "files")
@@ -132,8 +149,9 @@
 (spacemacs/set-leader-keys "osq" 'chriad/search-dpt)
 (spacemacs/set-leader-keys "ose" 'chriad/search-elpa)
 (spacemacs/set-leader-keys "osd" 'chriad/search-dotfiles)
+(spacemacs/set-leader-keys "osD" 'chriad/search-dotfilers)
 (spacemacs/set-leader-keys "osr" 'chriad/search-roam)
-
+(spacemacs/set-leader-keys "oss" 'chriad/search-systemd-units)
 (spacemacs/set-leader-keys "ot" 'terminal-here-launch)
 
 
