@@ -151,10 +151,8 @@ This function should only modify configuration layer settings."
                                       (qpdf :location (recipe
                                                        :fetcher github
                                                        :repo "orgtre/qpdf.el"))
-                                      org-roam-ui
                                       try
                                       fzf
-                                      zones ;; TODO: try multiple narrowings
                                       sway
                                       ;; helm-systemd
                                       anki-mode
@@ -168,7 +166,7 @@ This function should only modify configuration layer settings."
                                       ;; guix ;; install with guix
                                       ;; geiser ;; installed with guix
                                       ;; geiser-guile ;; installed with guix
-                                      magit-popup ;; guix
+                                      magit-popup ;; required for guix, superseeded by `transient'
                                       (director :location (recipe ;; automate is king
                                                            :fetcher github
                                                            :repo "bard/emacs-director"
@@ -194,6 +192,7 @@ This function should only modify configuration layer settings."
                                       evil-lispy
                                       ;;; TODO move to org-additional
                                       org-roam
+                                      org-roam-ui
                                       org-mru-clock
                                       org-page
                                       org-gtd
@@ -206,7 +205,7 @@ This function should only modify configuration layer settings."
                                       org-pdftools ;; important
 
                                       lisp-extra-font-lock
-                                      highlight-indent-guides
+                                      highlight-indent-guides ;; see spacemacs-editing-visual layer for alternatives
                                       ;; elisp-def ;; part of elisp layer
                                       key-quiz
                                       ;; sr-speedbar
@@ -599,7 +598,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil unicode symbols are displayed in the mode line.
    ;; If you use Emacs as a daemon and wants unicode characters only in GUI set
    ;; the value to quoted `display-graphic-p'. (default t)
-   dotspacemacs-mode-line-unicode-symbols t
+   dotspacemacs-mode-line-unicode-symbols 'display-graphic-p
 
    ;; If non-nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters point
@@ -948,7 +947,7 @@ before packages are loaded."
   ;; not customizable
   (setq define-word-offline-dict-directory "/media/chriad/ext4/SOFTWARE/dictionaries_enwiktionary/ding/")
   (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
-
+  (setq source-directory "~/gh/EMACS/emacs/src") ;; emacs C source for describe-*
 
     ;; TODO it should not be necessary to bind keys explicity like here, but it doesn't work otherwise
     ;; (with-eval-after-load 'edebug-x

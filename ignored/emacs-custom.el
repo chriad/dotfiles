@@ -113,7 +113,7 @@
    '(eaf-edit-mode comint-mode erc-mode eshell-mode geiser-repl-mode gud-mode inferior-apl-mode inferior-caml-mode inferior-emacs-lisp-mode inferior-j-mode inferior-python-mode inferior-scheme-mode inferior-sml-mode internal-ange-ftp-mode prolog-inferior-mode reb-mode shell-mode slime-repl-mode term-mode wdired-mode))
  '(evil-move-cursor-back nil)
  '(evil-org-use-additional-insert t)
- '(evil-undo-system 'undo-tree)
+ '(evil-undo-system 'undo-fu)
  '(evil-want-Y-yank-to-eol nil)
  '(fortune-dir "/home/chriad/.local/share/chezmoi/ignored/emacs/fortune")
  '(fortune-file
@@ -333,12 +333,16 @@
  '(paradox-github-token t)
  '(paren-sexp-mode t)
  '(pdf-annot-activate-created-annotations nil)
+ '(pdf-annot-edit-contents-display-buffer-action
+   '((display-buffer-reuse-window display-buffer-split-below-and-attach)
+     (inhibit-same-window . t)
+     (window-height . 0.25)))
  '(pdf-annot-list-display-buffer-action
    '((display-buffer-reuse-window display-buffer-in-direction)
      (inhibit-same-window . t)
      (direction . right)))
  '(pdf-annot-list-follow-minor-mode-hook nil)
- '(pdf-annot-list-format '((page . 3) (type . 10) (label . 24) (date . 24)))
+ '(pdf-annot-list-format '((page . 3) (type . 3) (date . 20) (contents . 30)))
  '(pdf-annot-list-listed-types
    '(free-text highlight ink squiggly strike-out text underline unknown))
  '(pdf-annot-minor-mode-map-prefix [3 1])

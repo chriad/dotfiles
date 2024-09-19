@@ -8,6 +8,7 @@
 (keymap-global-set "<kp-delete>" 'ignore)
 (keymap-global-set "C-<f8>" 'ignore)
 (keymap-global-set "s-]" 'ignore)
+;; (keymap-global-set "<menu>" 'ignore) ; this is the contex menu key, currently bound to execute-extended-command
 
 ;;; remapping
 

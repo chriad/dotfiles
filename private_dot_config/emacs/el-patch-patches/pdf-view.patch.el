@@ -25,3 +25,12 @@ The optional, boolean args exclude certain attributes."
                                          (cons (car edges) (cadr edges)) nil t)))))
                         (handler . (el-patch-swap pdf-view-bookmark-jump-handler pdf-view-bookmark-jump)))))))
   )
+
+;; TODO
+;; assume you are in the pdf-annot-list buffer
+;; (defun chriad/pdf-annot-make-record ()
+;;   `(,@(bookmark-make-record-default nil t 1)
+;;    (pdf-annot-id . (pdf-annot-get-id (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer) ))
+;;    (handler . (ignore)))
+
+;; TODO hook pdf-annot-list-mode with set-local make-bookmark-function

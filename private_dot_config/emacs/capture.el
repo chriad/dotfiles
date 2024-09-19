@@ -1,5 +1,6 @@
-;;; capture.el --- My personal capture templates.
+;;;; capture.el --- My personal capture templates.  -*- eval: (outline-minor-mode); eval: (hs-minor-mode -1); -*-
 
+;;; helpers
 ;; helper for f capture
 (defun chriad/fortune-append (&optional interactive file)
   "Helper function for capture template `f'
@@ -58,6 +59,7 @@ with the `org-roam-find-file' interface"
 ;;         ("d" (my-context-function (in-mode . "org-mode")))
 ;; ))
 
+;;; org-capture
 (setq org-capture-templates
       '(
         ;; go directly to a note heading in roam
@@ -98,6 +100,7 @@ with the `org-roam-find-file' interface"
 
 
         ;;; org-fc related captures
+
         ("l" "org-fc")
         ("lx" "front-back _ _" entry (file+headline "/home/chriad/Documents/org_fc.org" "org-fc")
          "* %^{question}?\n%^{answer}\n%a" :immediate-finish t)
@@ -130,6 +133,8 @@ with the `org-roam-find-file' interface"
         ;; TODO use`:jump-to-captured' to add cloze afterwords manually
         ("lcd" "deletion" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
          :before-finalize (lambda () (org-fc-type-cloze-init 'deletion)))
+
+
 
         ;;; m captures
         ("m" "maps")
@@ -218,3 +223,5 @@ with the `org-roam-find-file' interface"
   (set-frame-name "emacs org capture")
   (add-hook 'org-capture-after-finalize-hook 'abs--delete-frame-after-capture)
   (abs--org-capture-place-template-dont-delete-windows 'org-capture nil))
+
+;;; end
