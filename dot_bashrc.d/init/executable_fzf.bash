@@ -15,3 +15,9 @@
 
 source $chriad_software/fzf-tab-completion/bash/fzf-bash-completion.sh
 bind -x '"\t": fzf_bash_completion'
+
+
+fzf--browse-playlist-favs() {
+    local favs='/home/chriad/.local/share/chezmoi/ignored/@Favorites.xspf'
+    xpath -q -e '//title' "${favs}" | sed -e ':a;N;$!ba;s/<[^>]*>//g' |tail --lines +2 |fzf
+}

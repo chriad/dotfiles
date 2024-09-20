@@ -1,5 +1,6 @@
-;;; helpers
+;;;; -*- eval: (outline-minor-mode); eval: (hs-minor-mode -1); -*-
 
+;;; experiments
 ;; experiment with chriad-pdf-annots-list
 
 ;; (defun pdf-annot-getannots (&optional pages types buffer)
@@ -14,7 +15,7 @@
 
 ;; map pdf-annot-get id (pdf-annot-getannots '(50 . 70) '(highlight)) # returns list of alists. Each annot is a element of the list and itself an alist.
 
-
+;; TODO make c-c c-s in annots-buffer save annots to pdf
 
 ;; ((buffer . #<buffer name.pdf>)
 ;;  (page . 236)
@@ -32,6 +33,32 @@
 ;;   (if (window-live-p tablist-context-window)
 ;;       (tablist-hide-context-window)
 ;;     (tablist-display-context-window)))
+
+;;; helpers
+
+
+;; TODO make fortune from region
+;; use (pdf-info-metadata)
+;; ((title . "")
+;;  (author . "")
+;;  (subject . "")
+;;  (keywords-raw . "")
+;;  (keywords)
+;;  ...)
+
+;; when in pdf-annot-list-buffer, press J to go to next page in pdf-document-buffer
+(defun chriad/pdf-annot-next-page ()
+  (interactive)
+  (with-selected-window (display-buffer pdf-annot-list-document-buffer)
+    (pdf-view-next-page)))
+
+
+(defun chriad/pdf-annot-previous-page ()
+  (interactive)
+  (with-selected-window (display-buffer pdf-annot-list-document-buffer)
+    (pdf-view-previous-page)))
+
+
 (defun chriad/annot-from-tablist ()
   (pdf-annot-getannot (tabulated-list-get-id) pdf-annot-list-document-buffer))
 
@@ -41,6 +68,9 @@
     (pdf-annot-list-context-function (pdf-annot-get-id a) pdf-annot-list-document-buffer)
     )
   )
+
+(defun chriad/annot-highlights-text-to-sidecar (&optional embed)
+  (ignore))
 
 (defun chriad/pdf-annot-next-jump ()
   "jump to next annotation from document buffer"
@@ -72,7 +102,7 @@
 ;; TODO bind to pdf-annot-list keymap
 (defun chriad/pdf-annot-copy-highlight-text ()
   (interactive)
-  (let* ((a ( chriad/annot-from-tablist ))
+  (let* ((a (chriad/annot-from-tablist))
          (page (pdf-annot-get a 'page))
          (edges (pdf-annot-get-display-edges a)))
     (with-current-buffer pdf-annot-list-document-buffer
@@ -85,6 +115,21 @@
                     pdf-view-selection-style))
                  edges))
       (kill-new (mapconcat 'identity txt " ")))))
+
+;; (defun chriad/pdf-annot-get-highlight-text (a)
+;;   (interactive)
+;;   (let* (page (pdf-annot-get a 'page))
+;;         (edges (pdf-annot-get-display-edges a)))
+;;     (with-current-buffer pdf-annot-list-document-buffer
+;;       (pdf-view-goto-page page)
+;;       (setq txt (mapcar
+;;                  (lambda (edg)
+;;                    (pdf-info-gettext
+;;                     (pdf-view-current-page)
+;;                     edg
+;;                     pdf-view-selection-style))
+;;                  edges))
+;;       (kill-new (mapconcat 'identity txt " "))))
 
 ;; TODO bind to key in annot-list-map
 ;; TODO also maybe hook to pdf-annot-activate-handler-function
@@ -103,7 +148,8 @@
 (el-patch-feature pdf-annot)
 
 (with-eval-after-load 'pdf-annot
-  ;; inelegant way to get rid of comment window that lists the contents of this annotation with a header (date, author etc.)
+;;;; pdf-annot-list-annotation
+;;  inelegant way to get rid of comment window that lists the contents of this annotation with a header (date, author etc.)
   (el-patch-defun pdf-annot-list-annotations ()
     "List annotations in a Dired like buffer.
 
@@ -144,7 +190,7 @@
   ;; also change highlight attributes
 
   ;; TODO (face-background 'default nil)
-
+;;;; pdf-annot-show-annotation
   (el-patch-defun pdf-annot-show-annotation (a &optional highlight-p window)
     (save-selected-window
       (when window (select-window window 'norecord))
@@ -166,6 +212,7 @@
           (pdf-util-scroll-to-edges
            (pdf-util-scale-relative-to-pixel (car edges)))))))
 
+;;;; pdf-annot-list-display-annotation-from-id
   ;; do not highlight annotation
   (el-patch-defun pdf-annot-list-display-annotation-from-id (id)
     "Display the Annotation ID in the PDF file.
@@ -191,7 +238,7 @@ have the PDF buffer automatically move along with us."
                                  pdf-annot-list-document-buffer
                                  (pdf-annot-getannot id pdf-annot-list-document-buffer)))))
 
-
+;;;; pdf-annot-print-property
   ;; concise time display
   (el-patch-defun pdf-annot-print-property (a property)
     "Pretty print annotation A's property PROPERTY."
@@ -216,15 +263,7 @@ have the PDF buffer automatically move along with us."
         (t (format "%s" (or value ""))))))
   )
 
-;; override some keys
-;; (el-patch-defvar pdf-annot-list-mode-map
-;;   (let ((km (make-sparse-keymap)))
-;;     (define-key km (kbd "C-c C-f") #'pdf-annot-list-follow-minor-mode)
-;;     (define-key km (kbd "SPC") #'pdf-annot-list-display-annotation-from-id)
-;;     (define-key km (kbd "y") #'chriad/pdf-annot-copy-highlight-text)
-;;     km))
-
-
+;;; helpers
 ;; helm source for annotations
 ;; TODO momoize, write to sidecar, get checksum to see if something changed
 ;; TODO add action to edit highlighted text as annotation content (pdf-annot---edit-this-annot)
@@ -245,9 +284,7 @@ have the PDF buffer automatically move along with us."
     )
   )
 
-;; eval this in pdf-view-mode
 ;; TODO on RET, goto annotation
-;; (pdf-annot-list-display-annotation-from-id (tabulated-list-get-id))
 (defun chriad/pdf-annot-browse-annot-contents ()
   (interactive)
   (setq annots (sort (pdf-annot-getannots nil
@@ -261,16 +298,15 @@ have the PDF buffer automatically move along with us."
         :buffer "*helm pdf-annots*"))
 
 ;; when in annt buffer, pop up outline in same buffer
+;; TODO change to the outline element corresponding to the current page
 (defun chriad/outline-from-annots-buffer ()
   (interactive)
   (let ((pdf-outline-display-buffer-action '((display-buffer-reuse-window display-buffer-same-window) . nil)))
     (pdf-outline pdf-annot-list-document-buffer nil)))
 
-;; TODO copy annotation text on y
-;; (define-key pdf-annot-list-mode-map (kbd "y") 'chriad/pdf-annot-copy-highlight-text)
 
-
-;; load after pdf layer?
+;;; bindings
+;; K: overwrite tablist-do-kill-lines
 (use-package pdf-tools
   :defer 2
   :config
@@ -278,9 +314,13 @@ have the PDF buffer automatically move along with us."
     :mode  pdf-annot-list-mode
     :eval-after-load pdf-annot
     :bindings
+    "J"                 'chriad/pdf-annot-next-page
+    "K"                 'chriad/pdf-annot-previous-page
     "my"                'chriad/pdf-annot-copy-highlight-text
     "mo"                'chriad/outline-from-annots-buffer
     "mE"                'pdf-annot---edit-this-annot-highlight-text-as-content
     "mt"                'chriad/pdf-annot-content-tag
     "me"                'chriad/pdf-annot-edit-contents
     "mh"                'chriad/pdf-annot-browse-annot-contents))
+
+;;; end

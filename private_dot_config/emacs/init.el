@@ -1045,6 +1045,10 @@ before packages are loaded."
                                 "#+title: ${title}")
              :unnarrowed t)
 
+            ("a" "File to node's inbox" entry "** %?"
+             :target (file+olp "${slug}.org" ("_"))
+             :unnarrowed t)
+
             ("r" "uuid" plain "%?"
              :target (file+head "${uuid}.org.gpg"
                                 "#+title: ${title}")

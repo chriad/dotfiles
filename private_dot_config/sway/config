@@ -115,6 +115,9 @@ output * bg /usr/local/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png 
     # for_window [class="Wine"] floating enable
     # for_window [app_id="lutris"] floating enable
 
+    for_window [title="Slideshow — digiKam"] floating enable
+    for_window [title="Slideshow Settings — digiKam"] floating enable
+
     # bindsym $mod+F12 exec shutdown now
     # bindsym Mod4+L exec $lock
     # bindsym Control+Mod1+Delete exec ksysguard

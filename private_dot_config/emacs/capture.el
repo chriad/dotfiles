@@ -4,9 +4,7 @@
 ;; helper for f capture
 (defun chriad/fortune-append (&optional interactive file)
   "Helper function for capture template `f'
-
 Append STRING to the fortune FILE.
-
 If INTERACTIVE is non-nil, don't compile the fortune file afterwards."
   (require 'fortune)
   (setq file (expand-file-name
@@ -53,15 +51,17 @@ with the `org-roam-find-file' interface"
   (interactive)
   (save-window-excursion (org-roam-node-find) buffer-file-name))
 
+;;; contexts
 ;; TODO use this
 ;; (setq org-capture-templates-contexts
 ;;       '(("c" ((in-mode . "message-mode")))
 ;;         ("d" (my-context-function (in-mode . "org-mode")))
 ;; ))
 
-;;; org-capture
+;;; templates
 (setq org-capture-templates
       '(
+;;;; general
         ;; go directly to a note heading in roam
         ("h" "roam headline" entry
          (function (lambda () (chriad/helm-in-org-buffer (chriad/org-roam-find-file-name))))
@@ -99,7 +99,7 @@ with the `org-roam-find-file' interface"
          "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
 
 
-        ;;; org-fc related captures
+;;;; org-fc related captures
 
         ("l" "org-fc")
         ("lx" "front-back _ _" entry (file+headline "/home/chriad/Documents/org_fc.org" "org-fc")
@@ -134,9 +134,7 @@ with the `org-roam-find-file' interface"
         ("lcd" "deletion" entry (file+headline "/home/chriad/Documents/org-fc-flashcard-captures.org" "org-fc") (file "~/.config/emacs/capture-templates/code-snippet.capture")
          :before-finalize (lambda () (org-fc-type-cloze-init 'deletion)))
 
-
-
-        ;;; m captures
+;;;; map captures
         ("m" "maps")
         ("mf" "_ _"
          table-line
@@ -146,7 +144,7 @@ with the `org-roam-find-file' interface"
          :immediate-finish t)
 
         ;; ("mk" "key quiz")
-      
+
         ("ms" "_ r"
          table-line
          (file "~/Documents/vocabulary-map.org")
@@ -161,7 +159,7 @@ with the `org-roam-find-file' interface"
          :table-line-pos "I+1"
          :immediate-finish t)
 
-        ;;; c captures
+;;;; c captures
         ("c" "~/Documents/_")
 
         ;; TODO dynamically resolve captured mode: %(symbol-name (symbol-value 'major-mode))
@@ -203,10 +201,17 @@ with the `org-roam-find-file' interface"
          :table-line-pos "I+1"
          :immediate-finish t)
 
-        ("cq" "Questions" plain (file "~/Documents/q-and-a.txt") "%^{Question}?" :immediate-finish t)))
+        ("cq" "Questions" plain (file "~/Documents/q-and-a.txt") "%^{Question}?" :immediate-finish t)
+
+        ("cg" "special word at point"
+         plain (file "~/Documents/curious-words.org")
+         #'(lambda () (word-at-point t))
+         :immediate-finish t :after-finalize)
+        ))
 
 
-;; emacsclient --eval "(abs--quick-capture)" --alternate-editor= --create-frame
+;;; other
+;;  emacsclient --eval "(abs--quick-capture)" --alternate-editor= --create-frame
 (defun abs--quick-capture ()
   ;; redefine the function that splits the frame upon org-capture
   (defun abs--org-capture-place-template-dont-delete-windows (oldfun args)
