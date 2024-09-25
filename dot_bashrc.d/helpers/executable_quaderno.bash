@@ -15,6 +15,8 @@ quaderno--list-rootdir-documents() {
     dptrp1 --addr "$QUADERNO_STATIC_IP" list-documents | grep '^[^/]*/[^/]*$'
 }
 
+# TODO dptrp1 list-folders
+
 quaderno--list-all-documents() {
     dptrp1 --addr "$QUADERNO_STATIC_IP" list-documents
 }

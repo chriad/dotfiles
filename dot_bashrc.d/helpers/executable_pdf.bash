@@ -66,6 +66,11 @@ pdf--ocrmypdf-gartenfreund() {
     ocrmypdf -l deu --force-ocr "$pdf" "${pdf%pdf}"ocr.pdf
 }
 
+pdf--ocrmypdf-unjbig2() {
+    pdf="$1"
+    ocrmypdf --optimize 0 --skip-text "${pdf}" "${pdf%pdf}"no-jbig2.pdf
+}
+
 pdf--convert-grayscale() {
     # https://superuser.com/questions/104656/convert-a-pdf-to-greyscale-on-the-command-line-in-floss
     source="$1"
@@ -99,6 +104,11 @@ pdfx--extract-url ()
 
 pdfx--metadata() {
     pdfx -v $1 -o ${1%.pdf}.pdf-metadata
+}
+
+cpdf--extract-images() {
+    mkdir -p cpdf-extracted-images
+    cpdf -extract-images "${1}" -im magick -o cpdf-extracted-images/%%%
 }
 
 # termpdf--preview-page() {
