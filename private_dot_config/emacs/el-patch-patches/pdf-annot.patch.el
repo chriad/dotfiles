@@ -72,6 +72,13 @@
 (defun chriad/annot-highlights-text-to-sidecar (&optional embed)
   (ignore))
 
+;; TODO pdf-annot-show-annotation
+;; TODO (pdf-view-current-page) -> 113
+(defun chriad/pdf-annot-previous-jump ()
+  "jump to previous annotation from document buffer"
+  (interactive)
+  (ignore))
+
 (defun chriad/pdf-annot-next-jump ()
   "jump to next annotation from document buffer"
   (interactive)

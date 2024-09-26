@@ -61,43 +61,51 @@ with the `org-roam-find-file' interface"
 ;;; templates
 (setq org-capture-templates
       '(
-;;;; general
+;;;; r -> roam headline
         ;; go directly to a note heading in roam
-        ("h" "roam headline" entry
+        ("r" "roam headline")
+        ("rh" "subtree" entry
          (function (lambda () (chriad/helm-in-org-buffer (chriad/org-roam-find-file-name))))
          "* %?\n%a"
          :kill-buffer t :unnarrowed t)
 
+        ("rn" "plain" item
+         (function (lambda () (chriad/helm-in-org-buffer (chriad/org-roam-find-file-name))))
+         "- %?"
+         :unnarrowed t)
+
+        ("rt" "subtree Todo" entry
+         (function (lambda () (chriad/helm-in-org-buffer (chriad/org-roam-find-file-name))))
+         "* TODO %?\n")
+
+;;;; other
+        ("o" "other")
         ;;  ;; ...?
         ;;  ;; Me: ...
         ;;  ;; ...?
         ;;  ;; Me: ...
         ;;  ;; end
-        ("g" "Dialog" plain (file "/home/chriad/Documents/dialogs.org")
+        ("og" "Dialog" plain (file "/home/chriad/Documents/dialogs.org")
          (file "~/.config/emacs/capture-templates/dialog-snippet.capture"))
 
         ;; ("a" "webpage region to node" plain          ; s = selection
         ;;  (function (lambda () (org-roam-node-find)))
         ;;  "%i" :unnarrowed t)
 
-        ("t" "Todo" entry
-         (function (lambda () (chriad/helm-in-org-buffer (chriad/org-roam-find-file-name))))
-         "* TODO %?\n")
 
         ;; TODO add visited file %f for author
-        ("f" "fortune from url" plain
+        ("of" "fortune from url" plain
          #'chriad/fortune-append
          "%i\n\n          -- %:link%(eval fortune-end-sep)" :immediate-finish t)
 
-        ;;; Firefox `Org Capture` plugin
+;;;; Firefox `Org Capture` plugin
         ;; c-s-l in firefox without region captures here
         ("y" "firefox Org Capture Unselected template" entry (file+headline "/home/chriad/roam/Inbox.org" "firefox links")
          "* %?\n%u\n%a\n")
 
         ;; c-s-l with region in firefox captures region here
-        ("x" "notes" plain (file "/home/chriad/Documents/notes.org")
+        ("x" "firefox region notes" plain (file "/home/chriad/Documents/notes.org")
          "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
-
 
 ;;;; org-fc related captures
 
@@ -206,9 +214,8 @@ with the `org-roam-find-file' interface"
         ("cg" "special word at point"
          plain (file "~/Documents/curious-words.org")
          #'(lambda () (word-at-point t))
-         :immediate-finish t :after-finalize)
+         :immediate-finish t)
         ))
-
 
 ;;; other
 ;;  emacsclient --eval "(abs--quick-capture)" --alternate-editor= --create-frame

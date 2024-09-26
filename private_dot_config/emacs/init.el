@@ -148,6 +148,7 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      ;; site-lisp
                                       (qpdf :location (recipe
                                                        :fetcher github
                                                        :repo "orgtre/qpdf.el"))
@@ -814,11 +815,11 @@ before packages are loaded."
           fzf/grep-command "grep -nrH"
           ;; If nil, the fzf buffer will appear at the top of the window
           fzf/position-bottom t
-          fzf/window-height 15))
+          fzf/window-height 30))
 
 
   ;; TODO
-  ;; (spacemacs|diminish achievements-mode " 🏆" " [trophy]")
+  ;; (spacemacs|diminish achievements-mode "🏆" " [trophy]")
   ;; (spacemacs|add-toggle nameless
   ;;   :status nameless-mode
   ;;   :on (nameless-mode)
@@ -987,7 +988,7 @@ before packages are loaded."
     (text-mode)
     (read-only-mode -1)
     (while (re-search-forward "3 Tr" nil t)
-      (replace-match "7 Tr" nil nil))
+      (replace-match "7 Tr" nil nil)) ;; "0 Tr" preserves annots but bad font alignment
     (save-buffer)
     (pdf-view-mode))
 
@@ -1015,6 +1016,19 @@ before packages are loaded."
     (defun chriad/org-roam-publishable-p ()
       "The node is publishable if (1) at least on backlink exists and (2) all backlinks are also publishable"
       (ignore))
+
+    ;; TODO hook to roam
+    ;; (defun chriad/roam-doc ()
+    ;;   (let ((spacemacs-space-doc-modificators
+    ;;          '(center-buffer-mode
+    ;;            org-indent-mode
+    ;;            hide-line-numbers
+    ;;            alternative-emphasis
+    ;;            alternative-tags-look
+    ;;            org-block-line-face-remap
+    ;;            org-kbd-face-remap
+    ;;            resize-inline-images)))
+    ;;     (space-doc-mode)))
 
     (cl-defmethod org-roam-node-uuid ((node org-roam-node))
       "Return the uuid of NODE."
@@ -1060,6 +1074,7 @@ before packages are loaded."
              :unnarrowed t)))
     :bind
     ("C-c n c" . org-roam-capture)
+    ("C-c n b" . org-roam-buffer-toggle)
     ("C-c n i" . org-roam-node-insert)
     ("C-c n d" . org-roam-dailies-capture-today)
     ("C-c n g" . org-roam-show-graph)

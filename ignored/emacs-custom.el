@@ -295,11 +295,13 @@
  '(org-roam-db-autosync-mode t)
  '(org-roam-db-extra-links-elements '(keyword node-property))
  '(org-roam-directory "/home/chriad/roam/")
+ '(org-roam-extract-new-file-path "${slug}.org")
  '(org-roam-file-completion-tag-position 'append)
+ '(org-roam-file-extensions '("org" "gpg"))
  '(org-roam-find-file-hook
    '(org-roam-buffer--setup-redisplay-h org-roam--register-completion-functions-h org-roam--replace-roam-links-on-save-h org-roam-db-autosync--setup-update-on-save-h
                                         (lambda nil
-                                          (call-interactively #'org-hide-properties))))
+                                          (call-interactively #'org-hide-properties))) nil nil "(lambda nil (space-doc-mode))")
  '(org-roam-index-file "~/roam/index.org")
  '(org-roam-node-display-template "${title:*} ${tags:15}")
  '(org-safe-remote-resources
