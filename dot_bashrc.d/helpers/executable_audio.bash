@@ -3,7 +3,8 @@ mp3--quality() { mutagen-inspect "${1}"  | grep '^- .*'; }
 
 
 m4b--cover() {
-    ffmpeg -i "$1" -map 0:v -map -0:V -c copy cover.jpg
+    MP4Box -dump-cover "${1}" -out cover.jpg
+    # ffmpeg -i "$1" -map 0:v -map -0:V -c copy cover.jpg
 }
 
 m4b--remove-chaps() {
@@ -100,10 +101,12 @@ function m4b--title() {
 
 }
 
+# TODO extension m4a
+# TODO emacsclient --eval "(message Edit chapters, then press SPC F d)"
 mp4chaps--pipeline() {
     local fname="${1}"
     mp4chaps -x "${fname}"
-    emacsclient --no-wait --create-frame --alternate-editor= "${fname%m4b}chapters.txt"
+    emacsclient --create-frame --alternate-editor= "${fname%m4b}chapters.txt"
     mp4chaps -r "${fname}"
     mp4chaps -i "${fname}"
 }
