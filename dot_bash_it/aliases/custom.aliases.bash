@@ -3,6 +3,7 @@ alias exa=eza
 alias df=duf
 alias ll='ls -alF'
 alias la='ls -A'
+alias yt--from-browser="yt-dlp --cookies-from-browser firefox"
 # alias l='ls -CF'
 alias l=exa
 alias chriad--update-emacs='guix pull && guix package -u emacs'
