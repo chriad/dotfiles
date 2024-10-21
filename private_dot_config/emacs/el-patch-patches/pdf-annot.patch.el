@@ -74,6 +74,7 @@
 
 ;; TODO pdf-annot-show-annotation
 ;; TODO (pdf-view-current-page) -> 113
+;; pdf-info-getannots
 (defun chriad/pdf-annot-previous-jump ()
   "jump to previous annotation from document buffer"
   (interactive)
@@ -104,6 +105,26 @@
     (pdf-annot-put a 'contents (read-string "content>")))
   (tabulated-list-print t t))
 
+(defun chriad/pdf-annot-with-annot-text ()
+  (interactive)
+  (let* ((a (chriad/annot-from-tablist))
+         (page (pdf-annot-get a 'page))
+         (edges (pdf-annot-get-display-edges a)))
+    (with-current-buffer pdf-annot-list-document-buffer
+      (pdf-view-goto-page page)
+      (setq txt (mapcar
+                 (lambda (edg)
+                   (pdf-info-gettext
+                    (pdf-view-current-page)
+                    edg
+                    pdf-view-selection-style))
+                 edges))
+      txt)))
+
+
+(defun chriad/pdf-annot-with-annot-text-copy-to-kill-ring ()
+  (kill-new (mapconcat 'identity (chriad/pdf-annot-with-annot-text) " ")))
+
 
 ;; TODO mapconcat check hyphenation first bla- bli -> blabli
 ;; TODO bind to pdf-annot-list keymap
@@ -121,7 +142,8 @@
                     edg
                     pdf-view-selection-style))
                  edges))
-      (kill-new (mapconcat 'identity txt " ")))))
+      (kill-new (mapconcat 'identity txt " "))
+      )))
 
 ;; (defun chriad/pdf-annot-get-highlight-text (a)
 ;;   (interactive)
@@ -137,6 +159,12 @@
 ;;                     pdf-view-selection-style))
 ;;                  edges))
 ;;       (kill-new (mapconcat 'identity txt " "))))
+
+
+(defun chriad/pdf-annot-with-annot-text-as-anki-card ()
+  (interactive)
+  ((anki-connect-add-note "map" "Enhanced Cloze 2.1 v2" '(("Content" . (chriad/pdf-annot-with-annot-text))))))
+
 
 ;; TODO bind to key in annot-list-map
 ;; TODO also maybe hook to pdf-annot-activate-handler-function
@@ -271,6 +299,8 @@ have the PDF buffer automatically move along with us."
   )
 
 ;;; helpers
+
+;; DEPRECATED, use -with-annot-text-
 ;; helm source for annotations
 ;; TODO momoize, write to sidecar, get checksum to see if something changed
 ;; TODO add action to edit highlighted text as annotation content (pdf-annot---edit-this-annot)
@@ -323,11 +353,12 @@ have the PDF buffer automatically move along with us."
     :bindings
     "J"                 'chriad/pdf-annot-next-page
     "K"                 'chriad/pdf-annot-previous-page
-    "my"                'chriad/pdf-annot-copy-highlight-text
+    "my"                'chriad/pdf-annot-with-annot-text-copy-to-kill-ring
     "mo"                'chriad/outline-from-annots-buffer
     "mE"                'pdf-annot---edit-this-annot-highlight-text-as-content
     "mt"                'chriad/pdf-annot-content-tag
     "me"                'chriad/pdf-annot-edit-contents
+    "ma"                'chriad/pdf-annot-with-annot-text-as-anki-card
     "mh"                'chriad/pdf-annot-browse-annot-contents))
 
 ;;; end
