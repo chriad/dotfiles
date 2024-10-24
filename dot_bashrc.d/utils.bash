@@ -36,3 +36,7 @@ chriad--motd() {
     # on a LBS (linux base system) compliant system
     whatis true | cut -d- -f2 | cut -c2-
 }
+
+apt--installedp() {
+    apt list --installed 2>/dev/null | grep "${1}"
+}

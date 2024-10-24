@@ -35,8 +35,8 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     ;;;; Programming
-     ;;; DSL
+;;;; Programming
+;;; DSL
      ;;  Markup & config
      asciidoc
      (json :variables json-backend 'lsp)
@@ -45,22 +45,22 @@ This function should only modify configuration layer settings."
      (html :variables web-fmt-tool 'web-beautify)
      yaml
      ;; Lisp
-     ; racket
-     ; (scheme :variables scheme-implementations '(chicken))
+                                        ; racket
+                                        ; (scheme :variables scheme-implementations '(chicken))
      emacs-lisp
      common-lisp
-     ;;; general-purpose
+;;; general-purpose
      ;; TOML
      toml
      ;; Multi paradigm
      (python :variables python-backend 'lsp python-lsp-server 'pyright)
-     ; rust
+                                        ; rust
      ocaml
      lua
      (javascript :variables javascript-backend 'lsp javascript-repl `nodejs)
-     ; sml
+                                        ; sml
 
-     ;;;; Tools
+;;;; Tools
      systemd
      pass
      web-beautify
@@ -70,7 +70,7 @@ This function should only modify configuration layer settings."
      lsp
      dap
 
-     ;;;; private layers
+;;;; private layers
      chezmoi
      curiophenalia
      helm-additional
@@ -78,41 +78,41 @@ This function should only modify configuration layer settings."
      org-additional
      bookmark-plus
 
-     ;;;; Misc
+;;;; Misc
      (spacemacs-layouts :variables
                         spacemacs-layouts-restrict-spc-tab t
                         persp-autokill-buffer-on-remove 'kill-weak)
 
-     ;;;; third-party
-     ; toc
+;;;; third-party
+                                        ; toc
      (calibre :variables
               calibredb-root-dir "/media/chriad/ssd-45/reflowable"
               calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
 
-     ;;;; Completion
-     ;;; Auto-completion
+;;;; Completion
+;;; Auto-completion
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-help-tooltip 'manual)
 
-     ;;; Helm
+;;; Helm
      helm
-     ;;;; readers
+;;;; readers
      pdf
      djvu
-     ; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
-     ;;;; Source control
+                                        ; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
+;;;; Source control
      git
 
-     ;;;; TODO classify
-     ; emoji
-     ; (ipython-notebook :variables ein-backend 'jupyter)
+;;;; TODO classify
+                                        ; emoji
+                                        ; (ipython-notebook :variables ein-backend 'jupyter)
 
-     ; (ranger :variables ranger-show-preview t)
+                                        ; (ranger :variables ranger-show-preview t)
      helpful
-     ; deft
-     (dash :variables ;; offline doc browser
+                                        ; deft
+     (dash :variables                   ;; offline doc browser
            dash-docs-docset-newpath "~/.local/share/Zeal/Zeal/docsets")
      (spacemacs-evil :variables
                      spacemacs-evil-collection-allowed-list
@@ -121,21 +121,21 @@ This function should only modify configuration layer settings."
      (markdown :variables markdown-live-preview-engine 'vmd)
      multiple-cursors
      (org :variables
-          ; org-enable-org-journal-support t
+                                        ; org-enable-org-journal-support t
           org-enable-roam-support t
           org-enable-github-support t)
 
-     ;;;; Checkers
+;;;; Checkers
      ;; spell-checking
-     ; syntax-checking
+                                        ; syntax-checking
 
-     ;;;; File Trees
+;;;; File Trees
      neotree
-     ; treemacs
+                                        ; treemacs
 
-     ;;;; emacs
+;;;; emacs
      semantic
-     ; better-defaults ;; emacs style
+                                        ; better-defaults ;; emacs style
      )
 
 
@@ -192,7 +192,7 @@ This function should only modify configuration layer settings."
                                       ;; ascii-table
                                       clhs
                                       evil-lispy
-                                      ;;; TODO move to org-additional
+;;; TODO move to org-additional
                                       org-roam
                                       org-roam-ui
                                       org-mru-clock
@@ -259,7 +259,7 @@ This function should only modify configuration layer settings."
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '(
                                   ;; guix
-                                  geiser ;; externally managed by guix
+                                  geiser       ;; externally managed by guix
                                   geiser-guile ;; externally managed by guix
                                   )
 
@@ -273,8 +273,9 @@ This function should only modify configuration layer settings."
    ;; installs only the used packages but won't delete unused ones. `all'
    ;; installs *all* packages supported by Spacemacs and never uninstalls them.
    ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-but-keep-unused)) ;; this seems necessary for geiser, geiser-guile
-
+   dotspacemacs-install-packages 'used-only))
+;;used--but-keep-unused  this seems necessary for geiser, geiser-guile
+;; but interfers with linkd
 (defun dotspacemacs/init ()
   "Initialization:
 This function is called at the very beginning of Spacemacs startup,
@@ -609,7 +610,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Show the scroll bar while scrolling. The auto hide time can be configured
    ;; by setting this variable to a number. (default t)
-   dotspacemacs-scroll-bar-while-scrolling nil
+   dotspacemacs-scroll-bar-while-scrolling nil ;; glitch on first mwheel-scroll
 
    ;; Control line numbers activation.
    ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
@@ -772,7 +773,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (open-dribble-file "~/.config/emacs/dribble")
   ;; The default is 800 kilobytes.  Measured in bytes.
   ;; (setq gc-cons-threshold (* 50 1000 1000))
-  
+
 
   ;; (set-face-attribute 'default nil :height 120)
   ;; Profile emacs startup
@@ -826,8 +827,8 @@ before packages are loaded."
   ;;   :on (nameless-mode)
   ;;   :off (nameless-mode -1)
 
-    ;; (require 'delight)
-    ;; (delight 'achievements-mode nil)
+  ;; (require 'delight)
+  ;; (delight 'achievements-mode nil)
 
   ;; TODO
   ;; (defun log-edebug-instrumentees-advice (orig &rest args)
@@ -870,46 +871,46 @@ before packages are loaded."
   (setq psession-elisp-objects-default-directory (no-littering-expand-var-file-name "elisp-objects/"))
   (load (expand-file-name "key-quiz--custom-keys-alist.elc" psession-elisp-objects-default-directory))
 
-    ;; (defun insert-org-mode-link-from-helm-result (candidate)
-    ;;   (interactive)
-    ;;   (with-helm-current-buffer
-    ;;     (insert (format "[[file:%s][%s]]"
-    ;;                     (plist-get candidate :file)
-    ;;                     ;; Extract the title from the file name
-    ;;                     (subst-char-in-string
-    ;;                      ?_ ?\s
-    ;;                      (first
-    ;;                       (split-string
-    ;;                        (first
-    ;;                         (last
-    ;;                          (split-string (plist-get candidate :file) "\\-")))
-    ;;                        "\\.")))))))
+  ;; (defun insert-org-mode-link-from-helm-result (candidate)
+  ;;   (interactive)
+  ;;   (with-helm-current-buffer
+  ;;     (insert (format "[[file:%s][%s]]"
+  ;;                     (plist-get candidate :file)
+  ;;                     ;; Extract the title from the file name
+  ;;                     (subst-char-in-string
+  ;;                      ?_ ?\s
+  ;;                      (first
+  ;;                       (split-string
+  ;;                        (first
+  ;;                         (last
+  ;;                          (split-string (plist-get candidate :file) "\\-")))
+  ;;                        "\\.")))))))
 
-    ;; (helm-add-action-to-source "Insert org-mode link"
-    ;;                            'insert-org-mode-link-from-helm-result
-    ;;                            helm-rg-process-source)
+  ;; (helm-add-action-to-source "Insert org-mode link"
+  ;;                            'insert-org-mode-link-from-helm-result
+  ;;                            helm-rg-process-source)
 
   (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "fixed-layout.bib"))
 
-    ;; (add-to-list 'org-ref-default-bibliography calibredb-ref-default-bibliography)
-    ;; (setq org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename)
-    ;; ;;; TODO
-    ;; (setq backup-directory-alist
-    ;;       `((".*" . temporary-file-directory))
-    ;;       auto-save-file-name-transforms
-    ;;       `((".*" ,temporary-file-directory t)))
+  ;; (add-to-list 'org-ref-default-bibliography calibredb-ref-default-bibliography)
+  ;; (setq org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename)
+  ;; ;;; TODO
+  ;; (setq backup-directory-alist
+  ;;       `((".*" . temporary-file-directory))
+  ;;       auto-save-file-name-transforms
+  ;;       `((".*" ,temporary-file-directory t)))
 
-    ;; not needed currently
-    ;; (load-library "~/.config/emacs/secrets.el.gpg")
+  ;; not needed currently
+  ;; (load-library "~/.config/emacs/secrets.el.gpg")
 
-    ;; (setq shackle-default-rule '(:frame t)
-    ;;       shackle-display-buffer-frame-function 'sway-shackle-display-buffer-frame)
+  ;; (setq shackle-default-rule '(:frame t)
+  ;;       shackle-display-buffer-frame-function 'sway-shackle-display-buffer-frame)
 
-    ;; (sway-socket-tracker-mode)
-    ;; (sway-undertaker-mode) ;; If you want to use :dedicate, read below.
-    ;; (sway-x-focus-through-sway-mode) ;; Temporary workaround for Sway bug 6216
+  ;; (sway-socket-tracker-mode)
+  ;; (sway-undertaker-mode) ;; If you want to use :dedicate, read below.
+  ;; (sway-x-focus-through-sway-mode) ;; Temporary workaround for Sway bug 6216
 
-    ;; load patches
+  ;; load patches
   (defun load-directory (dir)
     (let ((load-it (lambda (f)
                      (load-file (concat (file-name-as-directory dir) f)))
@@ -951,24 +952,24 @@ before packages are loaded."
   (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
   (setq source-directory "~/gh/EMACS/emacs/src") ;; emacs C source for describe-*
 
-    ;; TODO it should not be necessary to bind keys explicity like here, but it doesn't work otherwise
-    ;; (with-eval-after-load 'edebug-x
-    ;;   (define-derived-mode
-    ;;     edebug-x-instrumented-function-list-mode tabulated-list-mode "Edebug Instrumented functions"
-    ;;     "Major mode for listing instrumented functions"
-    ;;     (setq tabulated-list-entries 'edebug-x-list-instrumented-functions)
-    ;;     (setq tabulated-list-format
-    ;;           [("Instrumented Functions" 50 nil)
-    ;;            ("File" 150 nil)])
+  ;; TODO it should not be necessary to bind keys explicity like here, but it doesn't work otherwise
+  ;; (with-eval-after-load 'edebug-x
+  ;;   (define-derived-mode
+  ;;     edebug-x-instrumented-function-list-mode tabulated-list-mode "Edebug Instrumented functions"
+  ;;     "Major mode for listing instrumented functions"
+  ;;     (setq tabulated-list-entries 'edebug-x-list-instrumented-functions)
+  ;;     (setq tabulated-list-format
+  ;;           [("Instrumented Functions" 50 nil)
+  ;;            ("File" 150 nil)])
 
-    ;;     (set-keymap-parent edebug-x-instrumented-function-list-mode-map tablist-mode-map)
-    ;;     (use-local-map edebug-x-instrumented-function-list-mode-map)
-    ;;     (tabulated-list-init-header)))
+  ;;     (set-keymap-parent edebug-x-instrumented-function-list-mode-map tablist-mode-map)
+  ;;     (use-local-map edebug-x-instrumented-function-list-mode-map)
+  ;;     (tabulated-list-init-header)))
 
     ;;; extends pdf layer declaration
-    ;; TODO move above to use-package
+  ;; TODO move above to use-package
 
-    ;; (require 'qpdf.el)
+  ;; (require 'qpdf.el)
   (defun chriad/fix-pdf-selection ()
     "Replace pdf with one where selection shows transparently."
     (interactive)
@@ -1093,11 +1094,11 @@ before packages are loaded."
     ("C-c n o" . org-id-get-create)
     ("C-c n o" . org-id-get-create))
 
-    ;; (defun org-capture-mode-hook--org-fc-cloze-code-hook ()
-    ;;   (if (equal (org-capture-get :key) "lcs")
-    ;;       (progn
-    ;;         (org-babel-next-src-block)
-    ;;         (org-edit-special))))
+  ;; (defun org-capture-mode-hook--org-fc-cloze-code-hook ()
+  ;;   (if (equal (org-capture-get :key) "lcs")
+  ;;       (progn
+  ;;         (org-babel-next-src-block)
+  ;;         (org-edit-special))))
 
   (use-package org-fc
     :defer t
@@ -1162,51 +1163,51 @@ before packages are loaded."
     )
 
 
-    ;; (global-evil-motion-trainer-mode 1)
-    ;; (setq evil-motion-trainer-threshold 6)
-    ;; (setq evil-motion-trainer-super-annoying-mode t)
-    ;; (emt-add-suggestion 'evil-next-line 'evil-avy-goto-char-timer) ;;emt= evil-motion-trainer
+  ;; (global-evil-motion-trainer-mode 1)
+  ;; (setq evil-motion-trainer-threshold 6)
+  ;; (setq evil-motion-trainer-super-annoying-mode t)
+  ;; (emt-add-suggestion 'evil-next-line 'evil-avy-goto-char-timer) ;;emt= evil-motion-trainer
 
   ;;; initial states
 
-    ;; working
-    ;; not working
+  ;; working
+  ;; not working
   (evil-set-initial-state 'Info-edit-mode 'emacs)
-    ;; (evil-set-initial-state 'debugger-mode 'emacs)
-    ;; (remove-hook 'paradox-menu-mode-hook 'evil-mode)
-    ;; (remove-hook 'paradox-mode-hook 'evil-mode)
-    ;; (remove-hook 'package-mode-hook 'evil-mode)
-    ;; (remove-hook 'package-menu-mode-hook 'evil-mode)
+  ;; (evil-set-initial-state 'debugger-mode 'emacs)
+  ;; (remove-hook 'paradox-menu-mode-hook 'evil-mode)
+  ;; (remove-hook 'paradox-mode-hook 'evil-mode)
+  ;; (remove-hook 'package-mode-hook 'evil-mode)
+  ;; (remove-hook 'package-menu-mode-hook 'evil-mode)
 
-    ;; (evil-set-initial-state 'org-capture-mode 'insert)
+  ;; (evil-set-initial-state 'org-capture-mode 'insert)
 
-    ;; customize
-    ;; (add-hook 'org-mode-hook 'org-indent-mode)
+  ;; customize
+  ;; (add-hook 'org-mode-hook 'org-indent-mode)
 
-    ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/dired-plus/dired+.el")
-    ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/pp-plus/pp+.el")
-    ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/thingatpt-plus/thingatpt+.el")
-    ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/org-babel-hide-markers-mode/ob-hide-markers.el")
-
-
-    ;; (add-hook 'pdf-view-mode-hook (lambda ()
-    ;;                                 (pdf-view-auto-slice-minor-mode)))
+  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/dired-plus/dired+.el")
+  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/pp-plus/pp+.el")
+  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/thingatpt-plus/thingatpt+.el")
+  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/org-babel-hide-markers-mode/ob-hide-markers.el")
 
 
-
-    ;; (add-hook 'org-noter-doc-mode-hook (lambda () (spacemacs/set-leader-keys-for-minor-mode
-    ;;                                                 'org-noter-doc-mode "i" 'org-noter-insert-precise-note)))
-    ;; (add-hook 'org-noter-doc-mode-hook (lambda () (spacemacs/set-leader-keys-for-minor-mode
-    ;;                                                 'org-noter-doc-mode "<f9>" 'org-noter-sync-current-page-or-chapter)))
-    ;; (add-hook 'org-noter-notes-mode-hook (lambda () (spacemacs/set-leader-keys-for-minor-mode
-    ;;                                                   'org-noter-notes-mode "<f9>" 'org-noter-sync-current-note)))
-    ;; (global-set-key (kbd "<f8>") 'org-noter-sync-current-page-or-chapter)
-    ;; (global-set-key (kbd "<f9>") 'org-noter-sync-current-note)
+  ;; (add-hook 'pdf-view-mode-hook (lambda ()
+  ;;                                 (pdf-view-auto-slice-minor-mode)))
 
 
 
-    ;; (require 'pdfgrep)
-    ;; (pdfgrep-mode)
+  ;; (add-hook 'org-noter-doc-mode-hook (lambda () (spacemacs/set-leader-keys-for-minor-mode
+  ;;                                                 'org-noter-doc-mode "i" 'org-noter-insert-precise-note)))
+  ;; (add-hook 'org-noter-doc-mode-hook (lambda () (spacemacs/set-leader-keys-for-minor-mode
+  ;;                                                 'org-noter-doc-mode "<f9>" 'org-noter-sync-current-page-or-chapter)))
+  ;; (add-hook 'org-noter-notes-mode-hook (lambda () (spacemacs/set-leader-keys-for-minor-mode
+  ;;                                                   'org-noter-notes-mode "<f9>" 'org-noter-sync-current-note)))
+  ;; (global-set-key (kbd "<f8>") 'org-noter-sync-current-page-or-chapter)
+  ;; (global-set-key (kbd "<f9>") 'org-noter-sync-current-note)
+
+
+
+  ;; (require 'pdfgrep)
+  ;; (pdfgrep-mode)
 
   (setq helm-dash-browser-func 'eww)
   (setq dash-docs-browser-func 'eww)
@@ -1225,13 +1226,13 @@ before packages are loaded."
   (use-package nov
     :defer t
     :init (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-  :config
-  ;; (add-hook 'nov-mode-hook 'on-screen-mode)
-  ;; (evil-set-initial-state 'nov-mode 'emacs)
-  ;; (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
-  )
+    :config
+    ;; (add-hook 'nov-mode-hook 'on-screen-mode)
+    ;; (evil-set-initial-state 'nov-mode 'emacs)
+    ;; (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
+    )
 
-  ; ranger
+                                        ; ranger
   ;; (setq ranger-enter-with-minus 'deer)
   ;; (setq ranger-cleanup-on-disable t)
   ;; (setq ranger-cleanup-eagerly t)
@@ -1248,26 +1249,26 @@ before packages are loaded."
 
 
 
-    ;; (good-scroll-mode 1)
+  ;; (good-scroll-mode 1)
 
   (global-prettify-symbols-mode)
 
-    ;; moved to customize
-    ;; (add-hook 'dired-mode-hook
-    ;;           (lambda ()
-    ;;             (dired-hide-details-mode)))
+  ;; moved to customize
+  ;; (add-hook 'dired-mode-hook
+  ;;           (lambda ()
+  ;;             (dired-hide-details-mode)))
 
-    ;; (require 'orca)
+  ;; (require 'orca)
 
 
   (load "~/.config/emacs/capture.el")
   (load "~/.config/emacs/o-keymap.el")
 
-    ;; (setq org-outline-path-complete-in-steps nil) ; Refile in a single go
-    ;; (setq org-refile-use-outline-path t)          ; Show full paths for refiling
+  ;; (setq org-outline-path-complete-in-steps nil) ; Refile in a single go
+  ;; (setq org-refile-use-outline-path t)          ; Show full paths for refiling
 
-    ;; from debian package hyperspec
-    ;; hyperspec.el that defines ``common-lisp-hyperspec-root'' is part of package slime
+  ;; from debian package hyperspec
+  ;; hyperspec.el that defines ``common-lisp-hyperspec-root'' is part of package slime
 
 
 
@@ -1295,22 +1296,22 @@ before packages are loaded."
 
 
 
-    ;; (setq spaceline-org-clock-p t)
-    ;; TODO move to org-additional
-    ;; (setq org-mru-clock-keep-formatting t)
+  ;; (setq spaceline-org-clock-p t)
+  ;; TODO move to org-additional
+  ;; (setq org-mru-clock-keep-formatting t)
 
-    ;; moved to customize
-    ;; (add-hook 'org-mode-hook
-    ;;           (lambda ()
-    ;;             (setq prettify-symbols-alist
-    ;;                   '(("lambda" . ?λ)
-    ;;                     ("defun" . ?⨐)
-    ;;                     ("->"     . ?⟶)
-    ;;                     (":="     . ?≔)
-    ;;                     ("=>"     . ?⟹)
-    ;;                     ("#t"     . ?⟙)
-    ;;                     ("!="     . ?≠)
-    ;;                     ("#f"     . ?⟘)))))
+  ;; moved to customize
+  ;; (add-hook 'org-mode-hook
+  ;;           (lambda ()
+  ;;             (setq prettify-symbols-alist
+  ;;                   '(("lambda" . ?λ)
+  ;;                     ("defun" . ?⨐)
+  ;;                     ("->"     . ?⟶)
+  ;;                     (":="     . ?≔)
+  ;;                     ("=>"     . ?⟹)
+  ;;                     ("#t"     . ?⟙)
+  ;;                     ("!="     . ?≠)
+  ;;                     ("#f"     . ?⟘)))))
 
   (use-package symex
     :defer t

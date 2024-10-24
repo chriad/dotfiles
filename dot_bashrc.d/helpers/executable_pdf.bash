@@ -1,6 +1,12 @@
-# cpdf -list-bookmarks <file>.pdf | cpdf--dumped-toc-to-txt > chaps.out
+# helper
 pdf--cpdf-dumped-toc-to-txt() {
     csvcut -c 2 -d" " -q'"' -p, "${1}"
+}
+
+# pdf--toc-to-chaps <file.pdf>
+pdf--toc-to-chaps() {
+    cpdf -list-bookmarks "${1}" | csvcut -c 2 -d" " -q'"' -p, > chaps.txt
+    
 }
 
 pdftk--d() {
