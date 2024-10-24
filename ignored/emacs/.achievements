@@ -75,11 +75,7 @@
                            (achievements-command-was-run
                             '(describe-key describe-key-briefly Info-goto-emacs-key-command-node where-is))))
                         nil nil 5 0 nil)
-   #s(emacs-achievement "When is a word not a word?" "You answered a question by using `describe-syntax'."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run 'describe-syntax)))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "When is a word not a word?" "You answered a question by using `describe-syntax'." t nil nil 5 0 nil)
    #s(emacs-achievement "What did I just do?" "You answered a question by using `(command-history view-lossage)'." t nil nil 5 0 nil)
    #s(emacs-achievement "Shortcut genius" "You don't need to learn new shortcuts anymore."
                         (lambda nil
