@@ -26,7 +26,9 @@
    "/home/chriad/.local/share/chezmoi/ignored/emacs/.emacs-bmk-bmenu-commands.el")
  '(bmkp-bmenu-image-bookmark-icon-file
    "~/.local/share/chezmoi/ignored/emacs/bookmark-plus/BookmarkPlusImageFileDefaultIcon")
+ '(bmkp-eww-generate-buffer-flag nil)
  '(bmkp-last-as-first-bookmark-file nil)
+ '(bmkp-properties-to-keep '(tags annotation visits))
  '(bmkp-propertize-bookmark-names-flag t)
  '(bookmark-bmenu-file-column 50)
  '(bookmark-default-file "/home/chriad/.local/share/chezmoi/ignored/emacs/bookmarks")
@@ -98,7 +100,10 @@
  '(eaf-pdf-extension-list '("pdf" "xps" "oxps" "cbz" "fb2" "fbz"))
  '(edebug-inline-result-backend 'popup)
  '(emacs-lisp-mode-hook
-   '(eldoc-mode eldoc-mode highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode elisp-def-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode))
+   '(eldoc-mode
+     (lambda nil
+       (setq-local bookmark-make-record-function #'lib-bookmark-make-record))
+     highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode elisp-def-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode))
  '(enable-local-variables t)
  '(enable-recursive-minibuffers nil nil nil "TODO")
  '(epa-file-cache-passphrase-for-symmetric-encryption t)
@@ -156,11 +161,12 @@
      (write-file default helm-read-file-name-handler-1)
      (write-region default helm-read-file-name-handler-1)
      (all-the-icons-insert . helm-mode-all-the-icons-handler)
-     (bmkp-autofile-set . ignore)) nil nil "TODO: read-file-name in bmkp-autofile-set does not work well with this.")
+     (bmkp-autofile-set ignore ido-read-file-name)) nil nil "TODO: bmkp-autofile-set only works with helm-mode disabeled")
  '(helm-completion-style 'helm-fuzzy)
  '(helm-descbinds-mode t)
  '(helm-descbinds-window-style 'split)
  '(helm-file-preview-mode nil nil (helm-file-preview) "This interferes with c-x 8")
+ '(helm-find-files-bookmark-prefix nil nil nil "Cannot revert customization for this item?")
  '(helm-firefox-default-directory "/home/chriad/snap/firefox/common/.mozilla/firefox/")
  '(helm-lisp-fuzzy-completion t)
  '(helm-move-to-line-cycle-in-source nil)
@@ -316,7 +322,6 @@
      ("cpp" . c++)
      ("ditaa" . artist)
      ("desktop" . conf-desktop)
-     ("dot" . fundamental)
      ("elisp" . emacs-lisp)
      ("ocaml" . tuareg)
      ("screen" . shell-script)
@@ -329,7 +334,7 @@
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
  '(org-superstar-remove-leading-stars t)
  '(package-selected-packages
-   '(snow misc-fns help-fns+ help-macro+ font-lock+ pp+ fzf thingatpt+ yatemplate dashboard w3m jeison try ansi shut-up commander qpdf company posframe clang-format helm markdown-mode slime spray load-dir nov delight org-roam-ui quelpa-use-package quelpa fit-frame toml-mode helm-system-packages fn anki-editor-view anki-mode anki-editor keymap-utils org-fc zeal-at-point yasnippet-snippets yasnippet-classic-snippets yapfify yaml-mode xref xr ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vmd-mode vim-powerline vi-tilde-fringe uuidgen utop undo-tree toc-org tldr terminal-here term-cursor tagedit systemd symon symex symbol-overlay string-edit-at-point stickyfunc-enhance srefactor sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc smeargle slime-company slim-mode sicp shell-pop scss-mode scrollkeeper sass-mode run-command ripgrep restart-emacs rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort pug-mode psession prettier-js popwin poetry pippel pipenv pip-requirements persp-mode pdfgrep pdf-view-restore pcre2el password-store-otp password-generator paradox ox-gfm overseer orgit-forge org-web-tools org-tidy org-superstar org-starless org-roam org-rich-yank org-ref org-projectile org-present org-pomodoro org-pdftools org-page org-mru-clock org-ml org-mime org-link-minor-mode org-link-beautify org-gtd org-download org-contrib org-cliplink org-babel-hide-markers orca open-junk-file on-screen olivetti ocp-indent ocamlformat npm-mode nose nodejs-repl no-littering neotree nameless multi-vterm multi-term multi-line mpv minions merlin-iedit merlin-eldoc merlin-company markdown-toc magit-popup lsp-ui lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode lisp-extra-font-lock ligature keycast key-quiz json-reformat json-navigator json-mode js2-refactor js-doc journalctl-mode inspector info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete holy-mode hl-todo highlight-sexp highlight-parentheses highlight-numbers highlight-indentation highlight-indent-guides highlight-function-calls highlight-defined hide-comnt helpful helm-xref helm-unicode helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-pass helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-firefox helm-file-preview helm-emmet helm-descbinds helm-dash helm-css-scss helm-company helm-comint helm-c-yasnippet helm-bibtex helm-atoms helm-apt google-translate good-scroll golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md geiser-guile flycheck-pos-tip flycheck-package flycheck-ocaml flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-org evil-numbers evil-nerd-commenter evil-motion-trainer evil-mc evil-matchit evil-lispy evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help epkg emr elisp-slime-nav elisp-demos elisp-def el-patch editorconfig edit-indirect edebug-x edebug-inline-result eat dyncloze dune dumb-jump drag-stuff dotenv-mode doctest doct djvu3 djvu dired-quick-sort director diminish devdocs define-word dap-mode cython-mode csv-mode company-web company-statistics company-quickhelp company-lua company-anaconda common-lisp-snippets command-log-mode column-enforce-mode code-cells clhs clean-aindent-mode chezmoi centered-cursor-mode calibredb blacken auto-yasnippet auto-highlight-symbol auto-dim-other-buffers auto-compile all-the-icons aggressive-indent age adoc-mode achievements ace-link ace-jump-helm-line))
+   '(graphviz-dot-mode anki-connect helm-ag bookmark+ org forge magit transient geiser merlin pp+ disable-mouse site-lisp snow misc-fns help-fns+ help-macro+ font-lock+ fzf yatemplate dashboard w3m jeison try ansi shut-up commander qpdf company posframe clang-format helm markdown-mode slime spray load-dir nov delight org-roam-ui quelpa-use-package quelpa fit-frame toml-mode helm-system-packages fn anki-editor-view anki-mode anki-editor keymap-utils org-fc zeal-at-point yasnippet-snippets yasnippet-classic-snippets yapfify yaml-mode xref xr ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vmd-mode vim-powerline vi-tilde-fringe uuidgen utop undo-tree toc-org tldr terminal-here term-cursor tagedit systemd symon symex symbol-overlay string-edit-at-point stickyfunc-enhance srefactor sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc smeargle slime-company slim-mode sicp shell-pop scss-mode scrollkeeper sass-mode run-command ripgrep restart-emacs rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort pug-mode psession prettier-js popwin poetry pippel pipenv pip-requirements persp-mode pdfgrep pdf-view-restore pcre2el password-store-otp password-generator paradox ox-gfm overseer orgit-forge org-web-tools org-tidy org-superstar org-starless org-roam org-rich-yank org-ref org-projectile org-present org-pomodoro org-pdftools org-page org-mru-clock org-ml org-mime org-link-minor-mode org-link-beautify org-gtd org-download org-contrib org-cliplink org-babel-hide-markers orca open-junk-file on-screen olivetti ocp-indent ocamlformat npm-mode nose nodejs-repl no-littering neotree nameless multi-vterm multi-term multi-line mpv minions merlin-iedit merlin-eldoc merlin-company markdown-toc magit-popup lsp-ui lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode lisp-extra-font-lock ligature keycast key-quiz json-reformat json-navigator json-mode js2-refactor js-doc journalctl-mode inspector info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete holy-mode hl-todo highlight-sexp highlight-parentheses highlight-numbers highlight-indentation highlight-indent-guides highlight-function-calls highlight-defined hide-comnt helpful helm-xref helm-unicode helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-pass helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-firefox helm-file-preview helm-emmet helm-descbinds helm-dash helm-css-scss helm-company helm-comint helm-c-yasnippet helm-bibtex helm-atoms helm-apt google-translate good-scroll golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md geiser-guile flycheck-pos-tip flycheck-package flycheck-ocaml flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-org evil-numbers evil-nerd-commenter evil-motion-trainer evil-mc evil-matchit evil-lispy evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help epkg emr elisp-slime-nav elisp-demos elisp-def el-patch editorconfig edit-indirect edebug-x edebug-inline-result eat dyncloze dune dumb-jump drag-stuff dotenv-mode doctest doct djvu3 djvu dired-quick-sort director diminish devdocs define-word dap-mode cython-mode csv-mode company-web company-statistics company-quickhelp company-lua company-anaconda common-lisp-snippets command-log-mode column-enforce-mode code-cells clhs clean-aindent-mode chezmoi centered-cursor-mode calibredb blacken auto-yasnippet auto-highlight-symbol auto-dim-other-buffers auto-compile all-the-icons aggressive-indent age adoc-mode achievements ace-link ace-jump-helm-line))
  '(paradox-automatically-star nil)
  '(paradox-execute-asynchronously 'ask t)
  '(paradox-github-token t)
@@ -344,9 +349,9 @@
      (inhibit-same-window . t)
      (direction . right)))
  '(pdf-annot-list-follow-minor-mode-hook nil)
- '(pdf-annot-list-format '((page . 3) (type . 3) (date . 20) (contents . 30)))
+ '(pdf-annot-list-format '((page . 3) (type . 3) (date . 20) (contents . 50)))
  '(pdf-annot-list-listed-types
-   '(free-text highlight ink squiggly strike-out text underline unknown))
+   '(file free-text highlight ink link popup squiggly strike-out text underline unknown))
  '(pdf-annot-minor-mode-map-prefix [3 1])
  '(pdf-occur-global-minor-mode t)
  '(pdf-outline-display-buffer-action

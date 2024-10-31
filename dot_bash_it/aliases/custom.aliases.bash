@@ -8,11 +8,13 @@ alias yt--from-browser="yt-dlp --cookies-from-browser firefox"
 alias l=exa
 alias chriad--update-emacs='guix pull && guix package -u emacs'
 alias chriad--update-kitty='curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin'
-alias chriad--count-koreader-unread="sqlite3 /home/chriad/koreader/settings/statistics.sqlite3 'SELECT COUNT(*) FROM book WHERE highlights IS NOT 0 AND notes IS NOT 0;'"
 # counters
+alias chriad--count-koreader-unread="sqlite3 /home/chriad/koreader/settings/statistics.sqlite3 'SELECT COUNT(*) FROM book WHERE highlights IS NOT 0 AND notes IS NOT 0;'"
 alias chriad--count-loaded-units="systemctl --legend=0 list-units|wc -l"
 alias chriad--count-images="sqlite3 /home/chriad/digikam-db/digikam4.db 'SELECT COUNT(*) FROM Images WHERE album IS NOT NULL;'"
 alias chriad--count-tasks="task count status:pending"
+alias chriad--count-calibre-books="calibredb --with-library=/media/chriad/ssd-45/fixed-layout list --for-machine | jq '. |length'"
+alias chriad--count-anki-cards="curl localhost:8765 -s -X POST -d '{ \"action\": \"getDeckStats\", \"version\": 6, \"params\": { \"decks\": [\"map\"] }}' | jq '.result | .[] |.total_in_deck'"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
