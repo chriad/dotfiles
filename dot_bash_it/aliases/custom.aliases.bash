@@ -8,6 +8,7 @@ alias yt--from-browser="yt-dlp --cookies-from-browser firefox"
 alias l=exa
 alias chriad--update-emacs='guix pull && guix package -u emacs'
 alias chriad--update-kitty='curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin'
+alias chriad--update-koreader='sudo /home/chriad/.local/bin/dra download --select "koreader-{tag}-amd64.deb" --install  --output /media/chriad/ext4/SOFTWARE/ koreader/koreader'
 # counters
 alias chriad--count-koreader-unread="sqlite3 /home/chriad/koreader/settings/statistics.sqlite3 'SELECT COUNT(*) FROM book WHERE highlights IS NOT 0 AND notes IS NOT 0;'"
 alias chriad--count-loaded-units="systemctl --legend=0 list-units|wc -l"

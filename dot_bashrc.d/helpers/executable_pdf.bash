@@ -120,3 +120,12 @@ cpdf--extract-images() {
 # termpdf--preview-page() {
 #     pdfgrep --with-filename --page-number --ignore-case --recursive "${1}" |fzf --delimiter : --nth 1 --nth 2 --preview='termpdf -n {2} {1}'
 #     }
+
+pdf--extract-image-pages() {
+    # do not convert any images, write all in native format
+    pdf="${1}"
+    start="${2}"
+    end="${3}"
+    if [ -n "${3}"]; then end=$start; fi
+    pdfimages -f $start -l $end -j -jp2 -jbig2 -ccitt -p "${pdf}" "${pdf%pdf}"
+}
