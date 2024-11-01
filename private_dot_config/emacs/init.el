@@ -136,6 +136,8 @@ This function should only modify configuration layer settings."
 ;;;; emacs
      semantic
                                         ; better-defaults ;; emacs style
+
+     compleseus
      )
 
 
