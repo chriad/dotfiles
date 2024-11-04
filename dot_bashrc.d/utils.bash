@@ -52,3 +52,11 @@ dra--update-epubcheck() {
     # chmod +x ludusavi
     # mv ludusavi "$HOME"/.local/bin/
 }
+guix--vm() {
+    # file=/media/chriad/ssd-45/guix-system.img
+    qemu-system-x86_64 \
+        -nic user,model=virtio-net-pci \
+        -enable-kvm -m 2048 \
+        -device virtio-blk,drive=myhd \
+        -drive if=none,file=/media/chriad/ssd-45/guix-system.img,id=myhd
+}
