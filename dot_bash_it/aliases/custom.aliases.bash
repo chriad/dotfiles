@@ -113,7 +113,11 @@ alias ipynb-view="jupyter nbconvert --stdout --to markdown"
 alias cl-repl="sbcl --eval '(ql:quickload :cl-repl)' --eval '(cl-repl:main)' --quit"
 alias remote-diff='git diff master..origin/master'
 alias gpol='gpo -q list 2> /dev/null | paste -sd"\t\n" | fzf --delimiter="\t" --with-nth=1 --bind "enter:execute(echo {2})+abort"'
-alias tt='gio trash' # to trash
+
+# treetop -> tt
+# ttconv -> tt
+# bad choice
+# alias tt='gio trash' # to trash
 alias nethogs="nethogs -v 3"
 alias fzfp="fzf --preview='batcat --color=always {}'"
 alias uncaps='xdotool key Caps_Lock'

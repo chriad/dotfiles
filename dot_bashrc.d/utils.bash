@@ -57,6 +57,16 @@ guix--vm() {
     qemu-system-x86_64 \
         -nic user,model=virtio-net-pci \
         -enable-kvm -m 2048 \
-        -device virtio-blk,drive=myhd \
-        -drive if=none,file=/media/chriad/ssd-45/guix-system.img,id=myhd
+        -device virtio-blk,drive=guix-live \
+        -drive if=none,file=/media/chriad/ssd-45/guix-live.qcow2,id=guix-live
+}
+# parlement-dl 'https://wdrmedien-a.akamaihd.net/medp/ondemand/de/fsk0/319/3196382/3196382_59643987.mp4' \
+#              > 'https://api.ardmediathek.de/player-service/subtitle/ebutt/urn:ard:subtitle:87d5286b6b110181' 08
+parlement-dl() {
+    curl "${1}" -o vid
+    curl "${2}" -o sub
+    tt convert -i sub --itype ttml -o sub.srt
+    ffmpeg -hide_banner -loglevel warning -nostats -i vid -i sub.srt -map 0:v -map 0:a -map 1 -c:v copy -c:a copy -c:s mov_text -metadata:s:s:0 language=eng "Parlement S02E${3}".mp4
+
+    rm vid sub sub.srt
 }

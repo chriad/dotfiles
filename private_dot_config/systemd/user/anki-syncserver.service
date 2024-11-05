@@ -4,7 +4,9 @@ Description=Anki sync server
 # StartLimitIntervalSec=60
 # StartLimitBurst=4
 ConditionPathExists=/home/chriad/.syncserver
-After=network.target
+# see arch systemd
+Wants=network-online.target
+After=network-online.target
 After=flatpak-system-helper.service
 
 [Service]
