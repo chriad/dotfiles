@@ -21,3 +21,10 @@ fzf--browse-playlist-favs() {
     local favs='/home/chriad/.local/share/chezmoi/ignored/@Favorites.xspf'
     xpath -q -e '//title' "${favs}" | sed -e ':a;N;$!ba;s/<[^>]*>//g' |tail --lines +2 |fzf
 }
+
+koreader--ebook-view ()
+{
+    local d;
+    d=/media/chriad/ssd-45/KOReader-Books
+    fd --prune -e epub --base-directory $d | fzf --bind="enter:become(koreader /media/chriad/ssd-45/KOReader-Books/{} 2>&1 > /dev/null & disown)"
+}

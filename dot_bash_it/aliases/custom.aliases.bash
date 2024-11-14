@@ -45,7 +45,8 @@ alias reload_custom_aliases=". ~/.bash_it/aliases/custom.aliases.bash"
 # alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
 
 # 1 letter
-alias n='nautilus . &'
+
+alias nau='nautilus . &'
 alias e="emacsclient --no-wait --create-frame --alternate-editor="
 alias a="alias|fzf"
 alias T="task|fzf"
