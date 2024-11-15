@@ -138,6 +138,11 @@ This function should only modify configuration layer settings."
                                         ; better-defaults ;; emacs style
 
      compleseus
+     ;; (tree-sitter :variables
+     ;;                            spacemacs-tree-sitter-hl-black-list '(org js2-mode rjsx-mode)
+     ;;                            tree-sitter-syntax-highlight-enable t
+     ;;                            tree-sitter-fold-enable t
+     ;;                            tree-sitter-fold-indicators-enable nil)
      )
 
 
@@ -150,6 +155,11 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      treesit-auto
+                                      ;; install by explicit clone, too many dependencies
+                                      ;; (combobulate :location (recipe
+                                      ;;                  :fetcher github
+                                      ;;                  :repo "mickeynp/combobulate"))
                                       anki-connect ;; very simple
                                       ;; site-lisp
                                       (qpdf :location (recipe
@@ -187,7 +197,8 @@ This function should only modify configuration layer settings."
                                       ;; dired-git-info ;; disable for debug
                                       ;; camcorder
                                       run-command
-                                      symex
+                                      ;; dependency on tree-sitter which is obsolete
+                                      ;; symex
                                       ;; niceify-info ;; breaks helm-info
                                       dyncloze
                                       no-littering ;; useful
@@ -803,8 +814,47 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  (use-package treesit-auto
+    :custom
+    (treesit-auto-install 'prompt)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode))
+
+  ;; (global-tree-sitter-mode)
 
   ;; (defvar key-quiz--custom-keys-alist '(("C-h k" . "describe-key")))
+  ;; (setq treesit-extra-load-path '("/home/chriad/gh/EMACS/tree-sitter-module/dist/"))
+  ;; (setq treesit-language-source-alist
+  ;;       '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+  ;;         ;; (cmake "https://github.com/uyha/tree-sitter-cmake")
+  ;;         ;; (css "https://github.com/tree-sitter/tree-sitter-css")
+  ;;         (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+  ;;         ;; (go "https://github.com/tree-sitter/tree-sitter-go")
+  ;;         (html "https://github.com/tree-sitter/tree-sitter-html")
+  ;;         ;; (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+  ;;         (json "https://github.com/tree-sitter/tree-sitter-json")
+  ;;         (org "https://github.com/milisims/tree-sitter-org.git")
+  ;;         ;; (make "https://github.com/alemuller/tree-sitter-make")
+  ;;         ;; (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+  ;;         ;; (python "https://github.com/tree-sitter/tree-sitter-python")
+  ;;         (toml "https://github.com/tree-sitter/tree-sitter-toml")
+  ;;         ;; (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+  ;;         ;; (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+  ;;         (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+  ;; ;; install
+  ;; ;; (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
+
+  ;; (setq major-mode-remap-alist
+  ;;       '((yaml-mode . yaml-ts-mode)
+  ;;         (bash-mode . bash-ts-mode)
+  ;;         ;; (js2-mode . js-ts-mode)
+  ;;         ;; (typescript-mode . typescript-ts-mode)
+  ;;         (json-mode . json-ts-mode)
+  ;;         ;; (css-mode . css-ts-mode)
+  ;;         ;; (python-mode . python-ts-mode)
+  ;;         ))
 
   (use-package fzf
     :bind
@@ -1315,12 +1365,13 @@ before packages are loaded."
   ;;                     ("!="     . ?≠)
   ;;                     ("#f"     . ?⟘)))))
 
-  (use-package symex
-    :defer t
-    :config
-    (symex-initialize)
-    (global-set-key (kbd "s-;") 'symex-mode-interface)
-    :custom (symex-modal-backend 'hydra))
+  ;; TODO dependency on tree-sitter package which is obsolete
+  ;; (use-package symex
+  ;;   :defer t
+  ;;   :config
+  ;;   (symex-initialize)
+  ;;   (global-set-key (kbd "s-;") 'symex-mode-interface)
+  ;;   :custom (symex-modal-backend 'hydra))
 
 
   (with-eval-after-load 'org
