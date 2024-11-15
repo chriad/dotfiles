@@ -27,33 +27,35 @@
 (defun chriad/search-dpt ()
   (interactive)
   ;; (fzf-find-file-in-dir (getenv "QUADERNO_SYNC_PATH"))
-  (fzf-find-file-in-dir "/media/chriad/ext4/dpt-mirror/dpt"))
+  ;; (fzf-find-file-in-dir "/media/chriad/ext4/dpt-mirror/dpt")
+  (let ((consult-fd-args '("fd --extension pdf --full-path")))
+    (consult-fd "/media/chriad/ext4/dpt-mirror/dpt")))
 
 
 (defun chriad/search-dotfilers ()
   ;; jump to a dir of some person
   (interactive)
-  (helm-find-files-1 "~/gh-dotfiles/"))
+  (consult-ripgrep "~/gh-dotfiles/"))
 
 ;; TODO must also search package-directory-list for guix
 ;; TODO use symbol at point as default search term
 (defun chriad/search-elpa ()
   "Search for code in packages. "
   (interactive)
-    (let ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never -t el"))
-      (spacemacs/helm-files-do-rg package-user-dir)))
+  (let ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never -t el"))
+    (consult-ripgrep package-user-dir)))
 
 (defun chriad/search-systemd-units ()
   (interactive)
-      (spacemacs/helm-files-do-rg "/usr/lib/systemd/user"))
+  (spacemacs/helm-files-do-rg "/usr/lib/systemd/user"))
 
 (defun chriad/search-dotfiles ()
   (interactive)
-      (spacemacs/helm-files-do-rg ""))
+  (spacemacs/helm-files-do-rg ""))
 
 (defun chriad/search-roam ()
   (interactive)
-      (spacemacs/helm-files-do-rg org-roam-directory))
+  (consult-ripgrep org-roam-directory))
 
 (defun chriad/find-custom-aliases ()
   (interactive)
@@ -154,7 +156,14 @@
 (spacemacs/set-leader-keys "osD" 'chriad/search-dotfilers)
 (spacemacs/set-leader-keys "osr" 'chriad/search-roam)
 (spacemacs/set-leader-keys "oss" 'chriad/search-systemd-units)
-(spacemacs/set-leader-keys "ot" 'terminal-here-launch)
+
+
+(spacemacs/declare-prefix  "ot" "tree-sitter")
+(spacemacs/set-leader-keys "ote" 'treesit-explore-mode) ;; tree-sitter-explore-mode is obsolete
+(spacemacs/set-leader-keys "oti" 'treesit-inspect-mode)
+(spacemacs/set-leader-keys "otn" 'treesit-inspect-node-at-point)
+;; TODO
+(spacemacs/set-leader-keys "otq" 'tree-sitter-query-builder)
 
 
 ;; h
@@ -199,7 +208,6 @@
 
 (spacemacs/set-leader-keys "opw" 'spacemacs/count-words-analysis)
 
-;; (spacemacs/set-leader-keys "ot" 'tab-bar-new-tab)
 
 ;; (spacemacs/declare-prefix "or" "roam")
 ;; (spacemacs/set-leader-keys "orn" 'my/navigate-note)
@@ -231,6 +239,7 @@
 
 ;; t
 (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "ot" 'tiny-expand)
+
 ;; e
 (spacemacs/declare-prefix-for-mode 'emacs-lisp-mode "moe" "debug")
 (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "oei" 'edebug-x-show-instrumented)
