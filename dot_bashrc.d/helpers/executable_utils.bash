@@ -76,3 +76,21 @@ parlement-dl() {
 screencast() {
     wf-recorder -a -f /home/chriad/Videos/"${1}".mkv
 }
+
+# # use gdebi instead of dpkg
+# dpkg () {
+#     local OPTIND OPTARG
+#     local real_command="gdebi"
+#     local command_args=()
+#     while getopts :i opt; do
+#         case $opt in
+#             i) command_args+=( "--apt-line" ) ;;
+#             ?) echo "unknown option: -$OPTARG" >&2
+#             return 1
+#             ;;
+#         esac
+#     done
+#     shift $((OPTIND - 1))
+
+#     "$real_command" "${command_args[@]}" "$@"
+# }

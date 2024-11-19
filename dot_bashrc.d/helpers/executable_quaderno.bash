@@ -31,20 +31,5 @@ quaderno--pdffd() {
 }
 alias pdffd=quaderno--pdffd
 
-# # use gdebi instead of dpkg
-# dpkg () {
-#     local OPTIND OPTARG
-#     local real_command="gdebi"
-#     local command_args=()
-#     while getopts :i opt; do
-#         case $opt in
-#             i) command_args+=( "--apt-line" ) ;;
-#             ?) echo "unknown option: -$OPTARG" >&2
-#             return 1
-#             ;;
-#         esac
-#     done
-#     shift $((OPTIND - 1))
+quaderno--fts() { rga-fzf "${1}" $QUADERNO_SYNC_PATH; }
 
-#     "$real_command" "${command_args[@]}" "$@"
-# }

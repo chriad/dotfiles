@@ -15,6 +15,7 @@ alias chriad--count-koreader-unread="sqlite3 /home/chriad/koreader/settings/stat
 alias chriad--count-loaded-units="systemctl --legend=0 list-units|wc -l"
 alias chriad--count-images="sqlite3 /home/chriad/digikam-db/digikam4.db 'SELECT COUNT(*) FROM Images WHERE album IS NOT NULL;'"
 alias chriad--count-tasks="task count status:pending"
+alias chriad--count-ubuntu-packages="dpkg --list | wc --lines"
 alias chriad--count-calibre-books="calibredb --with-library=/media/chriad/ssd-45/fixed-layout list --for-machine | jq '. |length'"
 alias chriad--count-anki-cards="curl localhost:8765 -s -X POST -d '{ \"action\": \"getDeckStats\", \"version\": 6, \"params\": { \"decks\": [\"map\"] }}' | jq '.result | .[] |.total_in_deck'"
 
