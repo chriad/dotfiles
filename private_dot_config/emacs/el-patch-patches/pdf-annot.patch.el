@@ -119,7 +119,7 @@
                     edg
                     pdf-view-selection-style))
                  edges))
-      txt)))
+      (mapconcat 'identity txt "　")))) ;;returns string
 
 
 (defun chriad/pdf-annot-with-annot-text-copy-to-kill-ring ()
@@ -161,9 +161,12 @@
 ;;       (kill-new (mapconcat 'identity txt " "))))
 
 
+;; add as `Basic`: then in anki change note type to cloze
 (defun chriad/pdf-annot-with-annot-text-as-anki-card ()
   (interactive)
-  ((anki-connect-add-note "map" "Enhanced Cloze 2.1 v2" '(("Content" . (chriad/pdf-annot-with-annot-text))))))
+  (require 'anki-connect)
+  (let ((txt (chriad/pdf-annot-with-annot-text)))
+    (anki-connect-add-note "map" "Basic" `(("Front" . ,txt) ("Back" . "")))))
 
 
 ;; TODO bind to key in annot-list-map
@@ -324,6 +327,7 @@ have the PDF buffer automatically move along with us."
 ;; TODO on RET, goto annotation
 (defun chriad/pdf-annot-browse-annot-contents ()
   (interactive)
+  (require 'helm)
   (setq annots (sort (pdf-annot-getannots nil
                                           '(highlight)
                                           pdf-annot-list-document-buffer)
