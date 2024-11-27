@@ -35,44 +35,45 @@ pdf--thumbnail() {
     pdftoppm -f 1 -l 1 -scale-to 1024 -png  $1 thumb
 }
 
-pdf--pdfx-extract-urls ()
-{
-    pdfx -v "$1" -o urls.txt
-}
+# pdfx--extract-urls ()
+# {
+#     pdfx -v "$1" -o urls.txt
+# }
 
-pdf--pdfx-browse-refs-json() {
+# TODO combine with jq and fzf and invoke firefox on candidate
+pdfx--browse-refs-json() {
     pdfx -v --json "${1}" |jid '.references'
 }
 
 # TODO first -remove-annotations from target?
-pdf--cpdf-graft-annots() {
+cpdf--graft-annots() {
     source="$1"
     target="$2"
     cpdf -copy-annotations "$source" "$target" -o "${target%pdf}"grafted.pdf
 }
 
-pdf--cpdf-dump-annot-to-file() {
+cpdf--dump-annot-to-file() {
     pdf="$1"
     cpdf -list-annotations-json "$pdf" > "${pdf%pdf}"annots.json
 }
 
-pdf--cpdf-repair() {
+cpdf--repair() {
     pdf="${1}"
     cpdf "${pdf}" -gs gs -gs-malformed-force -o "${pdf%pdf}"repaired.pdf
 }
 
-pdf--ocrmypdf-rasterize() {
+ocrmypdf--rasterize() {
     pdf="${1}"
     ocrmypdf --tesseract-timeout 0 --force-ocr "${pdf}" "${pdf%pdf}"rasterized.pdf
     
 }
 
-pdf--ocrmypdf-gartenfreund() {
+ocrmypdf--gartenfreund() {
     pdf="$1"
     ocrmypdf -l deu --force-ocr "$pdf" "${pdf%pdf}"ocr.pdf
 }
 
-pdf--ocrmypdf-unjbig2() {
+ocrmypdf--unjbig2() {
     pdf="$1"
     ocrmypdf --optimize 0 --skip-text "${pdf}" "${pdf%pdf}"no-jbig2.pdf
 }
@@ -103,16 +104,7 @@ pdf--thumbnail() {
 }
 
 
-pdfx--extract-url ()
-{
-    pdfx -v "$1" -o urls.txt
-}
-
-pdfx--metadata() {
-    pdfx -v $1 -o ${1%.pdf}.pdf-metadata
-}
-
-cpdf--extract-images() {
+pdf--cpdf-extract-images() {
     mkdir -p cpdf-extracted-images
     cpdf -extract-images "${1}" -im magick -o cpdf-extracted-images/%%%
 }

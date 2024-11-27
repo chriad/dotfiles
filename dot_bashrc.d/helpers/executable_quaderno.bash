@@ -25,7 +25,7 @@ alias quaderno--upload="dptrp1 --addr 192.168.2.199 upload"
 
 quaderno--pdffd() {
     local path="$QUADERNO_ROOT/dpt"
-    fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(emacsclient -c {} &>/dev/null &)+abort,ctrl-r:become(org.kde.okular {} &>/dev/null &)+abort,ctrl-p:become(pdfarranger {})'
+    fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:become(org.kde.okular {} &>/dev/null &)+abort,ctrl-r:become(emacsclient -c {} &>/dev/null &)+abort,ctrl-p:become(pdfarranger {})'
     # fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(flatpak run org.kde.okular {}  &>/dev/null &)+abort'
     # fdfind -e pdf . $path 2> /dev/null | fzf --bind='enter:execute(sioyek {} &)+abort'
 }
