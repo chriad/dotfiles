@@ -783,7 +783,8 @@ It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
 
-  (open-dribble-file "~/.config/emacs/dribble")
+  ;; (open-dribble-file "~/.config/emacs/dribble")
+
   ;; The default is 800 kilobytes.  Measured in bytes.
   ;; (setq gc-cons-threshold (* 50 1000 1000))
 
@@ -813,6 +814,11 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+;; disable deprecation warning
+  (setq byte-compile-warnings '(cl-functions))
+  (setq warning-minimum-level :emergency)
+
 
   (use-package treesit-auto
     :custom
@@ -970,6 +976,15 @@ before packages are loaded."
       (mapc load-it (directory-files dir nil "\\.el$"))))
   (load-directory "~/.config/emacs/el-patch-patches/")
 
+;; TODO
+  ;; (defun add-subdirs-to-load-path (dir)
+  ;;   "Recursive add directories to `load-path'."
+  ;;   (let ((default-directory (file-name-as-directory dir)))
+  ;;     (add-to-list 'load-path dir)
+  ;;     (normal-top-level-add-subdirs-to-load-path)))
+  ;; (add-subdirs-to-load-path "~/.config/emacs/el-patch-patches/")
+
+
   (setq pylookup-html-locations '("https://docs.python.org/3"))
   ;; for pylookup
   ;; (setq browse-url-handlers '(("\\`file:" . www-browser)))
@@ -1002,7 +1017,10 @@ before packages are loaded."
   ;; not customizable
   (setq define-word-offline-dict-directory "/media/chriad/ext4/SOFTWARE/dictionaries_enwiktionary/ding/")
   (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
-  (setq source-directory "~/gh/EMACS/emacs/src") ;; emacs C source for describe-*
+
+
+  (setq find-function-C-source-directory "~/gh/EMACS/emacs/src") ;; emacs C source for describe-*
+  ;; (setq source-directory "~/gh/EMACS/emacs/src") ;; this is only when compiled from source
 
   ;; TODO it should not be necessary to bind keys explicity like here, but it doesn't work otherwise
   ;; (with-eval-after-load 'edebug-x
@@ -1071,6 +1089,10 @@ before packages are loaded."
       "The node is publishable if (1) at least on backlink exists and (2) all backlinks are also publishable"
       (ignore))
 
+    ;; TODO
+    (defun chriad/org-roam-extract-subtree-with-link ()
+      "Extract the subtree but keen a link to the new file as the current node heading")
+
     ;; TODO hook to roam
     ;; (defun chriad/roam-doc ()
     ;;   (let ((spacemacs-space-doc-modificators
@@ -1112,6 +1134,11 @@ before packages are loaded."
              :target (file+head "${slug}.org"
                                 "#+title: ${title}")
              :unnarrowed t)
+            
+            ("i" "integrate" entry "* _ TODO %A\n%i"
+             :target (file+head "${slug}.org"
+                                "#+title: ${title}")
+             :unnarrowed t)
 
             ("a" "File to node's inbox" entry "** %?"
              :target (file+olp "${slug}.org" ("_"))
@@ -1122,7 +1149,7 @@ before packages are loaded."
                                 "#+title: ${title}")
              :unnarrowed t)
 
-            ("c" "context" plain "link: %A\nregion: %i\ncomment: %?"
+            ("c" "context" plain "link: %A\n%i\n %?"
              :target (file+head "${slug}.org"
                                 "#+title: ${title}")
              :unnarrowed t)))
@@ -1133,10 +1160,10 @@ before packages are loaded."
     ("C-c n d" . org-roam-dailies-capture-today)
     ("C-c n g" . org-roam-show-graph)
     ("C-c n u" . org-roam-ui-open) ;;  http://localhost:35901/
-    ("C-c n a t" . org-roam-tag-add)
     ("C-c n a a" . org-roam-alias-add)
-    ("C-c n a r" . org-roam-ref-add)
-    ("C-c n f r" . org-roam-ref-find)
+    ("C-c n a r" . org-roam-alias-remove)
+    ;; ("C-c n r a" . org-roam-ref-add)
+    ;; ("C-c n r f" . org-roam-ref-find)
     ("C-c n f f" . org-roam-node-find)
     ("C-c n t a" . org-roam-tag-add)
     ("C-c n t r" . org-roam-tag-remove)
@@ -1144,7 +1171,9 @@ before packages are loaded."
     ("C-c n R" . org-roam-node-random)
     ("C-c n e" . org-roam-extract-subtree) ;; notes shouldn't get too long. Better many files than one file with many notes
     ("C-c n o" . org-id-get-create)
-    ("C-c n o" . org-id-get-create))
+    ("C-c n m i" . org-roam-update-org-id-locations)
+    ("C-c n m s" . org-roam-db-sync)
+    ("C-c n m c" . org-roam-db-clear-all))
 
   ;; (defun org-capture-mode-hook--org-fc-cloze-code-hook ()
   ;;   (if (equal (org-capture-get :key) "lcs")
@@ -1305,6 +1334,10 @@ before packages are loaded."
 
   (global-prettify-symbols-mode)
 
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda ()
+              (push '("t" . ?𝔱) prettify-symbols-alist)))
+
   ;; moved to customize
   ;; (add-hook 'dired-mode-hook
   ;;           (lambda ()
@@ -1352,18 +1385,6 @@ before packages are loaded."
   ;; TODO move to org-additional
   ;; (setq org-mru-clock-keep-formatting t)
 
-  ;; moved to customize
-  ;; (add-hook 'org-mode-hook
-  ;;           (lambda ()
-  ;;             (setq prettify-symbols-alist
-  ;;                   '(("lambda" . ?λ)
-  ;;                     ("defun" . ?⨐)
-  ;;                     ("->"     . ?⟶)
-  ;;                     (":="     . ?≔)
-  ;;                     ("=>"     . ?⟹)
-  ;;                     ("#t"     . ?⟙)
-  ;;                     ("!="     . ?≠)
-  ;;                     ("#f"     . ?⟘)))))
 
   ;; TODO dependency on tree-sitter package which is obsolete
   ;; (use-package symex
