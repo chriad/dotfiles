@@ -33,3 +33,8 @@ alias pdffd=quaderno--pdffd
 
 quaderno--fts() { rga-fzf "${1}" $QUADERNO_SYNC_PATH; }
 
+# 1=author (year) 2=full title 3=file
+# quaderno--meta 'someone (2022)' 'sometitle' file.pdf
+quaderno--meta() {
+    ebook-meta -a "${1}" -t "${2}" "${3}"
+}

@@ -29,13 +29,22 @@
   ;; (fzf-find-file-in-dir (getenv "QUADERNO_SYNC_PATH"))
   ;; (fzf-find-file-in-dir "/media/chriad/ext4/dpt-mirror/dpt")
   (let ((consult-fd-args '("fd --extension pdf --full-path")))
-    (consult-fd "/media/chriad/ext4/dpt-mirror/dpt")))
+    (consult-fd "/media/chriad/ext4/dpt-mirror/dpt"))
+  )
 
 
 (defun chriad/search-dotfilers ()
   ;; jump to a dir of some person
   (interactive)
   (consult-ripgrep "~/gh-dotfiles/"))
+
+;; TODO
+;; (defun chriad/search-dotfilers-dir ()
+;;   ;; jump to a dir of some person
+;;   (interactive)
+;;   (let ((consult-grep-args '("grep --files-with-matches -r")))
+;;     (consult-grep "~/gh-dotfiles/")))
+
 
 ;; TODO must also search package-directory-list for guix
 ;; TODO use symbol at point as default search term
@@ -152,8 +161,8 @@
 (spacemacs/declare-prefix  "os" "search")
 (spacemacs/set-leader-keys "osq" 'chriad/search-dpt)
 (spacemacs/set-leader-keys "ose" 'chriad/search-elpa)
-(spacemacs/set-leader-keys "osd" 'chriad/search-dotfiles)
-(spacemacs/set-leader-keys "osD" 'chriad/search-dotfilers)
+(spacemacs/set-leader-keys "osd" 'chriad/search-dotfilers)
+(spacemacs/set-leader-keys "osD" 'chriad/search-dotfiles)
 (spacemacs/set-leader-keys "osr" 'chriad/search-roam)
 (spacemacs/set-leader-keys "oss" 'chriad/search-systemd-units)
 

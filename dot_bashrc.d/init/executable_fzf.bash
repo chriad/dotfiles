@@ -29,12 +29,26 @@ koreader--ebook-view ()
     fd --prune -e epub --base-directory $d | fzf --bind="enter:become(koreader /media/chriad/ssd-45/KOReader-Books/{} 2>&1 > /dev/null & disown)"
 }
 
-rga-fzf-nonbinary() {
+rga-fzf-annots() {
 	  RG_PREFIX="rga --files-with-matches --no-filename"
 	  local file
 	  file="$(
 		FZF_DEFAULT_COMMAND="$RG_PREFIX '$1' /media/chriad/ext4/dpt-mirror/dpt/math/" \
 			fzf --sort --preview="pdf-highlight-annot-text-handler.py {}" \
+				--phony -q "$1" \
+				--bind "change:reload:$RG_PREFIX {q}" \
+				--preview-window="70%:wrap" )" &&
+	      echo "opening $file" &&
+	      xdg-open "$file"
+}
+
+# TODO only include pdfs with a toc
+rga-fzf-toc() {
+	  RG_PREFIX="rga --files-with-matches --no-filename"
+	  local file
+	  file="$(
+		FZF_DEFAULT_COMMAND="$RG_PREFIX '$1' /media/chriad/ext4/dpt-mirror/dpt/math/" \
+			fzf --sort --preview="pdftocio --human-readable --print {}" \
 				--phony -q "$1" \
 				--bind "change:reload:$RG_PREFIX {q}" \
 				--preview-window="70%:wrap" )" &&

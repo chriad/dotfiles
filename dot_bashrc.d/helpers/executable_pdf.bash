@@ -93,18 +93,21 @@ pdf--convert-grayscale() {
         "$source"
 }
 
-pdf--drop-pdfimages () {
+pdfimages--drop-pdfimages () {
     # pdfimages -all -p -f 11 -l 30 <file>.pdf ./images/image-
     mkdir images
     pdfimages -p "$1" ./images/image-
 }
 
+
+# generate cover for audiobook
 pdf--thumbnail() {
-    pdftoppm -f 1 -l 1 -scale-to 1024 -png  $1 thumb
+    # pdftoppm -f 1 -l 1 -scale-to 1024 -png "${1}" thumb
+    pdftoppm -singlefile -cropbox -jpeg -scale-to 800 cover
 }
 
 
-pdf--cpdf-extract-images() {
+cpdf--extract-images() {
     mkdir -p cpdf-extracted-images
     cpdf -extract-images "${1}" -im magick -o cpdf-extracted-images/%%%
 }
@@ -113,11 +116,19 @@ pdf--cpdf-extract-images() {
 #     pdfgrep --with-filename --page-number --ignore-case --recursive "${1}" |fzf --delimiter : --nth 1 --nth 2 --preview='termpdf -n {2} {1}'
 #     }
 
-pdf--extract-image-pages() {
+pdfimages--extract-image-pages() {
     # do not convert any images, write all in native format
     pdf="${1}"
     start="${2}"
     end="${3}"
     if [ -n "${3}"]; then end=$start; fi
     pdfimages -f $start -l $end -j -jp2 -jbig2 -ccitt -p "${pdf}" "${pdf%pdf}"
+}
+
+
+pdf--pts2cm() { units "${1} postscriptpoint" cm; }
+
+mutool--obj() {
+    mutool show -g "${1}" grep |grep /Highlight |cut -f1 -d" " | xargs -d"\n" mutool show "${1}"
+    
 }

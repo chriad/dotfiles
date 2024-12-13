@@ -4,7 +4,7 @@ IFS="
 
 for line in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
   csvformat -t -D, "${line}" > "${line%txt}"csv
-	notify-send $line
+	# notify-send $line
 
 done
 

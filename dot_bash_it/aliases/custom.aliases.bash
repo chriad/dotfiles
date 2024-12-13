@@ -28,12 +28,17 @@ alias adb--connect="adb connect 192.168.2.167:5555"
 alias adb--disconnect="adb disconnect 192.168.2.167:5555"
 alias dmesg="dmesg -wL" # color and --tail
 
+
 # flatpak --command
 alias mpvshim='flatpak run com.github.iwalton3.jellyfin-mpv-shim'
 # alias gpodder="taskset -c 0 /usr/bin/flatpak run --command=/app/bin/gpodder org.gpodder.gpodder 2> /dev/null &"
 alias gpo='flatpak run --command=/app/bin/gpo org.gpodder.gpodder'
 alias operon='flatpak run --command=operon io.github.quodlibet.QuodLibet'
-alias ebook-meta='flatpak run --command=ebook-meta com.calibre_ebook.calibre'
+# TODO no completion available like this
+# alias ebook-meta='flatpak run --command=ebook-meta com.calibre_ebook.calibre'
+alias ebook-meta='/var/lib/flatpak/app/com.calibre_ebook.calibre/current/active/files/lib/calibre/ebook-meta'
+alias ebook-viewer='/var/lib/flatpak/app/com.calibre_ebook.calibre/current/active/files/lib/calibre/ebook-viewer'
+alias translate2de="translate -l en-de"
 
 alias fullname="readlink -f"
 alias s="kitten ssh"
@@ -44,7 +49,8 @@ alias fzf--XDG_DATA_DIRS="echo $XDG_DATA_DIRS | tr ':' '\n' |fzf"
 alias reload_custom_aliases=". ~/.bash_it/aliases/custom.aliases.bash"
 # only for `ubuntu` type wayland session
 # alias digikam="QT_QPA_PLATFORM=xcb digikam 2> /dev/null &"
-
+alias diffoscope="diffoscope --text-color always"
+alias reboot-win="sudo reboot-grub 4 && reboot"
 # 1 letter
 
 alias nau='nautilus . &'
@@ -101,6 +107,7 @@ alias rmff='rm -rf'
 alias torhome='cd /home/chriad/.local/share/torbrowser/tbb/x86_64/tor-browser/Browser/Downloads'
 alias firefoxhome='cd /home/chriad/snap/firefox/common/.mozilla/firefox/n1icf8cs.default-1634140706732'
 alias lolc='cd /media/chriad/ext4/losslesscut'
+alias dpt="cd $QUADERNO_ROOT/dpt"
 
 # flatpak
 alias calibre=com.calibre_ebook.calibre

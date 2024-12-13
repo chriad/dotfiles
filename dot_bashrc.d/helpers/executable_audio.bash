@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 mp3--quality() { mutagen-inspect "${1}"  | grep '^- .*'; }
 
+# TODO shadow original
+m4b--aac2mp4() { /usr/local/bin/aac2mp4 "${@}"  2>&1 > /dev/null; }
 
 m4b--cover() {
     MP4Box -dump-cover "${1}" -out cover.jpg

@@ -62,3 +62,8 @@ epub--subchaps-pipeline() {
     # epub--subchaps-pipeline "<h3" <file.epub>
     epub--subchaps "${1}" "${2}" | epub--sed-remove-epubzip-file-prefix | html2text -style pretty | sed--remove-empty-lines
 }
+
+# epub--search-elisp-chapters() {
+#     unzip -jp Introduction\ to\ Programming\ in\ Emacs\ Lisp\,\ An\ -\ Robert\ J.\ Chassell\ \(2932\).epub EPUB/xhtml/nav_toc.xhtml|html2text|tr "_" " " |fzf
+    
+# }
