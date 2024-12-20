@@ -41,3 +41,8 @@ ffmpeg--arte-merge-combined() {
 ffmpeg--dump-metadata() {
 	  ffmpeg -i "$1" -f ffmetadata - 2> /dev/null
 }
+
+# Audiobook-stream-1-video-mjpeg.mkv
+ffmpeg--mjpeg2jpeg() {
+    ffmpeg -i "${1}" -bsf:v mjpeg2jpeg cover.jpg
+}

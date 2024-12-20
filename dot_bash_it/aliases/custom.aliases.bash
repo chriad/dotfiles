@@ -37,7 +37,8 @@ alias operon='flatpak run --command=operon io.github.quodlibet.QuodLibet'
 # TODO no completion available like this
 # alias ebook-meta='flatpak run --command=ebook-meta com.calibre_ebook.calibre'
 alias ebook-meta='/var/lib/flatpak/app/com.calibre_ebook.calibre/current/active/files/lib/calibre/ebook-meta'
-alias ebook-viewer='/var/lib/flatpak/app/com.calibre_ebook.calibre/current/active/files/lib/calibre/ebook-viewer'
+# symlink to ~/.local/bin
+# alias ebook-viewer='/var/lib/flatpak/app/com.calibre_ebook.calibre/current/active/files/lib/calibre/ebook-viewer'
 alias translate2de="translate -l en-de"
 
 alias fullname="readlink -f"

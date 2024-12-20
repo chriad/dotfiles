@@ -41,17 +41,6 @@ apt--installedp() {
     apt list --installed 2>/dev/null | grep "${1}"
 }
 
-# jar file is not executable
-dra--update-epubcheck() {
-    p="/media/chriad/ext4/SOFTWARE"
-    dra download --select "epubcheck-{tag}.zip" -o $p/epubcheck-current.zip w3c/epubcheck
-    unzip $p/epubcheck-current.zip
-    pa=`unzip -Z -1 epubcheck-current.zip "*/epubcheck.jar"`
-    ln -sf $p/$pa ~/.local/bin/
-    rm $p/epubcheck-current.zip
-    # chmod +x ludusavi
-    # mv ludusavi "$HOME"/.local/bin/
-}
 
 guix--vm() {
     qemu-system-x86_64 \
