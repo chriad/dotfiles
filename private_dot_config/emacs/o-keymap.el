@@ -4,8 +4,8 @@
 ;; (keymap-global-set (kbd "Spc-C-Spc") 'execute-extended-command-for-buffer)
 (keymap-global-set "C-x <home>" 'execute-extended-command-for-buffer)
 (keymap-global-set "C-x 8 _" '(lambda () (insert-char ?\​))) ;; zero width space for org-mode markup escape
-(keymap-global-set "<kp-enter>" 'ignore)
-(keymap-global-set "<kp-delete>" 'ignore)
+(keymap-global-set "<kp-enter>" 'org-anki-sync-entry)
+(keymap-global-set "<kp-delete>" 'org-anki-cloze-dwim)
 (keymap-global-set "C-<f8>" 'ignore)
 (keymap-global-set "C-<menu>" 'ignore)
 (keymap-global-set "s-]" 'ignore)

@@ -61,6 +61,13 @@ with the `org-roam-find-file' interface"
 ;;; templates
 (setq org-capture-templates
       '(
+        ("w"
+         "Default template"
+         entry
+         (file+headline "~/org/capture.org" "Notes")
+         "* %^{Title}\n\n  Source: %u, %c\n\n  %i"
+         :empty-lines 1)
+        
 ;;;; r -> roam headline
         ;; go directly to a note heading in roam
         ("r" "roam headline")
@@ -104,8 +111,10 @@ with the `org-roam-find-file' interface"
          "* %?\n%u\n%a\n")
 
         ;; c-s-l with region in firefox captures region here
+        ;; ("x" "firefox region notes" plain (file "/home/chriad/Documents/notes.org")
+        ;;  "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
         ("x" "firefox region notes" plain (file "/home/chriad/Documents/notes.org")
-         "[[%:link][%i]]" :immediate-finish t :empty-lines 1 :prepend t)
+         "%i\n%:link" :immediate-finish t :empty-lines 1 :prepend t)
 
 ;;;; org-fc related captures
 
@@ -144,7 +153,7 @@ with the `org-roam-find-file' interface"
 
 ;;;; map captures
         ("m" "maps")
-        ("mf" "_ _"
+        ("mm" "_ _"
          table-line
          (file "~/Documents/vocabulary-map.org")
          "|%^{stimulus}|%^{response}|"

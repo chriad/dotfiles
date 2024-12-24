@@ -13,6 +13,11 @@ After=flatpak-system-helper.service
 # ExecStart=flatpak run --branch=stable --arch=x86_64 --command=anki --file-forwarding net.ankiweb.Anki --syncserver
 Type=simple
 ExecStart=systemd-cat -t anki-syncserver /var/lib/flatpak/exports/bin/net.ankiweb.Anki --syncserver
+# TODO could start syncserver with ExecPre and anki with ExecStart
+#ExecStartPre=: This tells systemd to run a specified command before it starts the service with the ExecStart= parameter.
+# TODO use this
+#KillMode
+
 ## to not require full path name, use flatpak-system-helper.service
 ## this should maybe be on-success, but first find out if exit status is 0 when stopping service manually
 # SuccessExitStatus=15

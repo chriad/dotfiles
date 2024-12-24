@@ -38,4 +38,5 @@ export MOZ_DISABLE_RDD_SANDBOX=1
 #     exec sway 2> ~/logs/sway.log
 # end
 
-exec sway
+exec sway -d 2> ~/logs/sway.log
+# exec sway

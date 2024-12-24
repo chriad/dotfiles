@@ -38,16 +38,18 @@
  '(bookmark-use-annotations nil)
  '(calibredb-library-alist
    '(("/media/chriad/ssd-45/reflowable")
-     ("/media/chriad/ssd-45/fixed-layout")))
+     ("/media/chriad/ssd-45/fixed-layout")) t)
  '(command-log-mode-is-global t)
  '(command-log-mode-key-binding-open-log [67 45 99 32 111])
  '(command-log-mode-window-font-size 1)
  '(command-log-mode-window-size 50)
  '(company-backends '(company-capf company-semantic company-files))
+ '(completions-detailed t)
  '(create-lockfiles nil)
  '(dash-docs-docsets-path "/home/chriad/.local/Zeal/Zeal/docsets")
  '(dash-docs-min-length 3)
  '(dash-fontify-mode-lighter " Dash")
+ '(debugger-stack-frame-as-list t)
  '(default-frame-alist
    '((font . "-ADBO-Source Code Pro-regular-normal-normal-*-16-*-*-*-m-0-iso10646-1")
      (buffer-predicate . spacemacs/useful-buffer-p)
@@ -93,6 +95,10 @@
          2]
      dired-extra-startup spacemacs//transient-hook-\(lambda\ nil\ \(let\ \(\(dired-quick-sort-suppress-setup-warning\ \'message\)\)\ \(dired-quick-sort-setup\)\)\)))
  '(dired-recursive-deletes 'always)
+ '(display-raw-bytes-as-hex t)
+ '(doc-view-mupdf-use-svg t)
+ '(doc-view-svg-background nil)
+ '(doc-view-svg-foreground nil)
  '(eaf-config-location "/media/chriad/nebula/spacemacs-config-files/fork/eaf/")
  '(eaf-find-file-ext-blacklist '("epub"))
  '(eaf-markdown-extension-list '("md" "org"))
@@ -134,13 +140,15 @@
  '(global-semantic-mru-bookmark-mode t)
  '(global-semantic-stickyfunc-mode t)
  '(global-semanticdb-minor-mode t)
+ '(global-tree-sitter-mode t)
+ '(global-treesit-auto-mode t)
  '(global-visual-line-mode t)
  '(helm-M-x-always-save-history nil)
  '(helm-M-x-show-short-doc t)
  '(helm-apropos-fuzzy-match t)
  '(helm-bookmark-default-filtered-sources
    '(helm-source-bookmark-org helm-source-bookmark-files&dirs helm-source-bookmark-helm-find-files helm-source-bookmark-info helm-source-bookmark-gnus helm-source-bookmark-mu4e helm-source-bookmark-man helm-source-bookmark-images helm-source-bookmark-w3m helm-source-bookmark-uncategorized helm-source-bookmark-set))
- '(helm-bookmark-show-location t)
+ '(helm-bookmark-show-location t t)
  '(helm-bookmark-use-icon t)
  '(helm-buffers-fuzzy-matching t)
  '(helm-candidate-number-limit 700)
@@ -209,12 +217,72 @@
      ("FIXME" . "#dc752f")
      ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
- '(ielm-mode-hook '(eldoc-mode) t nil "before reset: elisp-def-mode | spacemacs... | company-mode")
+ '(ielm-noisy nil)
  '(ignored-local-variable-values
    '((magit-todos-exclude-globs "elpa/")
      (org-confirm-babel-evaluate)))
  '(image-dired-dired-append-when-browsing t)
  '(image-dired-external-viewer "eog")
+ '(jka-compr-compression-info-list
+   '(["\\.Z\\'" "compressing" "compress"
+      ("-c")
+      "uncompressing" "gzip"
+      ("-c" "-q" "-d")
+      nil t "\37\235" zlib-decompress-region]
+     ["\\.bz2\\'" "bzip2ing" "bzip2" nil "bunzip2ing" "bzip2"
+      ("-d")
+      nil t "BZh" nil]
+     ["\\.tbz2?\\'" "bzip2ing" "bzip2" nil "bunzip2ing" "bzip2"
+      ("-d")
+      nil nil "BZh" nil]
+     ["\\.\\(?:tgz\\|svgz\\|sifz\\)\\'" "compressing" "gzip"
+      ("-c" "-q")
+      "uncompressing" "gzip"
+      ("-c" "-q" "-d")
+      t nil "\37\213" zlib-decompress-region]
+     ["\\.g?z\\'" "compressing" "gzip"
+      ("-c" "-q")
+      "uncompressing" "gzip"
+      ("-c" "-q" "-d")
+      t t "\37\213" zlib-decompress-region]
+     ["\\.lz\\'" "Lzip compressing" "lzip"
+      ("-c" "-q")
+      "Lzip uncompressing" "lzip"
+      ("-c" "-q" "-d")
+      t t "LZIP" nil]
+     ["\\.lzma\\'" "LZMA compressing" "lzma"
+      ("-c" "-q" "-z")
+      "LZMA uncompressing" "lzma"
+      ("-c" "-q" "-d")
+      t t "" nil]
+     ["\\.xz\\'" "XZ compressing" "xz"
+      ("-c" "-q")
+      "XZ uncompressing" "xz"
+      ("-c" "-q" "-d")
+      t t "\3757zXZ\0" nil]
+     ["\\.txz\\'" "XZ compressing" "xz"
+      ("-c" "-q")
+      "XZ uncompressing" "xz"
+      ("-c" "-q" "-d")
+      t nil "\3757zXZ\0" nil]
+     ["\\.dz\\'" nil nil nil "uncompressing" "gzip"
+      ("-c" "-q" "-d")
+      nil t "\37\213" nil]
+     ["\\.zst\\'" "zstd compressing" "zstd"
+      ("-c" "-q")
+      "zstd uncompressing" "zstd"
+      ("-c" "-q" "-d")
+      t t "(\265/\375" nil]
+     ["\\.tzst\\'" "zstd compressing" "zstd"
+      ("-c" "-q")
+      "zstd uncompressing" "zstd"
+      ("-c" "-q" "-d")
+      t nil "(\265/\375" nil]
+     ["\\.epub$" "creating epub publication" "zip"
+      ("-r" "-X")
+      "extracting epub" "bsdtar"
+      ("-x" "-O" "-f" "-")
+      t t "" nil]))
  '(keyboard-coding-system 'utf-8-unix)
  '(keycast-header-line-mode t)
  '(keycast-mode-line-mode nil)
@@ -230,6 +298,8 @@
  '(nov-variable-pitch nil)
  '(org-M-RET-may-split-line '((default)))
  '(org-agenda-files '("/home/chriad/roam/"))
+ '(org-anki-default-deck "org-anki")
+ '(org-anki-default-note-type "Cloze")
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-capture-mode-hook '(spacemacs//org-capture-start) nil nil "TODO: org-fc hooks")
  '(org-cite-global-bibliography '("/home/chriad/.config/bibliographies/fixed-layout.bib"))
@@ -296,6 +366,7 @@
  '(org-pdftools-markup-pointer-opacity 0.5)
  '(org-pdftools-use-freepointer-annot t)
  '(org-protocol-default-template-key nil)
+ '(org-return-follows-link t)
  '(org-roam-completion-everywhere t)
  '(org-roam-completion-system 'helm)
  '(org-roam-db-autosync-mode t)
@@ -334,7 +405,7 @@
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
  '(org-superstar-remove-leading-stars t)
  '(package-selected-packages
-   '(graphviz-dot-mode anki-connect helm-ag bookmark+ org forge magit transient geiser merlin pp+ disable-mouse site-lisp snow misc-fns help-fns+ help-macro+ font-lock+ fzf yatemplate dashboard w3m jeison try ansi shut-up commander qpdf company posframe clang-format helm markdown-mode slime spray load-dir nov delight org-roam-ui quelpa-use-package quelpa fit-frame toml-mode helm-system-packages fn anki-editor-view anki-mode anki-editor keymap-utils org-fc zeal-at-point yasnippet-snippets yasnippet-classic-snippets yapfify yaml-mode xref xr ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vmd-mode vim-powerline vi-tilde-fringe uuidgen utop undo-tree toc-org tldr terminal-here term-cursor tagedit systemd symon symex symbol-overlay string-edit-at-point stickyfunc-enhance srefactor sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc smeargle slime-company slim-mode sicp shell-pop scss-mode scrollkeeper sass-mode run-command ripgrep restart-emacs rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort pug-mode psession prettier-js popwin poetry pippel pipenv pip-requirements persp-mode pdfgrep pdf-view-restore pcre2el password-store-otp password-generator paradox ox-gfm overseer orgit-forge org-web-tools org-tidy org-superstar org-starless org-roam org-rich-yank org-ref org-projectile org-present org-pomodoro org-pdftools org-page org-mru-clock org-ml org-mime org-link-minor-mode org-link-beautify org-gtd org-download org-contrib org-cliplink org-babel-hide-markers orca open-junk-file on-screen olivetti ocp-indent ocamlformat npm-mode nose nodejs-repl no-littering neotree nameless multi-vterm multi-term multi-line mpv minions merlin-iedit merlin-eldoc merlin-company markdown-toc magit-popup lsp-ui lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode lisp-extra-font-lock ligature keycast key-quiz json-reformat json-navigator json-mode js2-refactor js-doc journalctl-mode inspector info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete holy-mode hl-todo highlight-sexp highlight-parentheses highlight-numbers highlight-indentation highlight-indent-guides highlight-function-calls highlight-defined hide-comnt helpful helm-xref helm-unicode helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-pass helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-firefox helm-file-preview helm-emmet helm-descbinds helm-dash helm-css-scss helm-company helm-comint helm-c-yasnippet helm-bibtex helm-atoms helm-apt google-translate good-scroll golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md geiser-guile flycheck-pos-tip flycheck-package flycheck-ocaml flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-org evil-numbers evil-nerd-commenter evil-motion-trainer evil-mc evil-matchit evil-lispy evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help epkg emr elisp-slime-nav elisp-demos elisp-def el-patch editorconfig edit-indirect edebug-x edebug-inline-result eat dyncloze dune dumb-jump drag-stuff dotenv-mode doctest doct djvu3 djvu dired-quick-sort director diminish devdocs define-word dap-mode cython-mode csv-mode company-web company-statistics company-quickhelp company-lua company-anaconda common-lisp-snippets command-log-mode column-enforce-mode code-cells clhs clean-aindent-mode chezmoi centered-cursor-mode calibredb blacken auto-yasnippet auto-highlight-symbol auto-dim-other-buffers auto-compile all-the-icons aggressive-indent age adoc-mode achievements ace-link ace-jump-helm-line))
+   '(ghub consult yaml closql flycheck helm-core js2-mode multiple-cursors lsp-mode magit-section nerd-icons parsebib emacsql with-editor undo-fu undo-fu-session vertico window-purpose combobulate ts-fold fringe-helper tree-sitter-langs org-roam org-dashboard graphviz-dot-mode anki-connect helm-ag bookmark+ org forge magit transient geiser merlin pp+ disable-mouse site-lisp snow misc-fns help-fns+ help-macro+ font-lock+ fzf yatemplate dashboard w3m jeison try ansi shut-up commander qpdf company posframe clang-format helm markdown-mode slime spray load-dir nov delight org-roam-ui quelpa-use-package quelpa fit-frame toml-mode helm-system-packages fn anki-editor-view anki-mode anki-editor keymap-utils org-fc zeal-at-point yasnippet-snippets yasnippet-classic-snippets yapfify yaml-mode xref xr ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vmd-mode vim-powerline vi-tilde-fringe uuidgen utop undo-tree toc-org tldr terminal-here term-cursor tagedit systemd symon symex symbol-overlay string-edit-at-point stickyfunc-enhance srefactor sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc smeargle slime-company slim-mode sicp shell-pop scss-mode scrollkeeper sass-mode run-command ripgrep restart-emacs rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort pug-mode psession prettier-js popwin poetry pippel pipenv pip-requirements persp-mode pdfgrep pdf-view-restore pcre2el password-store-otp password-generator paradox ox-gfm overseer orgit-forge org-web-tools org-tidy org-superstar org-starless org-rich-yank org-ref org-projectile org-present org-pomodoro org-pdftools org-page org-mru-clock org-ml org-mime org-link-minor-mode org-link-beautify org-gtd org-download org-contrib org-cliplink org-babel-hide-markers orca open-junk-file on-screen olivetti ocp-indent ocamlformat npm-mode nose nodejs-repl no-littering neotree nameless multi-vterm multi-term multi-line mpv minions merlin-iedit merlin-eldoc merlin-company markdown-toc magit-popup lsp-ui lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode lisp-extra-font-lock ligature keycast key-quiz json-reformat json-navigator json-mode js2-refactor js-doc journalctl-mode inspector info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete holy-mode hl-todo highlight-sexp highlight-parentheses highlight-numbers highlight-indentation highlight-indent-guides highlight-function-calls highlight-defined hide-comnt helpful helm-xref helm-unicode helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-pass helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-firefox helm-file-preview helm-emmet helm-descbinds helm-dash helm-css-scss helm-company helm-comint helm-c-yasnippet helm-bibtex helm-atoms helm-apt google-translate good-scroll golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md geiser-guile flycheck-pos-tip flycheck-package flycheck-ocaml flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-org evil-numbers evil-nerd-commenter evil-motion-trainer evil-mc evil-matchit evil-lispy evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help epkg emr elisp-slime-nav elisp-demos elisp-def el-patch editorconfig edit-indirect edebug-x edebug-inline-result eat dyncloze dune dumb-jump drag-stuff dotenv-mode doctest doct djvu3 djvu dired-quick-sort director diminish devdocs define-word dap-mode cython-mode csv-mode company-web company-statistics company-quickhelp company-lua company-anaconda common-lisp-snippets command-log-mode column-enforce-mode code-cells clhs clean-aindent-mode chezmoi centered-cursor-mode calibredb blacken auto-yasnippet auto-highlight-symbol auto-dim-other-buffers auto-compile all-the-icons aggressive-indent age adoc-mode achievements ace-link ace-jump-helm-line))
  '(paradox-automatically-star nil)
  '(paradox-execute-asynchronously 'ask t)
  '(paradox-github-token t)
@@ -445,6 +516,8 @@
  '(scroll-step 1)
  '(semantic-mode t)
  '(semantic-which-function-use-color t)
+ '(show-paren-mode t)
+ '(show-paren-style 'expression nil nil "This makes package highlight-sexp obsolete")
  '(spaceline-helm-mode t)
  '(spaceline-info-mode t)
  '(tags-apropos-additional-actions '(("Common Lisp" clhs-doc clhs-symbols)))
@@ -453,6 +526,7 @@
  '(tooltip-mode t nil nil "off")
  '(tooltip-resize-echo-area t)
  '(tramp-adb-connect-if-not-connected t)
+ '(tree-sitter-langs-git-dir "/home/chriad/gh/EMACS/tree-sitter-langs")
  '(treemacs-icons-dired-mode t)
  '(undo-fu-session-global-mode t)
  '(undo-tree-auto-save-history nil)

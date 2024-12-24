@@ -1,9 +1,7 @@
 # some more ls aliases
-alias exa=eza
-alias df=duf
 alias ll='ls -alF'
 alias la='ls -A'
-alias yt--from-browser="yt-dlp --cookies-from-browser firefox"
+
 # alias l='ls -CF'
 alias l=exa
 alias chriad--update-emacs='guix pull && guix package -u emacs'
@@ -41,6 +39,7 @@ alias ebook-meta='/var/lib/flatpak/app/com.calibre_ebook.calibre/current/active/
 # alias ebook-viewer='/var/lib/flatpak/app/com.calibre_ebook.calibre/current/active/files/lib/calibre/ebook-viewer'
 alias translate2de="translate -l en-de"
 
+# mutagen replacemant
 alias fullname="readlink -f"
 alias s="kitten ssh"
 alias catp="cat -p"
@@ -85,8 +84,11 @@ alias say=spd-say
 alias lilipond=lilypond
 alias pdf2text=pdftotext
 alias powershell=pwsh
-alias info=pinfo
 alias lisp=clisp
+alias exa=eza
+alias df=duf
+alias id3v2=mid3v2
+alias info=pinfo
 
 export www_browser=www-browser
 export docdir="/usr/share/doc"
@@ -201,28 +203,20 @@ alias findbigdir="/usr/bin/find ./ -maxdepth 1 -type d -print0 | xargs -0 du --m
 # alias puddletag="puddletag ."
 
 # alias sckill='kill $(ps -C screenkey -o pid=)'
-# Path to the bash it configuration
-# alias clip='xclip -selection clipboard'
 alias bashit--active-aliases="bashit show aliases | grep '\[x\]'"
 alias lst='exa -snew|tail'
 alias fuzb='source ~/fzf-chrome-bookmarks/fzf-chrome-bookmarks.sh'
 alias catf='cat <<eof>README.org'
-# alias youtube-dl-geo='/usr/local/bin/youtube-dl --geo-bypass-country de'
-alias diff-spacemacs='meld ~/.dotfiles/spacemacs ~/.emacs.d/core/templates/.spacemacs.template'
+alias yt--from-browser="yt-dlp --cookies-from-browser firefox"
 alias scan-home-network="sudo nmap -sn 192.168.1.0/24"
-# alias igv="/media/chriad/IGV_Linux_2.7.2/igv.sh"
 # alias keycode="xev | grep -A2 --line-buffered '^KeyRelease' | sed -n '/keycode /s/^.*keycode \([0-9]*\).* (.*, \(.*\)).*$/\1 \2/p'"
 # alias which="type -p"
 alias git-summary='/home/chriad/git-summary/git-summary'
 alias pdf--txt='pdftotext -layout -eol unix -nopgbrk'
 alias ipinfo='curl ipinfo.io'
-# alias pvcli=protonvpn-cli
 # alias subscriptions='ytcc -o xsv subscriptions -a name|fzf'
 
 # execs
 alias pdf--pdfbox-debugger-app='env _JAVA_AWT_WM_NONREPARENTING=1 java -jar /home/chriad/.local/bin/debugger-app-3.0.0-alpha2.jar'
 alias pdf--pdfbox-app='env _JAVA_AWT_WM_NONREPARENTING=1 java -jar /home/chriad/.local/bin/pdfbox-app-3.0.0-alpha2.jar'
-alias epub--epubcheck='java -jar ~/.local/bin/epubcheck.jar'
-alias textricator='~/textricator-9.2.56/textricator'
-alias jpdf="java -jar /media/chriad/ext4/SOFTWARE/jpdftweak-linux-x64-1.1/jpdftweak.jar" # use flatpak version
-alias retro-term="/home/chriad/github_scripts/cool-retro-term/Cool-Retro-Term-1.1.1-x86_64.AppImage"
+# alias jpdf="java -jar /media/chriad/ext4/SOFTWARE/jpdftweak-linux-x64-1.1/jpdftweak.jar" # use flatpak version
