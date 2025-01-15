@@ -32,6 +32,9 @@
     (consult-fd "/media/chriad/ext4/dpt-mirror/dpt"))
   )
 
+(defun chriad--insert-key-markup (key)
+  (interactive "kType key sequence: ")
+  (insert (format "%s" (help-key-description key nil))))
 
 (defun chriad/search-dotfilers ()
   ;; jump to a dir of some person
@@ -51,7 +54,7 @@
 (defun chriad/search-elpa ()
   "Search for code in packages. "
   (interactive)
-  (let ((root-helm-ag-base-command "rg --smart-case --no-heading --color=never -t el"))
+  (let ((consult-ripgrep-args (concat consult-ripgrep-args " -t elisp")))
     (consult-ripgrep package-user-dir)))
 
 (defun chriad/search-systemd-units ()
@@ -65,6 +68,10 @@
 (defun chriad/search-roam ()
   (interactive)
   (consult-ripgrep org-roam-directory))
+
+(defun chriad/search-spacemacs-core ()
+  (interactive)
+  (consult-ripgrep "/media/chriad/nebula/spacemacs-fork/core"))
 
 (defun chriad/find-custom-aliases ()
   (interactive)
@@ -147,8 +154,10 @@
 (spacemacs/set-leader-keys "ofk" 'chriad/find-custom-keymap)
 
 (spacemacs/declare-prefix  "oo" "org")
+(spacemacs/set-leader-keys "ooi" 'org-web-tools-insert-link-for-url)
+(spacemacs/set-leader-keys "ook" 'chriad--insert-key-markup)
 (spacemacs/set-leader-keys "ool" 'ace-link-org)
-(spacemacs/set-leader-keys "oor" 'org-ref-cite-insert-helm)
+;; (spacemacs/set-leader-keys "oor" 'org-ref-cite-insert-helm) ;; helm bibtex
 (spacemacs/set-leader-keys "oop" 'org-previous-link)
 (spacemacs/set-leader-keys "oon" 'org-next-link)
 (spacemacs/declare-prefix  "ooC" "org clocks")
@@ -159,12 +168,13 @@
 (spacemacs/set-leader-keys "omm" 'minions-minor-modes-menu)
 
 (spacemacs/declare-prefix  "os" "search")
-(spacemacs/set-leader-keys "osq" 'chriad/search-dpt)
-(spacemacs/set-leader-keys "ose" 'chriad/search-elpa)
 (spacemacs/set-leader-keys "osd" 'chriad/search-dotfilers)
 (spacemacs/set-leader-keys "osD" 'chriad/search-dotfiles)
+(spacemacs/set-leader-keys "ose" 'chriad/search-elpa)
+(spacemacs/set-leader-keys "osq" 'chriad/search-dpt)
 (spacemacs/set-leader-keys "osr" 'chriad/search-roam)
-(spacemacs/set-leader-keys "oss" 'chriad/search-systemd-units)
+(spacemacs/set-leader-keys "oss" 'chriad/search-spacemacs-core)
+(spacemacs/set-leader-keys "osu" 'chriad/search-systemd-units)
 
 
 (spacemacs/declare-prefix  "ot" "tree-sitter")

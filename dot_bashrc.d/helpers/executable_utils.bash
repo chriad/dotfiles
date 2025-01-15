@@ -83,3 +83,8 @@ screencast() {
 
 #     "$real_command" "${command_args[@]}" "$@"
 # }
+
+# swaymsg--switch-layout "de"
+swaymsg--switch-layout() {
+    swaymsg input type:keyboard xkb_layout "${1}"
+}

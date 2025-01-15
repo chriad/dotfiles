@@ -35,6 +35,7 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     prettier
 ;;;; Programming
 ;;; DSL
      ;;  Markup & config
@@ -155,6 +156,12 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      counsel-jq
+                                      ;; TODO
+                                      (org-anki :location (recipe
+                                                           :fetcher github
+                                                           :repo "eyeinsky/org-anki"
+                                                           :files (:defaults "example/*.org" "README.org")))
                                       treesit-auto
                                       ;; install by explicit clone, too many dependencies
                                       ;; (combobulate :location (recipe
@@ -1337,6 +1344,18 @@ before packages are loaded."
   (add-hook 'emacs-lisp-mode-hook
             (lambda ()
               (push '("t" . ?𝔱) prettify-symbols-alist)))
+  ;; moved to customize
+  ;; (add-hook 'org-mode-hook
+  ;;           (lambda ()
+  ;;             (setq prettify-symbols-alist
+  ;;                   '(("lambda" . ?λ)
+  ;;                     ("defun" . ?⨐)
+  ;;                     ("->"     . ?⟶)
+  ;;                     (":="     . ?≔)
+  ;;                     ("=>"     . ?⟹)
+  ;;                     ("#t"     . ?⟙)
+  ;;                     ("!="     . ?≠)
+  ;;                     ("#f"     . ?⟘)))))
 
   ;; moved to customize
   ;; (add-hook 'dired-mode-hook
@@ -1378,8 +1397,8 @@ before packages are loaded."
      '(tags-apropos-additional-actions '(("Common Lisp" clhs-doc clhs-symbols)))))
 
 
-
-
+  ;; libraries from deb packages os installer
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 
   ;; (setq spaceline-org-clock-p t)
   ;; TODO move to org-additional
@@ -1394,6 +1413,8 @@ before packages are loaded."
   ;;   (global-set-key (kbd "s-;") 'symex-mode-interface)
   ;;   :custom (symex-modal-backend 'hydra))
 
+  ;; TODO append to dired-compress-files-alist
+  ;; ("\.epub$" . "zip -fX %i mimetype $(ls|xargs echo|sed 's/mimetype//g'")
 
   (with-eval-after-load 'org
 
