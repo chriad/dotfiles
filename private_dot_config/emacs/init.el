@@ -1,4 +1,4 @@
-;; -*- mode: emacs-lisp; lexical-binding: t; -*-
+;; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -35,9 +35,10 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     epub
      prettier
-;;;; Programming
-;;; DSL
+     ;;;; Programming
+     ;;; DSL
      ;;  Markup & config
      asciidoc
      (json :variables json-backend 'lsp)
@@ -328,14 +329,6 @@ It should only modify the values of Spacemacs settings."
    ;; (default (format "spacemacs-%s.pdmp" emacs-version))
    dotspacemacs-emacs-dumper-dump-file (format "spacemacs-%s.pdmp" emacs-version)
 
-   ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
-   ;; possible. Set it to nil if you have no way to use HTTPS in your
-   ;; environment, otherwise it is strongly recommended to let it set to t.
-   ;; This variable has no effect if Emacs is launched with the parameter
-   ;; `--insecure' which forces the value of this variable to nil.
-   ;; (default t)
-   dotspacemacs-elpa-https t
-
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    ;; (default 5)
    dotspacemacs-elpa-timeout 5
@@ -441,7 +434,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, *scratch* buffer will be persistent. Things you write down in
    ;; *scratch* buffer will be saved and restored automatically.
-   dotspacemacs-scratch-buffer-persistent nil
+   dotspacemacs-scratch-buffer-persistent t
 
    ;; If non-nil, `kill-buffer' on *scratch* buffer
    ;; will bury it instead of killing.
@@ -453,12 +446,12 @@ It should only modify the values of Spacemacs settings."
 
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
-   ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(
-                                        ;vscode-dark-plus
-                         spacemacs-dark
-                         spacemacs-light
-                         )
+   ;; with 2 themes variants, one dark and one light). A theme from external
+   ;; package can be defined with `:package', or a theme can be defined with
+   ;; `:location' to download the theme package, refer the themes section in
+   ;; DOCUMENTATION.org for the full theme specifications.
+   dotspacemacs-themes '(spacemacs-dark
+                         spacemacs-light)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -574,6 +567,17 @@ It should only modify the values of Spacemacs settings."
    ;; are kept or minimized by `spacemacs/toggle-maximize-window' (SPC w m).
    ;; (default t)
    dotspacemacs-maximize-window-keep-side-windows t
+
+   ;; If nil, no load-hints enabled. If t, enable the `load-hints' which will
+   ;; put the most likely path on the top of `load-path' to reduce walking
+   ;; through the whole `load-path'. It's an experimental feature to speedup
+   ;; Spacemacs on Windows. Refer the FAQ.org "load-hints" session for details.
+   dotspacemacs-enable-load-hints nil
+
+   ;; If t, enable the `package-quickstart' feature to avoid full package
+   ;; loading, otherwise no `package-quickstart' attemption (default nil).
+   ;; Refer the FAQ.org "package-quickstart" section for details.
+   dotspacemacs-enable-package-quickstart nil
 
    ;; If non-nil a progress bar is displayed when spacemacs is loading. This
    ;; may increase the boot time on some systems and emacs builds, set it to
@@ -738,6 +742,9 @@ It should only modify the values of Spacemacs settings."
    ;; to aggressively delete empty line and long sequences of whitespace,
    ;; `trailing' to delete only the whitespace at end of lines, `changed' to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
+   ;; The variable `global-spacemacs-whitespace-cleanup-modes' controls
+   ;; which major modes have whitespace cleanup enabled or disabled
+   ;; by default.
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
 
@@ -823,9 +830,12 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
-;; disable deprecation warning
+  ;; disable deprecation warning
   (setq byte-compile-warnings '(cl-functions))
   (setq warning-minimum-level :emergency)
+
+  ;; cache inline resutls
+  ;; (add-to-list 'org-babel-default-inline-header-args '(:cache . "yes"))
 
 
   (use-package treesit-auto
@@ -984,7 +994,7 @@ before packages are loaded."
       (mapc load-it (directory-files dir nil "\\.el$"))))
   (load-directory "~/.config/emacs/el-patch-patches/")
 
-;; TODO
+  ;; TODO
   ;; (defun add-subdirs-to-load-path (dir)
   ;;   "Recursive add directories to `load-path'."
   ;;   (let ((default-directory (file-name-as-directory dir)))
@@ -1329,15 +1339,15 @@ before packages are loaded."
 
 
 
-
-  (use-package nov
-    :defer t
-    :init (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
-    :config
-    ;; (add-hook 'nov-mode-hook 'on-screen-mode)
-    ;; (evil-set-initial-state 'nov-mode 'emacs)
-    ;; (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
-    )
+;; epub layer
+  ;; (use-package nov
+  ;;   :defer t
+  ;;   :init (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+  ;;   :config
+  ;;   ;; (add-hook 'nov-mode-hook 'on-screen-mode)
+  ;;   ;; (evil-set-initial-state 'nov-mode 'emacs)
+  ;;   ;; (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
+  ;;   )
 
                                         ; ranger
   ;; (setq ranger-enter-with-minus 'deer)

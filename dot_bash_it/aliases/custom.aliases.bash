@@ -1,7 +1,8 @@
 # some more ls aliases
 alias ll='ls -alF'
 alias la='ls -A'
-
+# alias emacs-from-scratch="SPACEMACSDIR=/home/chriad/spacemacs.d emacs --init-directory /media/chriad/nebula/from-scratch &"
+alias emacs-from-scratch="emacs --init-directory /media/chriad/nebula/from-scratch &"
 # alias l='ls -CF'
 alias l=exa
 alias chriad--update-emacs='guix pull && guix package -u emacs'

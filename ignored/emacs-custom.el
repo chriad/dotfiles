@@ -106,6 +106,7 @@
  '(eaf-org-override-pdf-links-store t)
  '(eaf-pdf-extension-list '("pdf" "xps" "oxps" "cbz" "fb2" "fbz"))
  '(edebug-inline-result-backend 'popup)
+ '(edebug-print-length 100)
  '(emacs-lisp-mode-hook
    '(eldoc-mode
      (lambda nil
@@ -134,6 +135,7 @@
  '(gist-ask-for-filename t)
  '(global-command-log-mode t)
  '(global-dash-fontify-mode t)
+ '(global-display-fill-column-indicator-mode t)
  '(global-flycheck-mode t)
  '(global-semantic-decoration-mode nil)
  '(global-semantic-highlight-func-mode t)
@@ -402,6 +404,7 @@
      ("toml" . conf-toml)
      ("tldr" . tldr)
      ("helpful" . helpful)))
+ '(org-startup-folded 'show2levels)
  '(org-startup-with-inline-images nil)
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
  '(org-superstar-remove-leading-stars t)

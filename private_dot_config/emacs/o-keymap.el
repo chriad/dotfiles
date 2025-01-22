@@ -1,4 +1,5 @@
 ;;;; spacemacs private ``o'' keymap
+(require 'consult)
 
 ;;; use c-h c (describe-key-briefly) to see the key name
 ;; (keymap-global-set (kbd "Spc-C-Spc") 'execute-extended-command-for-buffer)
@@ -14,7 +15,8 @@
 ;;; remapping
 
 ;; TODO does not interop with pp+
-(global-set-key [remap eval-expression] 'pp-eval-expression)
+;; el-patched eval-expression with pp-eval-expression code
+;; (global-set-key [remap eval-expression] 'pp-eval-expression)
 
 ;; -----------------
 
@@ -56,6 +58,21 @@
   (interactive)
   (let ((consult-ripgrep-args (concat consult-ripgrep-args " -t elisp")))
     (consult-ripgrep package-user-dir)))
+
+
+(defun chriad/search-emacs ()
+  "Search for code in packages. "
+  (interactive)
+  (let ((consult-ripgrep-args (concat consult-ripgrep-args " -t elisp -t gzip")))
+    (consult-ripgrep "/home/chriad/.guix-profile/share/emacs/29.4/lisp/")))
+
+(defun chriad/search-layers ()
+  "Search for code in packages. "
+  (interactive)
+  (let ((consult-ripgrep-args (concat consult-ripgrep-args " -t elisp")))
+    (consult-ripgrep "/media/chriad/nebula/spacemacs-fork/layers")))
+
+
 
 (defun chriad/search-systemd-units ()
   (interactive)
@@ -171,6 +188,8 @@
 (spacemacs/set-leader-keys "osd" 'chriad/search-dotfilers)
 (spacemacs/set-leader-keys "osD" 'chriad/search-dotfiles)
 (spacemacs/set-leader-keys "ose" 'chriad/search-elpa)
+(spacemacs/set-leader-keys "osE" 'chriad/search-emacs)
+(spacemacs/set-leader-keys "osl" 'chriad/search-layers)
 (spacemacs/set-leader-keys "osq" 'chriad/search-dpt)
 (spacemacs/set-leader-keys "osr" 'chriad/search-roam)
 (spacemacs/set-leader-keys "oss" 'chriad/search-spacemacs-core)
@@ -234,6 +253,7 @@
 
 ;; w
 (spacemacs/declare-prefix  "ow" "which key")
+;; SPC h k -> show top level
 (spacemacs/set-leader-keys "owf" 'which-key-show-full-major-mode)
 (spacemacs/set-leader-keys "owj" 'which-key-show-major-mode)
 (spacemacs/set-leader-keys "owi" 'which-key-show-minor-mode-keymap)
@@ -244,6 +264,13 @@
 (spacemacs/set-leader-keys "oxp" 'spacemacs/paradox-list-packages)
 (spacemacs/set-leader-keys "oxe" 'epkg-list-packages)
 (spacemacs/set-leader-keys "oxq" 'quelpa-expand-recipe) ;; use in scratch buffer
+
+(spacemacs/declare-prefix  "ox" "sometimes useful")
+(spacemacs/set-leader-keys "oxp" 'spacemacs/paradox-list-packages)
+
+
+(spacemacs/declare-prefix  "o=" "format")
+(spacemacs/set-leader-keys "o=j" 'json-reformat-region)
 
 
 ;;;; mode specific personal bindings ---------------
