@@ -1,6 +1,8 @@
 ;;;; spacemacs private ``o'' keymap
 (require 'consult)
 
+(load "./keybinding-functions.el")
+
 ;;; use c-h c (describe-key-briefly) to see the key name
 ;; (keymap-global-set (kbd "Spc-C-Spc") 'execute-extended-command-for-buffer)
 (keymap-global-set "C-x <home>" 'execute-extended-command-for-buffer)
@@ -19,103 +21,6 @@
 ;; (global-set-key [remap eval-expression] 'pp-eval-expression)
 
 ;; -----------------
-
-(defcustom chriad-search-plist nil "Pairs of search function suffixes and their locations"
-  :type '(alist :key-type string :value-type string))
-
-(defmacro chriad/build-search-functions ()
-  (ignore))
-
-(defun chriad/search-dpt ()
-  (interactive)
-  ;; (fzf-find-file-in-dir (getenv "QUADERNO_SYNC_PATH"))
-  ;; (fzf-find-file-in-dir "/media/chriad/ext4/dpt-mirror/dpt")
-  (let ((consult-fd-args '("fd --extension pdf --full-path")))
-    (consult-fd "/media/chriad/ext4/dpt-mirror/dpt"))
-  )
-
-(defun chriad--insert-key-markup (key)
-  (interactive "kType key sequence: ")
-  (insert (format "%s" (help-key-description key nil))))
-
-(defun chriad/search-dotfilers ()
-  ;; jump to a dir of some person
-  (interactive)
-  (consult-ripgrep "~/gh-dotfiles/"))
-
-;; TODO
-;; (defun chriad/search-dotfilers-dir ()
-;;   ;; jump to a dir of some person
-;;   (interactive)
-;;   (let ((consult-grep-args '("grep --files-with-matches -r")))
-;;     (consult-grep "~/gh-dotfiles/")))
-
-
-;; TODO must also search package-directory-list for guix
-;; TODO use symbol at point as default search term
-(defun chriad/search-elpa ()
-  "Search for code in packages. "
-  (interactive)
-  (let ((consult-ripgrep-args (concat consult-ripgrep-args " -t elisp")))
-    (consult-ripgrep package-user-dir)))
-
-
-(defun chriad/search-emacs ()
-  "Search for code in packages. "
-  (interactive)
-  (let ((consult-ripgrep-args (concat consult-ripgrep-args " -t elisp -t gzip")))
-    (consult-ripgrep "/home/chriad/.guix-profile/share/emacs/29.4/lisp/")))
-
-(defun chriad/search-layers ()
-  "Search for code in packages. "
-  (interactive)
-  (let ((consult-ripgrep-args (concat consult-ripgrep-args " -t elisp")))
-    (consult-ripgrep "/media/chriad/nebula/spacemacs-fork/layers")))
-
-
-
-(defun chriad/search-systemd-units ()
-  (interactive)
-  (spacemacs/helm-files-do-rg "/usr/lib/systemd/user"))
-
-(defun chriad/search-dotfiles ()
-  (interactive)
-  (spacemacs/helm-files-do-rg ""))
-
-(defun chriad/search-roam ()
-  (interactive)
-  (consult-ripgrep org-roam-directory))
-
-(defun chriad/search-spacemacs-core ()
-  (interactive)
-  (consult-ripgrep "/media/chriad/nebula/spacemacs-fork/core"))
-
-(defun chriad/find-custom-aliases ()
-  (interactive)
-  ;; (find-file (concat (getenv "BASH_IT") "/aliases/custom.aliases.bash")
-  (chezmoi-find (concat "/home/chriad/.bash_it" "/aliases/custom.aliases.bash")))
-
-(defun chriad/find-custom-keymap ()
-  (interactive)
-  (chezmoi-find "/home/chriad/.config/emacs/o-keymap.el"))
-
-(defun chriad/find-custom-settings ()
-  (interactive)
-  (find-file "/home/chriad/.local/share/chezmoi/ignored/emacs-custom.el"))
-
-(defun chriad/find-custom-bookmark-file ()
-  (interactive)
-  (switch-to-buffer (find-file-noselect "/home/chriad/.config/emacs/bookmarks")))
-
-(defun chriad/find-bashrc ()
-  (interactive)
-  (chezmoi-find "/home/chriad/.bashrc"))
-
-(defun chriad/find-dotfile ()
-  "Edit the `dotfile', in the current window."
-  (interactive)
-  (chezmoi-find (dotspacemacs/location)))
-
 
 ;;; global personal bindings
 
@@ -150,14 +55,17 @@
 ;; D
 (defalias 'debug-cancel-on-entry 'cancel-debug-on-entry)
 (spacemacs/declare-prefix  "oD" "debug")
+
 (spacemacs/declare-prefix  "oDd" "Debug")
 (spacemacs/set-leader-keys "oDdc" 'debug-cancel-on-entry)
 (spacemacs/set-leader-keys "oDde" 'debug-on-entry)
 (spacemacs/set-leader-keys "oDdq" 'toggle-debug-on-quit) ;; didn't get that error message just before emacs shutdown?
+
 (spacemacs/declare-prefix  "oDe" "edebug")
-(spacemacs/set-leader-keys "oDei" 'edebug-inline-result-mode) ;; toggle
 (spacemacs/set-leader-keys "oDee" 'edebug-on-entry)
 (spacemacs/set-leader-keys "oDec" 'edebug-cancel-on-entry)
+(spacemacs/set-leader-keys "oDei" 'edebug-inline-result-mode) ;; toggle
+(spacemacs/set-leader-keys "oDeI" 'inspector-inspect-expression)
 
 ;; f
 (spacemacs/declare-prefix  "of" "files")

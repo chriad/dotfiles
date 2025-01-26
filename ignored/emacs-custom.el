@@ -61,7 +61,8 @@
      (top . 0)
      (left . 0)))
  '(delete-old-versions t)
- '(desktop-save-mode t)
+ '(desktop-auto-save-timeout 20)
+ '(desktop-save-mode nil nil nil "TODO: running as daemon -> problem restoring; use activities.el")
  '(dired-auto-revert-buffer 'dired-directory-changed-p)
  '(dired-dwim-target t)
  '(dired-listing-switches "-alh")
@@ -96,7 +97,6 @@
          2]
      dired-extra-startup spacemacs//transient-hook-\(lambda\ nil\ \(let\ \(\(dired-quick-sort-suppress-setup-warning\ \'message\)\)\ \(dired-quick-sort-setup\)\)\)))
  '(dired-recursive-deletes 'always)
- '(display-raw-bytes-as-hex t)
  '(doc-view-mupdf-use-svg t)
  '(doc-view-svg-background nil)
  '(doc-view-svg-foreground nil)
@@ -108,8 +108,7 @@
  '(edebug-inline-result-backend 'popup)
  '(edebug-print-length 100)
  '(emacs-lisp-mode-hook
-   '(eldoc-mode
-     (lambda nil
+   '((lambda nil
        (setq-local bookmark-make-record-function #'lib-bookmark-make-record))
      highlight-defined-mode highlight-function-calls-mode eval-sexp-fu-flash-mode flycheck-package-setup flycheck-elsa-setup elisp-slime-nav-mode auto-compile-mode overseer-enable-mode edebug-x-mode elisp-def-mode spacemacs//define-elisp-comment-text-object spacemacs//init-company-emacs-lisp-mode company-mode))
  '(enable-local-variables t)
@@ -120,7 +119,7 @@
  '(epg-pinentry-mode 'loopback)
  '(evil-buffer-regexps '(("^ \\*load\\*") ("\\*LV\\*") ("\\\"\\*info\\*\\\"")))
  '(evil-emacs-state-modes
-   '(sly-db-mode backtrace-mode package-mode paradox-mode achievements-list-mode 5x5-mode bbdb-mode blackbox-mode bookmark-bmenu-mode bookmark-edit-annotation-mode browse-kill-ring-mode bs-mode bubbles-mode bzr-annotate-mode calc-mode cfw:calendar-mode completion-list-mode custom-theme-choose-mode delicious-search-mode desktop-menu-blist-mode desktop-menu-mode dun-mode dvc-bookmarks-mode dvc-diff-mode dvc-info-buffer-mode dvc-log-buffer-mode dvc-revlist-mode dvc-revlog-mode dvc-status-mode dvc-tips-mode ediff-meta-mode efs-mode Electric-buffer-menu-mode emms-browser-mode emms-mark-mode emms-metaplaylist-mode emms-playlist-mode ess-help-mode etags-select-mode fj-mode gc-issues-mode gdb-breakpoints-mode gdb-disassembly-mode gdb-frames-mode gdb-locals-mode gdb-memory-mode gdb-registers-mode gdb-threads-mode gist-list-mode gnus-article-mode gnus-browse-mode gnus-group-mode gnus-server-mode gnus-summary-mode gomoku-mode google-maps-static-mode ibuffer-mode jde-javadoc-checker-report-mode magit-popup-mode magit-popup-sequence-mode mh-folder-mode monky-mode mpuz-mode mu4e-main-mode mu4e-headers-mode mu4e-view-mode notmuch-hello-mode notmuch-search-mode notmuch-show-mode notmuch-tree-mode proced-mode rcirc-mode rebase-mode recentf-dialog-mode reftex-select-bib-mode reftex-select-label-mode reftex-toc-mode sldb-mode slime-inspector-mode slime-thread-control-mode slime-xref-mode snake-mode solitaire-mode sr-buttons-mode sr-mode sr-tree-mode sr-virtual-mode tetris-mode tla-annotate-mode tla-archive-list-mode tla-bconfig-mode tla-bookmarks-mode tla-branch-list-mode tla-browse-mode tla-category-list-mode tla-changelog-mode tla-follow-symlinks-mode tla-inventory-file-mode tla-inventory-mode tla-lint-mode tla-logs-mode tla-revision-list-mode tla-revlog-mode tla-tree-lint-mode tla-version-list-mode twittering-mode urlview-mode vc-annotate-mode vc-dir-mode vc-git-log-view-mode vc-hg-log-view-mode vc-svn-log-view-mode vm-mode vm-summary-mode w3m-mode wab-compilation-mode xgit-annotate-mode xgit-changelog-mode xgit-diff-mode xgit-revlog-mode xhg-annotate-mode xhg-log-mode xhg-mode xhg-mq-mode xhg-mq-sub-mode xhg-status-extra-mode Info-mode edebug-x-instrumented-function-list-mode key-quiz-mode nov-mode) nil nil "Does this work with spacemacs?")
+   '(sly-db-mode backtrace-mode package-mode paradox-mode achievements-list-mode 5x5-mode bbdb-mode blackbox-mode bookmark-edit-annotation-mode browse-kill-ring-mode bs-mode bubbles-mode bzr-annotate-mode calc-mode cfw:calendar-mode completion-list-mode custom-theme-choose-mode delicious-search-mode desktop-menu-blist-mode desktop-menu-mode dun-mode dvc-bookmarks-mode dvc-diff-mode dvc-info-buffer-mode dvc-log-buffer-mode dvc-revlist-mode dvc-revlog-mode dvc-status-mode dvc-tips-mode ediff-meta-mode efs-mode Electric-buffer-menu-mode emms-browser-mode emms-mark-mode emms-metaplaylist-mode emms-playlist-mode ess-help-mode etags-select-mode fj-mode gc-issues-mode gdb-breakpoints-mode gdb-disassembly-mode gdb-frames-mode gdb-locals-mode gdb-memory-mode gdb-registers-mode gdb-threads-mode gist-list-mode gnus-article-mode gnus-browse-mode gnus-group-mode gnus-server-mode gnus-summary-mode gomoku-mode google-maps-static-mode ibuffer-mode jde-javadoc-checker-report-mode magit-popup-mode magit-popup-sequence-mode mh-folder-mode monky-mode mpuz-mode mu4e-main-mode mu4e-headers-mode mu4e-view-mode notmuch-hello-mode notmuch-search-mode notmuch-show-mode notmuch-tree-mode rcirc-mode rebase-mode recentf-dialog-mode reftex-select-bib-mode reftex-select-label-mode reftex-toc-mode sldb-mode slime-inspector-mode slime-thread-control-mode slime-xref-mode snake-mode solitaire-mode sr-buttons-mode sr-mode sr-tree-mode sr-virtual-mode tetris-mode tla-annotate-mode tla-archive-list-mode tla-bconfig-mode tla-bookmarks-mode tla-branch-list-mode tla-browse-mode tla-category-list-mode tla-changelog-mode tla-follow-symlinks-mode tla-inventory-file-mode tla-inventory-mode tla-lint-mode tla-logs-mode tla-revision-list-mode tla-revlog-mode tla-tree-lint-mode tla-version-list-mode twittering-mode urlview-mode vc-annotate-mode vc-dir-mode vc-git-log-view-mode vc-hg-log-view-mode vc-svn-log-view-mode vm-mode vm-summary-mode w3m-mode wab-compilation-mode xgit-annotate-mode xgit-changelog-mode xgit-diff-mode xgit-revlog-mode xhg-annotate-mode xhg-log-mode xhg-mode xhg-mq-mode xhg-mq-sub-mode xhg-status-extra-mode Info-mode edebug-x-instrumented-function-list-mode key-quiz-mode archive-mode dired) nil nil "Does this work with spacemacs?")
  '(evil-escape-mode nil)
  '(evil-insert-state-modes
    '(eaf-edit-mode comint-mode erc-mode eshell-mode geiser-repl-mode gud-mode inferior-apl-mode inferior-caml-mode inferior-emacs-lisp-mode inferior-j-mode inferior-python-mode inferior-scheme-mode inferior-sml-mode internal-ange-ftp-mode prolog-inferior-mode reb-mode shell-mode slime-repl-mode term-mode wdired-mode))
@@ -128,6 +127,8 @@
  '(evil-org-use-additional-insert t)
  '(evil-undo-system 'undo-fu)
  '(evil-want-Y-yank-to-eol nil)
+ '(evil-want-integration t)
+ '(font-lock-maximum-decoration '((t . t) (ps-mode . t)) nil nil "Redundant, but remember this.")
  '(fortune-dir "/home/chriad/.local/share/chezmoi/ignored/emacs/fortune")
  '(fortune-file
    "/home/chriad/.local/share/chezmoi/ignored/emacs/fortune/fortunes")
@@ -146,6 +147,7 @@
  '(global-tree-sitter-mode t)
  '(global-treesit-auto-mode t)
  '(global-visual-line-mode t)
+ '(guix-emacs-verbose t)
  '(helm-M-x-always-save-history nil)
  '(helm-M-x-show-short-doc t)
  '(helm-apropos-fuzzy-match t)
@@ -173,7 +175,7 @@
      (write-region default helm-read-file-name-handler-1)
      (all-the-icons-insert . helm-mode-all-the-icons-handler)
      (bmkp-autofile-set ignore ido-read-file-name)) nil nil "TODO: bmkp-autofile-set only works with helm-mode disabeled")
- '(helm-completion-style 'helm-fuzzy)
+ '(helm-completion-style 'helm-fuzzy t)
  '(helm-descbinds-mode t)
  '(helm-descbinds-window-style 'split)
  '(helm-file-preview-mode nil nil (helm-file-preview) "This interferes with c-x 8")
@@ -199,8 +201,8 @@
      ("bookmark+: Find file" . bmkp-find-file)
      ("bookmark+: Add tag" . ignore)
      ("bookmark+: Edit bookmark " . bmkp-edit-bookmark-record)))
- '(helm-yas-display-key-on-candidate t)
- '(helm-yas-space-match-any-greedy t)
+ '(helm-yas-display-key-on-candidate t t)
+ '(helm-yas-space-match-any-greedy t t)
  '(history-delete-duplicates t)
  '(history-length 1000)
  '(hl-sexp-background-colors '("white smoke" "white"))
@@ -280,12 +282,7 @@
       ("-c" "-q")
       "zstd uncompressing" "zstd"
       ("-c" "-q" "-d")
-      t nil "(\265/\375" nil]
-     ["\\.epub$" "creating epub publication" "zip"
-      ("-r" "-X")
-      "extracting epub" "bsdtar"
-      ("-x" "-O" "-f" "-")
-      t t "" nil]))
+      t nil "(\265/\375" nil]))
  '(keyboard-coding-system 'utf-8-unix)
  '(keycast-header-line-mode t)
  '(keycast-mode-line-mode nil)
@@ -297,7 +294,9 @@
  '(load-dir-recursive t)
  '(lsp-pyright-diagnostic-mode "workspace")
  '(markdown-hide-markup t)
+ '(max-lisp-eval-depth 3200 nil nil "helpful--keymap-keys recursion")
  '(menu-bar-mode nil)
+ '(minibuffer-electric-default-mode t)
  '(nov-variable-pitch nil)
  '(org-M-RET-may-split-line '((default)))
  '(org-agenda-files '("/home/chriad/roam/"))
@@ -314,7 +313,6 @@
  '(org-download-image-attr-list nil)
  '(org-download-image-org-width 700)
  '(org-download-screenshot-method "gnome-screenshot -a -f %s")
- '(org-ellipsis " ↴")
  '(org-export-headline-levels 6)
  '(org-hide-emphasis-markers t)
  '(org-hide-leading-stars t)
@@ -408,8 +406,9 @@
  '(org-startup-with-inline-images nil)
  '(org-superstar-headline-bullets-list '(8227 8227 8227 10047))
  '(org-superstar-remove-leading-stars t)
+ '(org-support-shift-select t)
  '(package-selected-packages
-   '(ghub consult yaml closql flycheck helm-core js2-mode multiple-cursors lsp-mode magit-section nerd-icons parsebib emacsql with-editor undo-fu undo-fu-session vertico window-purpose combobulate ts-fold fringe-helper tree-sitter-langs org-roam org-dashboard graphviz-dot-mode anki-connect helm-ag bookmark+ org forge magit transient geiser merlin pp+ disable-mouse site-lisp snow misc-fns help-fns+ help-macro+ font-lock+ fzf yatemplate dashboard w3m jeison try ansi shut-up commander qpdf company posframe clang-format helm markdown-mode slime spray load-dir nov delight org-roam-ui quelpa-use-package quelpa fit-frame toml-mode helm-system-packages fn anki-editor-view anki-mode anki-editor keymap-utils org-fc zeal-at-point yasnippet-snippets yasnippet-classic-snippets yapfify yaml-mode xref xr ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vmd-mode vim-powerline vi-tilde-fringe uuidgen utop undo-tree toc-org tldr terminal-here term-cursor tagedit systemd symon symex symbol-overlay string-edit-at-point stickyfunc-enhance srefactor sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc smeargle slime-company slim-mode sicp shell-pop scss-mode scrollkeeper sass-mode run-command ripgrep restart-emacs rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort pug-mode psession prettier-js popwin poetry pippel pipenv pip-requirements persp-mode pdfgrep pdf-view-restore pcre2el password-store-otp password-generator paradox ox-gfm overseer orgit-forge org-web-tools org-tidy org-superstar org-starless org-rich-yank org-ref org-projectile org-present org-pomodoro org-pdftools org-page org-mru-clock org-ml org-mime org-link-minor-mode org-link-beautify org-gtd org-download org-contrib org-cliplink org-babel-hide-markers orca open-junk-file on-screen olivetti ocp-indent ocamlformat npm-mode nose nodejs-repl no-littering neotree nameless multi-vterm multi-term multi-line mpv minions merlin-iedit merlin-eldoc merlin-company markdown-toc magit-popup lsp-ui lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode lisp-extra-font-lock ligature keycast key-quiz json-reformat json-navigator json-mode js2-refactor js-doc journalctl-mode inspector info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete holy-mode hl-todo highlight-sexp highlight-parentheses highlight-numbers highlight-indentation highlight-indent-guides highlight-function-calls highlight-defined hide-comnt helpful helm-xref helm-unicode helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-pass helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-firefox helm-file-preview helm-emmet helm-descbinds helm-dash helm-css-scss helm-company helm-comint helm-c-yasnippet helm-bibtex helm-atoms helm-apt google-translate good-scroll golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md geiser-guile flycheck-pos-tip flycheck-package flycheck-ocaml flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-org evil-numbers evil-nerd-commenter evil-motion-trainer evil-mc evil-matchit evil-lispy evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help epkg emr elisp-slime-nav elisp-demos elisp-def el-patch editorconfig edit-indirect edebug-x edebug-inline-result eat dyncloze dune dumb-jump drag-stuff dotenv-mode doctest doct djvu3 djvu dired-quick-sort director diminish devdocs define-word dap-mode cython-mode csv-mode company-web company-statistics company-quickhelp company-lua company-anaconda common-lisp-snippets command-log-mode column-enforce-mode code-cells clhs clean-aindent-mode chezmoi centered-cursor-mode calibredb blacken auto-yasnippet auto-highlight-symbol auto-dim-other-buffers auto-compile all-the-icons aggressive-indent age adoc-mode achievements ace-link ace-jump-helm-line))
+   '(csv parse-csv activities persist unidecode nhexl-mode counsel-jq ghub consult yaml closql flycheck helm-core js2-mode multiple-cursors lsp-mode magit-section nerd-icons parsebib emacsql with-editor undo-fu undo-fu-session vertico window-purpose combobulate ts-fold fringe-helper tree-sitter-langs org-roam org-dashboard graphviz-dot-mode anki-connect helm-ag bookmark+ org forge magit transient geiser merlin pp+ disable-mouse site-lisp snow misc-fns help-fns+ help-macro+ font-lock+ fzf yatemplate dashboard w3m jeison try ansi shut-up commander qpdf company posframe clang-format helm markdown-mode slime spray load-dir nov delight org-roam-ui quelpa-use-package quelpa fit-frame toml-mode helm-system-packages fn anki-editor-view anki-mode anki-editor keymap-utils org-fc zeal-at-point yasnippet-snippets yasnippet-classic-snippets yapfify yaml-mode xref xr ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vmd-mode vim-powerline vi-tilde-fringe uuidgen utop undo-tree toc-org tldr terminal-here term-cursor tagedit systemd symon symex symbol-overlay string-edit-at-point stickyfunc-enhance srefactor sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc smeargle slime-company slim-mode sicp shell-pop scss-mode scrollkeeper sass-mode run-command ripgrep restart-emacs rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort pug-mode psession prettier-js popwin poetry pippel pipenv pip-requirements persp-mode pdfgrep pdf-view-restore pcre2el password-store-otp password-generator paradox ox-gfm overseer orgit-forge org-web-tools org-tidy org-superstar org-starless org-rich-yank org-ref org-projectile org-present org-pomodoro org-pdftools org-page org-mru-clock org-ml org-mime org-link-minor-mode org-link-beautify org-gtd org-download org-contrib org-cliplink org-babel-hide-markers orca open-junk-file on-screen olivetti ocp-indent ocamlformat npm-mode nose nodejs-repl no-littering neotree nameless multi-vterm multi-term multi-line mpv minions merlin-iedit merlin-eldoc merlin-company markdown-toc magit-popup lsp-ui lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode lisp-extra-font-lock ligature keycast key-quiz json-reformat json-navigator json-mode js2-refactor js-doc journalctl-mode inspector info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete holy-mode hl-todo highlight-sexp highlight-parentheses highlight-numbers highlight-indentation highlight-indent-guides highlight-function-calls highlight-defined hide-comnt helpful helm-xref helm-unicode helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-pass helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-firefox helm-file-preview helm-emmet helm-descbinds helm-dash helm-css-scss helm-company helm-comint helm-c-yasnippet helm-bibtex helm-atoms helm-apt google-translate good-scroll golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link gh-md geiser-guile flycheck-pos-tip flycheck-package flycheck-ocaml flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-org evil-numbers evil-nerd-commenter evil-motion-trainer evil-mc evil-matchit evil-lispy evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help epkg emr elisp-slime-nav elisp-demos elisp-def el-patch editorconfig edit-indirect edebug-x edebug-inline-result eat dyncloze dune dumb-jump drag-stuff dotenv-mode doctest doct djvu3 djvu dired-quick-sort director diminish devdocs define-word dap-mode cython-mode csv-mode company-web company-statistics company-quickhelp company-lua company-anaconda common-lisp-snippets command-log-mode column-enforce-mode code-cells clhs clean-aindent-mode chezmoi centered-cursor-mode calibredb blacken auto-yasnippet auto-highlight-symbol auto-dim-other-buffers auto-compile all-the-icons aggressive-indent age adoc-mode achievements ace-link ace-jump-helm-line))
  '(paradox-automatically-star nil)
  '(paradox-execute-asynchronously 'ask t)
  '(paradox-github-token t)
@@ -478,9 +477,39 @@
  '(psession-savehist-mode t)
  '(racket-browse-url-function 'browse-url-firefox)
  '(racket-documentation-search-location 'local)
+ '(reb-mode-hook nil nil nil "TODO: maybe enter evil-lisp-state")
  '(reb-re-syntax 'rx)
  '(safe-local-variable-values
-   '((eval font-lock-add-keywords nil
+   '((comment-fill-column . 80)
+     (etags-regen-ignores "test/manual/etags/")
+     (etags-regen-regexp-alist
+      (("c" "objc")
+       "/[ \11]*DEFVAR_[A-Z_ \11(]+\"\\([^\"]+\\)\"/\\1/" "/[ \11]*DEFVAR_[A-Z_ \11(]+\"[^\"]+\",[ \11]\\([A-Za-z0-9_]+\\)/\\1/"))
+     (eval add-hook 'before-save-hook 'time-stamp)
+     (eval add-hook 'after-save-hook
+           (lambda nil
+             (shell-command
+              (concat markdown-command " README.md > README.html")))
+           nil 'local)
+     (elisp-lint-indent-specs
+      (vulpea-utils-with-file . 1)
+      (vulpea-utils-with-note . 1)
+      (org-roam-with-file . 2)
+      (org-with-point-at . 1)
+      (org-element-map . 2)
+      (file-templates-set . defun)
+      (leader-def . 0)
+      (dlet . 1)
+      (general-create-definer . 1)
+      (eval-with-default-dir . 1)
+      (bui-define-interface . 2)
+      (use-package . 1)
+      (buffer-lines-map . 1)
+      (buffer-lines-each . 1)
+      (buffer-lines-each-t . 1)
+      (request . defun))
+     (vulpea-id-auto-targets)
+     (eval font-lock-add-keywords nil
            `((,(concat "("
                        (regexp-opt
                         '("sp-do-move-op" "sp-do-move-cl" "sp-do-put-op" "sp-do-put-cl" "sp-do-del-op" "sp-do-del-cl")
@@ -554,4 +583,7 @@
  ;; If there is more than one, they won't work right.
  '(linkd-generic-link ((t (:foreground "burlywood"))))
  '(linkd-generic-link-name ((t (:foreground "cyan"))))
- '(linkd-tag-name ((t (:foreground "chocolate" :underline t)))))
+ '(linkd-tag-name ((t (:foreground "chocolate" :underline t))))
+ '(org-level-1 ((t (:extend nil :foreground "#4f97d7"))))
+ '(org-level-2 ((t (:inherit bold :foreground "#2d9574"))))
+ '(org-level-3 ((t (:extend nil :foreground "#67b11d" :weight normal)))))
