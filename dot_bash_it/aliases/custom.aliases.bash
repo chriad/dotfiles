@@ -1,8 +1,10 @@
 # some more ls aliases
 alias ll='ls -alF'
 alias la='ls -A'
+alias firefox-proxy="firefox --remote-debugging-port=9222 &"
 # alias emacs-from-scratch="SPACEMACSDIR=/home/chriad/spacemacs.d emacs --init-directory /media/chriad/nebula/from-scratch &"
-alias emacs-from-scratch="emacs --init-directory /media/chriad/nebula/from-scratch &"
+alias emacs--from-scratch="emacs --init-directory /media/chriad/nebula/from-scratch &"
+alias emacs--vanilla="with-emacs.sh --dir /media/chriad/nebula/vanilla &"
 # alias l='ls -CF'
 alias l=exa
 alias chriad--update-emacs='guix pull && guix package -u emacs'
@@ -26,8 +28,8 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 alias adb--connect="adb connect 192.168.2.167:5555"
 alias adb--disconnect="adb disconnect 192.168.2.167:5555"
 alias dmesg="dmesg -wL" # color and --tail
-
-
+alias is-pipx='pipx list --short|cut -f1 -d" "|fzf'
+alias is-npm='npm ls -g --depth=0|fzf'
 # flatpak --command
 alias mpvshim='flatpak run com.github.iwalton3.jellyfin-mpv-shim'
 # alias gpodder="taskset -c 0 /usr/bin/flatpak run --command=/app/bin/gpodder org.gpodder.gpodder 2> /dev/null &"

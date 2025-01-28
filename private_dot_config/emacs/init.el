@@ -213,9 +213,8 @@ This function should only modify configuration layer settings."
                                       no-littering ;; useful
                                       ;; ascii-table
                                       clhs
-                                      evil-lispy
-;;; TODO move to org-additional
-                                      org-roam
+                                      ;; evil-lispy
+                                      org-roam ; TODO move to org-additional
                                       org-roam-ui
                                       org-mru-clock
                                       org-page

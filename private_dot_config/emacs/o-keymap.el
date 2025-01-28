@@ -1,7 +1,7 @@
 ;;;; spacemacs private ``o'' keymap
 (require 'consult)
 
-(load "./keybinding-functions.el")
+(load "~/.config/emacs/keybinding-functions.el")
 
 ;;; use c-h c (describe-key-briefly) to see the key name
 ;; (keymap-global-set (kbd "Spc-C-Spc") 'execute-extended-command-for-buffer)

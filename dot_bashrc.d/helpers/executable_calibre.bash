@@ -35,5 +35,5 @@ koreader--ebook-view ()
 {
     local d;
     d=/media/chriad/ssd-45/KOReader-Books
-    fd --prune -e epub --base-directory $d | fzf --bind="enter:become(koreader /media/chriad/ssd-45/KOReader-Books/{} 2>&1 > /dev/null & disown)"
+    fd --prune -e epub --base-directory $d | fzf --bind="enter:execute(koreader /media/chriad/ssd-45/KOReader-Books/{} 2>&1 > /dev/null &)+accept"
 }
