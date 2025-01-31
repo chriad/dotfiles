@@ -13,6 +13,7 @@
 (keymap-global-set "C-<menu>" 'ignore)
 (keymap-global-set "s-]" 'ignore)
 ;; (keymap-global-set "<menu>" 'ignore) ; this is the contex menu key, currently bound to execute-extended-command
+(keymap-global-set "C-c l" #'dictionary-lookup-definition)
 
 ;;; remapping
 
@@ -20,6 +21,8 @@
 ;; el-patched eval-expression with pp-eval-expression code
 ;; (global-set-key [remap eval-expression] 'pp-eval-expression)
 
+;; usually I just want window to take current column, not whole frame
+(global-set-key [remap spacemacs/toggle-maximize-window] 'spacemacs/maximize-vertically)
 ;; -----------------
 
 ;;; global personal bindings

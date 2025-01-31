@@ -157,7 +157,7 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
-                                      activities
+                                      ;; activities
                                       counsel-jq
                                       ;; TODO
                                       (org-anki :location (recipe
@@ -1288,42 +1288,10 @@ before packages are loaded."
 
   ;; working
   ;; not working
+  (evil-set-initial-state 'dired-mode 'emacs)
   (evil-set-initial-state 'Info-edit-mode 'emacs)
-  ;; (evil-set-initial-state 'debugger-mode 'emacs)
-  ;; (remove-hook 'paradox-menu-mode-hook 'evil-mode)
-  ;; (remove-hook 'paradox-mode-hook 'evil-mode)
-  ;; (remove-hook 'package-mode-hook 'evil-mode)
-  ;; (remove-hook 'package-menu-mode-hook 'evil-mode)
+  (evil-set-initial-state 'bmkp-bmenu-list-mode 'emacs)
 
-  ;; (evil-set-initial-state 'org-capture-mode 'insert)
-
-  ;; customize
-  ;; (add-hook 'org-mode-hook 'org-indent-mode)
-
-  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/dired-plus/dired+.el")
-  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/pp-plus/pp+.el")
-  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/thingatpt-plus/thingatpt+.el")
-  ;; (load "/media/chriad/nebula/spacemacs-fork/private/local/org-babel-hide-markers-mode/ob-hide-markers.el")
-
-
-  ;; (add-hook 'pdf-view-mode-hook (lambda ()
-  ;;                                 (pdf-view-auto-slice-minor-mode)))
-
-
-
-  ;; (add-hook 'org-noter-doc-mode-hook (lambda () (spacemacs/set-leader-keys-for-minor-mode
-  ;;                                                 'org-noter-doc-mode "i" 'org-noter-insert-precise-note)))
-  ;; (add-hook 'org-noter-doc-mode-hook (lambda () (spacemacs/set-leader-keys-for-minor-mode
-  ;;                                                 'org-noter-doc-mode "<f9>" 'org-noter-sync-current-page-or-chapter)))
-  ;; (add-hook 'org-noter-notes-mode-hook (lambda () (spacemacs/set-leader-keys-for-minor-mode
-  ;;                                                   'org-noter-notes-mode "<f9>" 'org-noter-sync-current-note)))
-  ;; (global-set-key (kbd "<f8>") 'org-noter-sync-current-page-or-chapter)
-  ;; (global-set-key (kbd "<f9>") 'org-noter-sync-current-note)
-
-
-
-  ;; (require 'pdfgrep)
-  ;; (pdfgrep-mode)
 
   (setq helm-dash-browser-func 'eww)
   (setq dash-docs-browser-func 'eww)

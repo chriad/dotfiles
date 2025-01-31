@@ -63,6 +63,7 @@
  '(delete-old-versions t)
  '(desktop-auto-save-timeout 20)
  '(desktop-save-mode nil nil nil "TODO: running as daemon -> problem restoring; use activities.el")
+ '(dictionary-server nil nil nil "Automatic: First try localhost, then dict.org after confirmation")
  '(dired-auto-revert-buffer 'dired-directory-changed-p)
  '(dired-dwim-target t)
  '(dired-listing-switches "-alh")
@@ -227,6 +228,7 @@
      (org-confirm-babel-evaluate)))
  '(image-dired-dired-append-when-browsing t)
  '(image-dired-external-viewer "eog")
+ '(info-manual+node-buffer-name-mode t)
  '(jka-compr-compression-info-list
    '(["\\.Z\\'" "compressing" "compress"
       ("-c")
@@ -292,7 +294,8 @@
  '(lispy-eval-display-style 'overlay)
  '(load-dir-recursive t)
  '(lsp-pyright-diagnostic-mode "workspace")
- '(magit-repository-directories '(("/home/chriad/gh-dotfiles" . 2)))
+ '(magit-define-global-key-bindings 'recommended)
+ '(magit-repository-directories '(("/home/chriad/gh-dotfiles" . 2) ("/home/chriad/gh" . 4)))
  '(markdown-hide-markup t)
  '(max-lisp-eval-depth 3200 nil nil "helpful--keymap-keys recursion")
  '(menu-bar-mode nil)
