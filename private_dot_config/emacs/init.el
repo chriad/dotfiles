@@ -206,8 +206,11 @@ This function should only modify configuration layer settings."
                                       ;; dired-git-info ;; disable for debug
                                       ;; camcorder
                                       run-command
-                                      ;; dependency on tree-sitter which is obsolete
-                                      ;; symex
+                                      ;; this uses builtin treesitter; also, no hydra any more
+                                      (symex
+                                        :location (recipe :fetcher github
+                                                          :repo "drym-org/symex.el"
+                                                          :branch "2.0-integration"))
                                       ;; niceify-info ;; breaks helm-info
                                       dyncloze
                                       no-littering ;; useful
@@ -232,7 +235,7 @@ This function should only modify configuration layer settings."
                                       ;; elisp-def ;; part of elisp layer
                                       key-quiz
                                       ;; sr-speedbar
-                                      lispy
+                                      lispy ;; just for the ``ace-'' commands
                                       achievements
                                       doct
                                       common-lisp-snippets
@@ -1026,11 +1029,6 @@ before packages are loaded."
   ;; (setq highlight-indent-guides-method 'character)
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
 
-  ;; (require 'evil-lispy)
-  ;; (add-hook 'emacs-lisp-mode-hook #'evil-lispy-mode)
-  ;; (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hooks)
-
-
   ;; not customizable
   (setq define-word-offline-dict-directory "/media/chriad/ext4/SOFTWARE/dictionaries_enwiktionary/ding/")
   (setq org-capture-template-dir "/home/chriad/.config/emacs/capture-templates/")
@@ -1400,14 +1398,24 @@ before packages are loaded."
   ;; TODO move to org-additional
   ;; (setq org-mru-clock-keep-formatting t)
 
-
   ;; TODO dependency on tree-sitter package which is obsolete
-  ;; (use-package symex
-  ;;   :defer t
-  ;;   :config
-  ;;   (symex-initialize)
-  ;;   (global-set-key (kbd "s-;") 'symex-mode-interface)
-  ;;   :custom (symex-modal-backend 'hydra))
+
+   ;; TL;DR: Use the evil option -- this is the default, and it is available to both evil and vanilla emacs users. If you're learning and would like some hand-holding as you familiarize yourself with the keybindings, use the hydra option, but it is likely that hydra will eventually be deprecated here.
+
+  ;; (package-vc-install "https://github.com/drym-org/symex.el")
+
+
+  (use-package lispy
+    :commands (lispy-ace-symbol)
+    :bind ("C-<f4>" . lispy-ace-symbol))
+
+
+  (use-package symex
+    :defer t
+    :config
+    (symex-initialize)
+    (global-set-key (kbd "s-;") 'symex-mode-interface)
+    :custom (symex-modal-backend 'evil))
 
   ;; TODO append to dired-compress-files-alist
   ;; ("\.epub$" . "zip -fX %i mimetype $(ls|xargs echo|sed 's/mimetype//g'")
@@ -1427,5 +1435,4 @@ before packages are loaded."
     )
 
   (setq custom-file "/home/chriad/.config/emacs/emacs-custom.el")
-  (load custom-file)
-  )
+  (load custom-file))

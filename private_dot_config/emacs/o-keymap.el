@@ -14,6 +14,7 @@
 (keymap-global-set "s-]" 'ignore)
 ;; (keymap-global-set "<menu>" 'ignore) ; this is the contex menu key, currently bound to execute-extended-command
 (keymap-global-set "C-c l" #'dictionary-lookup-definition)
+(keymap-global-set "C-x n s" 'sp-narrow-to-sexp)
 
 ;;; remapping
 
