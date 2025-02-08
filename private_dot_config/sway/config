@@ -123,13 +123,13 @@ output * bg /usr/local/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png 
     # bindsym Control+Mod1+Delete exec ksysguard
     bindsym $mod+F1 exec nautilus --new-window
     bindsym $mod+F2 exec emacsclient --alternate-editor= --create-frame
-    # bindsym $mod+F3 exec mpv --player-operation-mode=pseudo-gui
+    # bindsym $mod+F3 exec emacsclient --alternate-editor= --create-frame -s emacs
     bindsym $mod+F3 exec systemctl suspend
     bindsym $mod+F4 exec firefox
     # bindsym $mod+F5 exec kate
     bindsym $mod+F5 exec sudo systemctl hibernate
     # bindsym $mod+F6 exec io.github.quodlibet.QuodLibet
-    bindsym $mod+F6 exec /var/lib/flatpak/exports/bin/io.github.quodlibet.QuodLibet
+    # bindsym $mod+F6 exec /var/lib/flatpak/exports/bin/io.github.quodlibet.QuodLibet
     # bindsym $mod+F6 exec lutris
     # bindsym $mod+F7 exec notify-send $(weather)
     # bindsym $mod+F8 exec pkill kmousetool || kmousetool

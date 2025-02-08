@@ -103,41 +103,36 @@ This function should only modify configuration layer settings."
 ;;;; readers
      pdf
      djvu
-                                        ; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
+     ;; (elfeed :variables rmh-elfeed-org-files (list (concat "/home/chriad/.config/emacs/" "elfeed.org")))
 ;;;; Source control
      git
-
 ;;;; TODO classify
-                                        ; emoji
-                                        ; (ipython-notebook :variables ein-backend 'jupyter)
-
-                                        ; (ranger :variables ranger-show-preview t)
+     ;; emoji
+     ;; (ipython-notebook :variables ein-backend 'jupyter)
+     ;; (ranger :variables ranger-show-preview t)
      helpful
-                                        ; deft
-     (dash :variables                   ;; offline doc browser
-           dash-docs-docset-newpath "~/.local/share/Zeal/Zeal/docsets")
+     ;; deft
+     ;; (dash :variables                   ;; offline doc browser
+     ;;       dash-docs-docset-newpath "~/.local/share/Zeal/Zeal/docsets")
      (spacemacs-evil :variables
                      spacemacs-evil-collection-allowed-list
                      '(ediff dired))
      command-log
      (markdown :variables markdown-live-preview-engine 'vmd)
      multiple-cursors
-     (org :variables
-                                        ; org-enable-org-journal-support t
-          org-enable-roam-support t
-          org-enable-github-support t)
+     org
+     ;; (org :variables
+     ;;      org-enable-github-support t)
 
 ;;;; Checkers
      ;; spell-checking
-                                        ; syntax-checking
+     ;; syntax-checking
 
 ;;;; File Trees
      neotree
-                                        ; treemacs
-
 ;;;; emacs
      semantic
-                                        ; better-defaults ;; emacs style
+     ;; better-defaults ;; emacs style
 
      compleseus
      ;; (tree-sitter :variables
@@ -217,8 +212,8 @@ This function should only modify configuration layer settings."
                                       ;; ascii-table
                                       clhs
                                       ;; evil-lispy
-                                      org-roam ; TODO move to org-additional
-                                      org-roam-ui
+                                      ;; org-roam ; TODO move to org-additional
+                                      ;; org-roam-ui
                                       org-mru-clock
                                       org-page
                                       org-gtd
@@ -285,10 +280,13 @@ This function should only modify configuration layer settings."
                                   ;; guix
                                   geiser       ;; externally managed by guix
                                   geiser-guile ;; externally managed by guix
+                                  org-roam
                                   )
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(org-roam
+                                    geiser-guile
+                                    geiser)
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -832,6 +830,9 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  (load "~/.config/emacs/additional-packages-config.el")
+
+  (add-hook 'help-mode-hook 'evil-mode -1)
   ;; disable deprecation warning
   (setq byte-compile-warnings '(cl-functions))
   (setq warning-minimum-level :emergency)
@@ -937,8 +938,6 @@ before packages are loaded."
   (put 'chezmoi-diff 'disabled "~~~ Use chezmoi-ediff ~~~")
   (put 'spacemacs/paradox-list-packages 'disabled "~~~ Use SPC f e U ~~~")
 
-  (use-package org-pdftools
-    :hook (org-mode . org-pdftools-setup-link))
 
 
   (setq bibtex-completion-bibliography '("~/.config/bibliographies/fixed-layout.bib")
@@ -1108,19 +1107,6 @@ before packages are loaded."
     (defun chriad/org-roam-extract-subtree-with-link ()
       "Extract the subtree but keen a link to the new file as the current node heading")
 
-    ;; TODO hook to roam
-    ;; (defun chriad/roam-doc ()
-    ;;   (let ((spacemacs-space-doc-modificators
-    ;;          '(center-buffer-mode
-    ;;            org-indent-mode
-    ;;            hide-line-numbers
-    ;;            alternative-emphasis
-    ;;            alternative-tags-look
-    ;;            org-block-line-face-remap
-    ;;            org-kbd-face-remap
-    ;;            resize-inline-images)))
-    ;;     (space-doc-mode)))
-
     (cl-defmethod org-roam-node-uuid ((node org-roam-node))
       "Return the uuid of NODE."
       (uuidgen-1))
@@ -1149,7 +1135,7 @@ before packages are loaded."
              :target (file+head "${slug}.org"
                                 "#+title: ${title}")
              :unnarrowed t)
-            
+
             ("i" "integrate" entry "* _ TODO %A\n%i"
              :target (file+head "${slug}.org"
                                 "#+title: ${title}")
@@ -1186,33 +1172,35 @@ before packages are loaded."
     ("C-c n R" . org-roam-node-random)
     ("C-c n e" . org-roam-extract-subtree) ;; notes shouldn't get too long. Better many files than one file with many notes
     ("C-c n o" . org-id-get-create)
+    ("C-c n x d" . org-roam-demote-entire-buffer) ;; node-to-entry
+    ("C-c n x r" . org-roam-refile) ;; entry-to-entry-other-node
     ("C-c n m i" . org-roam-update-org-id-locations)
     ("C-c n m s" . org-roam-db-sync)
     ("C-c n m c" . org-roam-db-clear-all))
 
-  ;; (defun org-capture-mode-hook--org-fc-cloze-code-hook ()
-  ;;   (if (equal (org-capture-get :key) "lcs")
-  ;;       (progn
-  ;;         (org-babel-next-src-block)
-  ;;         (org-edit-special))))
+  (defun org-capture-mode-hook--org-fc-cloze-code-hook ()
+    (if (equal (org-capture-get :key) "lcs")
+        (progn
+          (org-babel-next-src-block)
+          (org-edit-special))))
 
-  (use-package activities
-    :init
-    (activities-mode)
-    (activities-tabs-mode)
-    ;; Prevent `edebug' default bindings from interfering.
-    (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+  ;; (use-package activities
+  ;;   :init
+  ;;   (activities-mode)
+  ;;   (activities-tabs-mode)
+  ;;   ;; Prevent `edebug' default bindings from interfering.
+  ;;   (setq edebug-inhibit-emacs-lisp-mode-bindings t)
 
-    :bind
-    (("C-x C-a C-n" . activities-new)
-     ("C-x C-a C-d" . activities-define)
-     ("C-x C-a C-a" . activities-resume)
-     ("C-x C-a C-s" . activities-suspend)
-     ("C-x C-a C-k" . activities-kill)
-     ("C-x C-a RET" . activities-switch)
-     ("C-x C-a b" . activities-switch-buffer)
-     ("C-x C-a g" . activities-revert)
-     ("C-x C-a l" . activities-list)))
+  ;;   :bind
+  ;;   (("C-x C-a C-n" . activities-new)
+  ;;    ("C-x C-a C-d" . activities-define)
+  ;;    ("C-x C-a C-a" . activities-resume)
+  ;;    ("C-x C-a C-s" . activities-suspend)
+  ;;    ("C-x C-a C-k" . activities-kill)
+  ;;    ("C-x C-a RET" . activities-switch)
+  ;;    ("C-x C-a b" . activities-switch-buffer)
+  ;;    ("C-x C-a g" . activities-revert)
+  ;;    ("C-x C-a l" . activities-list)))
 
   (use-package org-fc
     :defer t
@@ -1289,6 +1277,8 @@ before packages are loaded."
   (evil-set-initial-state 'dired-mode 'emacs)
   (evil-set-initial-state 'Info-edit-mode 'emacs)
   (evil-set-initial-state 'bmkp-bmenu-list-mode 'emacs)
+  (evil-set-initial-state 'bookmark-bmenu-list-mode 'emacs)
+  (evil-set-initial-state 'debugger-mode 'emacs)
 
 
   (setq helm-dash-browser-func 'eww)
@@ -1303,8 +1293,10 @@ before packages are loaded."
   ;; ;; (helm-posframe-enable)
 
 
+  ;; don't show any stars
+  ;; (add-hook 'org-mode-hook 'org-starless-mode)
 
-;; epub layer
+  ;; epub layer
   ;; (use-package nov
   ;;   :defer t
   ;;   :init (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
@@ -1435,4 +1427,5 @@ before packages are loaded."
     )
 
   (setq custom-file "/home/chriad/.config/emacs/emacs-custom.el")
-  (load custom-file))
+  (load custom-file)
+  )
