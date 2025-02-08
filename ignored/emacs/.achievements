@@ -33,21 +33,13 @@
                           (and
                            (achievements-command-was-run 'view-emacs-problems)))
                         nil nil 5 0 nil)
-   #s(emacs-achievement "Entomologist" "You learned new things by using `view-emacs-debugging'."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run 'view-emacs-debugging)))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "Entomologist" "You learned new things by using `view-emacs-debugging'." t nil nil 5 0 nil)
    #s(emacs-achievement "Joining the cause" "You learned new things by using `view-emacs-todo'."
                         (lambda nil
                           (and
                            (achievements-command-was-run 'view-emacs-todo)))
                         nil nil 5 0 nil)
-   #s(emacs-achievement "Where else can I look?" "You learned new things by using `view-external-packages'."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run 'view-external-packages)))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "Where else can I look?" "You learned new things by using `view-external-packages'." t nil nil 5 0 nil)
    #s(emacs-achievement "World Traveler" "You learned new things by using `(view-hello-file describe-language-environment describe-input-method describe-coding-system)'."
                         (lambda nil
                           (and
@@ -57,11 +49,7 @@
    #s(emacs-achievement "Package Hunter" "You learned new things by using `(finder-by-keyword describe-package)'." t nil nil 5 0 nil)
    #s(emacs-achievement "I know I read it somewhere" "You answered a question by using `apropos-documentation'." t nil nil 5 0 nil)
    #s(emacs-achievement "Apropos of Nothing" "You answered a question by using `apropos'." t nil nil 5 0 nil)
-   #s(emacs-achievement "Answer in search of a question" "You answered a question by using `apropos-value'."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run 'apropos-value)))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "Answer in search of a question" "You answered a question by using `apropos-value'." t nil nil 5 0 nil)
    #s(emacs-achievement "What to type?" "You answered a question by using `describe-bindings'." t nil nil 5 0 nil)
    #s(emacs-achievement "What does this do?" "You answered a question by using `(describe-function Info-goto-emacs-command-node info-lookup-symbol describe-variable describe-mode)'."
                         (lambda nil
@@ -69,12 +57,7 @@
                            (achievements-command-was-run
                             '(describe-function Info-goto-emacs-command-node info-lookup-symbol describe-variable describe-mode))))
                         nil nil 5 0 nil)
-   #s(emacs-achievement "What happens when I do this?" "You answered a question by using `(describe-key describe-key-briefly Info-goto-emacs-key-command-node where-is)'."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run
-                            '(describe-key describe-key-briefly Info-goto-emacs-key-command-node where-is))))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "What happens when I do this?" "You answered a question by using `(describe-key describe-key-briefly Info-goto-emacs-key-command-node where-is)'." t nil nil 5 0 nil)
    #s(emacs-achievement "When is a word not a word?" "You answered a question by using `describe-syntax'." t nil nil 5 0 nil)
    #s(emacs-achievement "What did I just do?" "You answered a question by using `(command-history view-lossage)'." t nil nil 5 0 nil)
    #s(emacs-achievement "Shortcut genius" "You don't need to learn new shortcuts anymore."
@@ -185,11 +168,7 @@
                           (and
                            (achievements-command-was-run 'gomoku)))
                         nil nil 5 50 nil)
-   #s(emacs-achievement "Penmanship" "You have enjoyed `handwrite'."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run 'handwrite)))
-                        nil nil 5 50 nil)
+   #s(emacs-achievement "Penmanship" "You have enjoyed `handwrite'." t nil nil 5 50 nil)
    #s(emacs-achievement "Saigon" "You have enjoyed `hanoi'."
                         (lambda nil
                           (and
@@ -481,18 +460,8 @@
                             [this-command achievements--arrow-key-replacement-commands last-input-event achievements--arrow-keys-needing-replacements delete 0]
                             4]
                         5 0 nil)
-   #s(emacs-achievement "Inception" "You have used recursive editing and exited succesfully."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run
-                            '(recursive-edit exit-recursive-edit))))
-                        nil nil 5 0 nil)
-   #s(emacs-achievement "Narrow minded" "You have used narrowing."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run
-                            '((narrow-to-region narrow-to-page narrow-to-defun)))))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "Inception" "You have used recursive editing and exited succesfully." t nil nil 5 0 nil)
+   #s(emacs-achievement "Narrow minded" "You have used narrowing." t nil nil 5 0 nil)
    #s(emacs-achievement "Forbidden Fruits" "You have used all disabled commands."
                         (lambda nil
                           (and
@@ -535,11 +504,7 @@
                           (and
                            (achievements-command-was-run 'scroll-left)))
                         nil nil 5 0 nil)
-   #s(emacs-achievement "Dired reuse" "You have reused a dired buffer to look at another file/directory."
-                        (lambda nil
-                          (and
-                           (achievements-command-was-run 'dired-find-alternate-file)))
-                        nil nil 5 0 nil)
+   #s(emacs-achievement "Dired reuse" "You have reused a dired buffer to look at another file/directory." t nil nil 5 0 nil)
    #s(emacs-achievement "Yes Man" "You can't say no."
                         (lambda nil
                           (and
