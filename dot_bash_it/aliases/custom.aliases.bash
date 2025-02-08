@@ -4,7 +4,7 @@ alias la='ls -A'
 alias firefox-proxy="firefox --remote-debugging-port=9222 &"
 # alias emacs-from-scratch="SPACEMACSDIR=/home/chriad/spacemacs.d emacs --init-directory /media/chriad/nebula/from-scratch &"
 alias emacs--from-scratch="emacs --init-directory /media/chriad/nebula/from-scratch &"
-alias emacs--vanilla="with-emacs.sh --dir /media/chriad/nebula/vanilla &"
+alias emacs--vanilla="with-emacs.sh -R --dir /media/chriad/nebula/vanilla &"
 # alias l='ls -CF'
 alias l=exa
 alias chriad--update-emacs='guix pull && guix package -u emacs'
