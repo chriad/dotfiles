@@ -2,19 +2,7 @@
 (require 'consult)
 
 (load "~/.config/emacs/keybinding-functions.el")
-
-;;; use c-h c (describe-key-briefly) to see the key name
-;; (keymap-global-set (kbd "Spc-C-Spc") 'execute-extended-command-for-buffer)
-(keymap-global-set "C-x <home>" 'execute-extended-command-for-buffer)
-(keymap-global-set "C-x 8 _" '(lambda () (insert-char ?\​))) ;; zero width space for org-mode markup escape
-(keymap-global-set "<kp-enter>" 'org-anki-sync-entry)
-(keymap-global-set "<kp-delete>" 'org-anki-cloze-dwim)
-(keymap-global-set "C-<f8>" 'ignore)
-(keymap-global-set "C-<menu>" 'ignore)
-(keymap-global-set "s-]" 'ignore)
-;; (keymap-global-set "<menu>" 'ignore) ; this is the contex menu key, currently bound to execute-extended-command
-(keymap-global-set "C-c l" #'dictionary-lookup-definition)
-(keymap-global-set "C-x n s" 'sp-narrow-to-sexp)
+(load "~/.config/emacs/custom-keybindings.el")
 
 ;;; remapping
 
